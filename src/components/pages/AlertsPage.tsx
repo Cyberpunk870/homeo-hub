@@ -114,15 +114,15 @@ export default function AlertsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-white p-6 rounded-lg border border-secondary/30"
+            className="bg-white p-6 rounded-lg border-2 border-destructive/40 shadow-md"
           >
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-destructive/10 rounded-lg">
+              <div className="p-3 bg-destructive/15 rounded-lg">
                 <AlertTriangle className="w-8 h-8 text-destructive" />
               </div>
               <div>
-                <p className="font-paragraph text-sm text-foreground/60">Low Stock Alerts</p>
-                <p className="font-heading text-3xl text-foreground">{lowStockAlerts.length}</p>
+                <p className="font-paragraph text-sm font-semibold text-gray-700">Low Stock Alerts</p>
+                <p className="font-heading text-4xl font-bold text-destructive">{lowStockAlerts.length}</p>
               </div>
             </div>
           </motion.div>
@@ -131,15 +131,15 @@ export default function AlertsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-white p-6 rounded-lg border border-secondary/30"
+            className="bg-white p-6 rounded-lg border-2 border-accent-gold/40 shadow-md"
           >
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-accent-gold/10 rounded-lg">
+              <div className="p-3 bg-accent-gold/15 rounded-lg">
                 <Clock className="w-8 h-8 text-accent-gold" />
               </div>
               <div>
-                <p className="font-paragraph text-sm text-foreground/60">Expiry Alerts</p>
-                <p className="font-heading text-3xl text-foreground">{expiryAlerts.length}</p>
+                <p className="font-paragraph text-sm font-semibold text-gray-700">Expiry Alerts</p>
+                <p className="font-heading text-4xl font-bold text-accent-gold">{expiryAlerts.length}</p>
               </div>
             </div>
           </motion.div>
