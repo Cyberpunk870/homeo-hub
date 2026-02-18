@@ -185,36 +185,6 @@ export default function HomePage() {
         <div className="flex flex-col lg:flex-row flex-1">
           {/* Left: Content */}
           <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 lg:px-20 py-20 z-10 bg-background/80 backdrop-blur-sm lg:bg-transparent">
-            {/* Top Logo Images */}
-            <div className="mb-12 flex gap-6 items-center">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6 }}
-                className="w-24 h-24 rounded-full overflow-hidden border-4 border-primary shadow-lg flex-shrink-0"
-              >
-                <Image
-                  src="https://static.wixstatic.com/media/3fbaca_fb69eca258004dabb70a8e7194db7b28~mv2.png"
-                  alt="Homeopathic Medicines"
-                  width={200}
-                  className="w-full h-full object-cover"
-                />
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: 0.1 }}
-                className="w-24 h-24 rounded-full overflow-hidden border-4 border-primary shadow-lg flex-shrink-0"
-              >
-                <Image
-                  src="https://static.wixstatic.com/media/3fbaca_247171c8c6594e6581cacd4e6e57215b~mv2.png"
-                  alt="Dr. Upadhyaya's Credentials"
-                  width={200}
-                  className="w-full h-full object-cover"
-                />
-              </motion.div>
-            </div>
-
             <FadeIn>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-accent-gold/30 bg-accent-gold/5 text-accent-gold text-sm font-medium mb-8">
                 <span className="relative flex h-2 w-2">
@@ -254,27 +224,7 @@ export default function HomePage() {
             </FadeIn>
           </div>
 
-          {/* Right: Horizontal Carousel with 4 Images */}
-          <div className="w-full lg:w-1/2 relative min-h-[50vh] lg:min-h-auto bg-secondary/10 flex items-center justify-center overflow-hidden p-8">
-            <div className="w-full flex gap-6 overflow-x-auto pb-4">
-              {splashImages.map((image, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="flex-shrink-0 w-40 h-40 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-accent-gold shadow-lg"
-                >
-                  <Image
-                    src={image.url}
-                    alt={image.alt}
-                    width={300}
-                    className="w-full h-full object-cover"
-                  />
-                </motion.div>
-              ))}
-            </div>
-          </div>
+
         </div>
       </section>
 

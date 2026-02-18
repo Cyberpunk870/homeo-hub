@@ -29,9 +29,6 @@ export default function Header() {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full overflow-hidden bg-accent-gold flex items-center justify-center shadow-md">
-              <span className="font-heading text-2xl text-background font-bold">UP</span>
-            </div>
             <div>
               <h1 className="font-heading text-2xl text-foreground">Dr. Upadhyaya's</h1>
               <p className="font-paragraph text-sm text-foreground/80">Homeopathy</p>
