@@ -181,18 +181,18 @@ export default function PrescriptionsPage() {
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-paragraph text-sm">
                           <div>
-                            <p className="text-foreground/60">Doctor</p>
-                            <p className="font-medium">{prescription.doctorName}</p>
+                            <p className="text-gray-600 font-medium">Doctor</p>
+                            <p className="font-medium text-gray-900">{prescription.doctorName}</p>
                           </div>
                           <div>
-                            <p className="text-foreground/60">Date</p>
-                            <p className="font-medium">
+                            <p className="text-gray-600 font-medium">Date</p>
+                            <p className="font-medium text-gray-900">
                               {prescription.prescriptionDate ? new Date(prescription.prescriptionDate).toLocaleDateString() : 'N/A'}
                             </p>
                           </div>
                           <div>
-                            <p className="text-foreground/60">Medicines</p>
-                            <p className="font-medium line-clamp-1">{prescription.medicinesAndDosages}</p>
+                            <p className="text-gray-600 font-medium">Medicines</p>
+                            <p className="font-medium line-clamp-1 text-gray-900">{prescription.medicinesAndDosages}</p>
                           </div>
                         </div>
                       </div>
@@ -223,37 +223,37 @@ export default function PrescriptionsPage() {
             <div className="space-y-6">
               <div className="grid grid-cols-2 gap-4 font-paragraph text-sm">
                 <div>
-                  <p className="text-foreground/60 mb-1">Prescription ID</p>
-                  <p className="font-medium text-foreground">{selectedPrescription.prescriptionId}</p>
+                  <p className="text-gray-600 mb-1 font-medium">Prescription ID</p>
+                  <p className="font-medium text-gray-900">{selectedPrescription.prescriptionId}</p>
                 </div>
                 <div>
-                  <p className="text-foreground/60 mb-1">Date</p>
-                  <p className="font-medium text-foreground">
+                  <p className="text-gray-600 mb-1 font-medium">Date</p>
+                  <p className="font-medium text-gray-900">
                     {selectedPrescription.prescriptionDate ? new Date(selectedPrescription.prescriptionDate).toLocaleDateString() : 'N/A'}
                   </p>
                 </div>
                 <div>
-                  <p className="text-foreground/60 mb-1">Patient Name</p>
-                  <p className="font-medium text-foreground">{selectedPrescription.patientName}</p>
+                  <p className="text-gray-600 mb-1 font-medium">Patient Name</p>
+                  <p className="font-medium text-gray-900">{selectedPrescription.patientName}</p>
                 </div>
                 <div>
-                  <p className="text-foreground/60 mb-1">Doctor Name</p>
-                  <p className="font-medium text-foreground">{selectedPrescription.doctorName}</p>
+                  <p className="text-gray-600 mb-1 font-medium">Doctor Name</p>
+                  <p className="font-medium text-gray-900">{selectedPrescription.doctorName}</p>
                 </div>
               </div>
 
               <div>
-                <p className="text-foreground/60 mb-2 font-paragraph text-sm">Medicines & Dosages</p>
-                <div className="bg-background p-4 rounded-lg">
-                  <p className="font-paragraph text-sm whitespace-pre-wrap">{selectedPrescription.medicinesAndDosages}</p>
+                <p className="text-gray-600 mb-2 font-paragraph text-sm font-medium">Medicines & Dosages</p>
+                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                  <p className="font-paragraph text-sm whitespace-pre-wrap text-gray-900">{selectedPrescription.medicinesAndDosages}</p>
                 </div>
               </div>
 
               {selectedPrescription.notes && (
                 <div>
-                  <p className="text-foreground/60 mb-2 font-paragraph text-sm">Notes</p>
-                  <div className="bg-background p-4 rounded-lg">
-                    <p className="font-paragraph text-sm whitespace-pre-wrap">{selectedPrescription.notes}</p>
+                  <p className="text-gray-600 mb-2 font-paragraph text-sm font-medium">Notes</p>
+                  <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <p className="font-paragraph text-sm whitespace-pre-wrap text-gray-900">{selectedPrescription.notes}</p>
                   </div>
                 </div>
               )}
