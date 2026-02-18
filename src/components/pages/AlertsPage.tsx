@@ -181,8 +181,8 @@ export default function AlertsPage() {
                             <AlertTriangle className="w-5 h-5 text-destructive" />
                           </div>
                           <div className="flex-1">
-                            <h3 className="font-heading text-xl text-foreground mb-2">
-                              {alert.medicine.medicineName}
+                            <h3 className="font-heading text-xl text-gray-900 font-bold mb-2">
+                              {alert.medicine.medicineName || 'Unknown Medicine'}
                             </h3>
                             <div className="flex flex-wrap gap-2 mb-3">
                               <Badge variant="outline">{alert.medicine.potency}</Badge>
@@ -259,8 +259,8 @@ export default function AlertsPage() {
                               }`} />
                             </div>
                             <div className="flex-1">
-                              <h3 className="font-heading text-xl text-foreground mb-2">
-                                {alert.medicineName}
+                              <h3 className="font-heading text-xl text-gray-900 font-bold mb-2">
+                                {alert.medicineName || 'Unknown Medicine'}
                               </h3>
                               <div className="mb-3">
                                 <Badge variant={urgency === 'critical' ? 'destructive' : 'outline'}>
