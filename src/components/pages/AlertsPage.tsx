@@ -17,6 +17,7 @@ interface LowStockAlert {
 interface ExpiryAlert {
   batch: InventoryBatches;
   daysUntilExpiry: number;
+  medicineName: string;
 }
 
 export default function AlertsPage() {
@@ -66,9 +67,11 @@ export default function AlertsPage() {
           const expiryDate = new Date(batch.expiryDate);
           if (expiryDate <= sixMonthsFromNow && expiryDate >= today) {
             const daysUntilExpiry = Math.floor((expiryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+            const medicine = medicines.find(m => m.medicineName === batch.medicineSKU);
             expiring.push({
               batch,
-              daysUntilExpiry
+              daysUntilExpiry,
+              medicineName: medicine?.medicineName || batch.medicineSKU || 'Unknown Medicine'
             });
           }
         }
@@ -257,7 +260,7 @@ export default function AlertsPage() {
                             </div>
                             <div className="flex-1">
                               <h3 className="font-heading text-xl text-foreground mb-2">
-                                {alert.batch.medicineSKU}
+                                {alert.medicineName}
                               </h3>
                               <div className="mb-3">
                                 <Badge variant={urgency === 'critical' ? 'destructive' : 'outline'}>
