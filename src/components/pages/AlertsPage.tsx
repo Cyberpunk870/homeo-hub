@@ -208,7 +208,10 @@ export default function AlertsPage() {
               ) : (
                 <div className="flex flex-col items-center justify-center py-20">
                   <AlertCircle className="w-16 h-16 text-foreground/60 mb-4" />
-                  <p className="font-paragraph text-lg text-foreground/60">No low stock alerts</p>
+                  <p className="font-heading text-xl text-foreground mb-2">No Low Stock Alerts</p>
+                  <p className="font-paragraph text-base text-foreground/60 max-w-md text-center">
+                    All medicines are currently above their reorder levels. Your inventory is in good condition.
+                  </p>
                 </div>
               )}
             </div>
