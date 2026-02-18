@@ -93,15 +93,21 @@ export default function AboutPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="bg-secondary p-8 rounded-lg border border-primary/30"
+            className="bg-secondary p-8 rounded-lg border border-primary/30 hover:border-accent-gold/40 transition-all duration-300 overflow-hidden group"
           >
             <div className="flex flex-col items-center text-center space-y-6">
-              <div className="w-32 h-32 rounded-full bg-accent-gold/20 flex items-center justify-center">
-                <span className="font-heading text-4xl text-accent-gold">RU</span>
+              <div className="relative w-40 h-40 rounded-full overflow-hidden border-4 border-accent-gold/30 group-hover:border-accent-gold/60 transition-all duration-300">
+                <Image
+                  src="https://static.wixstatic.com/media/3fbaca_e2b4cf1af34e4fb992258cbdf513ae85~mv2.jpeg"
+                  alt="Dr. R.C. Upadhyaya"
+                  width={160}
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div>
                 <h3 className="font-heading text-2xl text-foreground mb-2">Dr. R.C. Upadhyaya</h3>
-                <p className="font-paragraph text-sm text-foreground/80 mb-4">D.H.M.S. (JAIPUR)</p>
+                <p className="font-paragraph text-sm text-accent-gold font-medium mb-2">D.H.M.S. (JAIPUR)</p>
+                <p className="font-paragraph text-sm text-foreground/80 mb-4">Founder & Chief Homeopathic Consultant</p>
                 <Badge variant="outline" className="font-paragraph">Homeopathic Medicine</Badge>
               </div>
             </div>
@@ -113,16 +119,22 @@ export default function AboutPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="bg-secondary p-8 rounded-lg border border-primary/30"
+            className="bg-secondary p-8 rounded-lg border border-primary/30 hover:border-accent-gold/40 transition-all duration-300 overflow-hidden group"
           >
             <div className="flex flex-col items-center text-center space-y-6">
-              <div className="w-32 h-32 rounded-full bg-accent-gold/20 flex items-center justify-center">
-                <span className="font-heading text-4xl text-accent-gold">PU</span>
+              <div className="relative w-40 h-40 rounded-full overflow-hidden border-4 border-accent-gold/30 group-hover:border-accent-gold/60 transition-all duration-300">
+                <Image
+                  src="https://static.wixstatic.com/media/3fbaca_55af41eb68914b3a85b967748f59444a~mv2.jpeg"
+                  alt="Dr. Priya Upadhyaya"
+                  width={160}
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div>
                 <h3 className="font-heading text-2xl text-foreground mb-2">Dr. Priya Upadhyaya</h3>
-                <p className="font-paragraph text-sm text-foreground/80 mb-2">B.H.M.S. (DELHI)</p>
-                <p className="font-paragraph text-sm text-foreground/80 mb-4">M.D.(HOM.) (JAIPUR)</p>
+                <p className="font-paragraph text-sm text-accent-gold font-medium mb-1">B.H.M.S. (DELHI)</p>
+                <p className="font-paragraph text-sm text-accent-gold font-medium mb-2">M.D.(HOM.) (JAIPUR)</p>
+                <p className="font-paragraph text-sm text-foreground/80 mb-4">Senior Homeopathic Consultant</p>
                 <Badge variant="outline" className="font-paragraph">Homeopathic Medicine</Badge>
               </div>
             </div>

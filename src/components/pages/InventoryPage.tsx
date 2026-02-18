@@ -84,15 +84,15 @@ export default function InventoryPage() {
     <div className="min-h-screen bg-background">
       <Header />
       
-      <div className="w-full max-w-[100rem] mx-auto px-8 py-16">
+      <div className="w-full max-w-[100rem] mx-auto px-4 sm:px-8 py-16">
         {/* Page Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-12"
         >
-          <h1 className="font-heading text-5xl text-foreground mb-4">Medicine Inventory</h1>
-          <p className="font-paragraph text-lg text-foreground/80">
+          <h1 className="font-heading text-4xl sm:text-5xl text-foreground mb-4">Medicine Inventory</h1>
+          <p className="font-paragraph text-base sm:text-lg text-foreground/80">
             Browse and manage your homeopathic medicine catalog
           </p>
         </motion.div>

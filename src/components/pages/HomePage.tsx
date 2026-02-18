@@ -158,63 +158,81 @@ export default function HomePage() {
       <Header />
 
       {/* --- Hero Section --- */}
-      <section className="relative w-full min-h-[70vh] flex flex-col overflow-hidden">
-        {/* Top Navigation - Stacked Horizontally */}
-        <nav className="w-full bg-primary border-b border-secondary/30 px-8 py-3">
-          <div className="max-w-[120rem] mx-auto flex flex-wrap gap-8 justify-center">
-            {[
-              { name: 'Inventory', path: '/inventory' },
-              { name: 'Stock Management', path: '/stock-management' },
-              { name: 'Alerts', path: '/alerts' },
-              { name: 'Prescriptions', path: '/prescriptions' },
-              { name: 'Reports', path: '/reports' },
-              { name: 'About', path: '/about' }
-            ].map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className="font-paragraph text-base text-white hover:text-accent-gold transition-colors"
-              >
-                {link.name}
-              </Link>
-            ))}
-          </div>
-        </nav>
+      <section className="relative w-full min-h-[85vh] flex flex-col overflow-hidden bg-gradient-to-br from-primary via-primary to-secondary">
+        {/* Decorative Background Elements */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-accent-gold/5 rounded-full blur-3xl -z-10" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-accent-gold/5 rounded-full blur-3xl -z-10" />
 
         {/* Main Hero Content */}
-        <div className="flex flex-col lg:flex-row flex-1">
+        <div className="flex flex-col lg:flex-row flex-1 items-center">
           {/* Left: Content */}
-          <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 lg:px-20 py-16 z-10 bg-background/80 backdrop-blur-sm lg:bg-transparent">
+          <div className="w-full lg:w-1/2 flex flex-col justify-center px-6 sm:px-8 lg:px-16 py-16 lg:py-20 z-10">
             <FadeIn delay={0.1}>
-              <h1 className="font-heading text-6xl lg:text-8xl font-bold leading-[0.9] tracking-tight text-foreground mb-6">
+              <div className="inline-flex items-center gap-2 text-accent-gold font-medium tracking-wider uppercase text-sm mb-6">
+                <Leaf className="w-4 h-4" />
+                Holistic Healthcare Management
+              </div>
+            </FadeIn>
+
+            <FadeIn delay={0.15}>
+              <h1 className="font-heading text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold leading-[0.95] tracking-tight text-foreground mb-6">
                 Dr. Upadhyaya's <br />
                 <span className="text-accent-gold italic">Homeopathy</span>
               </h1>
             </FadeIn>
 
             <FadeIn delay={0.2}>
-              <p className="text-lg text-foreground/90 max-w-xl leading-relaxed mb-8 border-l-2 border-accent-gold/30 pl-6">
-                Precision inventory tracking meets holistic care. Designed exclusively for 
-                <span className="font-semibold text-foreground"> Dr. Upadhyaya's Homeopathy</span>, 
-                bridging the gap between ancient wisdom and modern efficiency.
+              <p className="text-base sm:text-lg text-foreground/90 max-w-2xl leading-relaxed mb-8 border-l-4 border-accent-gold/50 pl-6">
+                Precision inventory tracking meets holistic care. A comprehensive management system designed exclusively for Dr. Upadhyaya's Homeopathy, bridging the gap between ancient wisdom and modern efficiency.
               </p>
             </FadeIn>
 
-            <FadeIn delay={0.3}>
-              <div className="flex flex-wrap gap-4">
-                <Button asChild className="h-12 px-8 rounded-full bg-accent-gold text-background hover:bg-accent-gold/90 transition-all duration-500 text-base">
+            <FadeIn delay={0.25}>
+              <div className="flex flex-col sm:flex-row flex-wrap gap-4">
+                <Button asChild className="h-12 px-8 rounded-full bg-accent-gold text-background hover:bg-accent-gold/90 transition-all duration-500 text-base font-medium shadow-lg hover:shadow-xl">
                   <Link to="/inventory">
                     Access Inventory <ArrowRight className="ml-2 w-4 h-4" />
                   </Link>
                 </Button>
-                <Button asChild variant="outline" className="h-12 px-8 rounded-full border-foreground/20 hover:bg-primary/20 text-base text-foreground">
-                  <Link to="/about">Clinic Profile</Link>
+                <Button asChild variant="outline" className="h-12 px-8 rounded-full border-2 border-foreground/30 hover:bg-foreground/10 text-base text-foreground font-medium transition-all">
+                  <Link to="/about">Learn About Us</Link>
                 </Button>
+              </div>
+            </FadeIn>
+
+            {/* Stats */}
+            <FadeIn delay={0.3}>
+              <div className="grid grid-cols-3 gap-6 mt-12 pt-8 border-t border-foreground/10">
+                <div>
+                  <p className="font-heading text-2xl sm:text-3xl text-accent-gold">2400+</p>
+                  <p className="font-paragraph text-sm text-foreground/80">Medicine SKUs</p>
+                </div>
+                <div>
+                  <p className="font-heading text-2xl sm:text-3xl text-accent-gold">2</p>
+                  <p className="font-paragraph text-sm text-foreground/80">Clinic Locations</p>
+                </div>
+                <div>
+                  <p className="font-heading text-2xl sm:text-3xl text-accent-gold">100%</p>
+                  <p className="font-paragraph text-sm text-foreground/80">Uptime</p>
+                </div>
               </div>
             </FadeIn>
           </div>
 
-
+          {/* Right: Hero Image */}
+          <div className="w-full lg:w-1/2 flex items-center justify-center px-6 sm:px-8 py-12 lg:py-0">
+            <FadeIn delay={0.35}>
+              <div className="relative w-full max-w-md lg:max-w-full">
+                <div className="absolute inset-0 bg-gradient-to-br from-accent-gold/20 to-transparent rounded-3xl blur-2xl" />
+                <Image
+                  src="https://static.wixstatic.com/media/3fbaca_e0ed6d313c284936a515d045b97f08d4~mv2.jpeg"
+                  alt="Dr. Upadhyaya's Homeopathy Clinic"
+                  width={500}
+                  className="relative z-10 rounded-3xl shadow-2xl w-full h-auto"
+                />
+              </div>
+            </FadeIn>
+          </div>
         </div>
       </section>
 
