@@ -21,14 +21,16 @@ export default function Header() {
 
   const isActive = (path: string) => location.pathname === path;
 
+  const isHomePage = location.pathname === '/';
+
   return (
     <header className="w-full bg-white border-b border-secondary/30 sticky top-0 z-50">
       <div className="max-w-[120rem] mx-auto px-8 py-6">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full overflow-hidden bg-primary/10 flex items-center justify-center">
-              <span className="font-heading text-2xl text-primary">UP</span>
+            <div className="w-16 h-16 rounded-full overflow-hidden bg-green-600 flex items-center justify-center shadow-md">
+              <span className="font-heading text-2xl text-white font-bold">UP</span>
             </div>
             <div>
               <h1 className="font-heading text-2xl text-foreground">Dr. Upadhyaya's</h1>
@@ -37,36 +39,40 @@ export default function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={`font-paragraph text-base transition-colors ${
-                  isActive(link.path)
-                    ? 'text-primary font-medium'
-                    : 'text-foreground/70 hover:text-primary'
-                }`}
-              >
-                {link.name}
-              </Link>
-            ))}
-          </nav>
+          {!isHomePage && (
+            <nav className="hidden lg:flex items-center gap-8">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className={`font-paragraph text-base transition-colors ${
+                    isActive(link.path)
+                      ? 'text-primary font-medium'
+                      : 'text-foreground/70 hover:text-primary'
+                  }`}
+                >
+                  {link.name}
+                </Link>
+              ))}
+            </nav>
+          )}
 
           {/* Location Selector & Mobile Menu */}
           <div className="flex items-center gap-4">
             {/* Location Selector */}
-            <div className="hidden md:flex items-center gap-2 bg-background px-4 py-2 rounded-lg">
-              <MapPin className="w-4 h-4 text-primary" />
-              <select
-                value={selectedLocation}
-                onChange={(e) => setSelectedLocation(e.target.value as 'noida' | 'delhi')}
-                className="font-paragraph text-sm bg-transparent border-none outline-none cursor-pointer text-foreground"
-              >
-                <option value="noida">Noida</option>
-                <option value="delhi">Delhi</option>
-              </select>
-            </div>
+            {!isHomePage && (
+              <div className="hidden md:flex items-center gap-2 bg-background px-4 py-2 rounded-lg">
+                <MapPin className="w-4 h-4 text-primary" />
+                <select
+                  value={selectedLocation}
+                  onChange={(e) => setSelectedLocation(e.target.value as 'noida' | 'delhi')}
+                  className="font-paragraph text-sm bg-transparent border-none outline-none cursor-pointer text-foreground"
+                >
+                  <option value="noida">Noida</option>
+                  <option value="delhi">Delhi</option>
+                </select>
+              </div>
+            )}
 
             {/* Mobile Menu Button */}
             <button
@@ -98,17 +104,19 @@ export default function Header() {
             ))}
             
             {/* Mobile Location Selector */}
-            <div className="flex items-center gap-2 bg-background px-4 py-3 rounded-lg md:hidden">
-              <MapPin className="w-4 h-4 text-primary" />
-              <select
-                value={selectedLocation}
-                onChange={(e) => setSelectedLocation(e.target.value as 'noida' | 'delhi')}
-                className="font-paragraph text-sm bg-transparent border-none outline-none cursor-pointer text-foreground flex-1"
-              >
-                <option value="noida">Noida Clinic</option>
-                <option value="delhi">Delhi Clinic</option>
-              </select>
-            </div>
+            {!isHomePage && (
+              <div className="flex items-center gap-2 bg-background px-4 py-3 rounded-lg md:hidden">
+                <MapPin className="w-4 h-4 text-primary" />
+                <select
+                  value={selectedLocation}
+                  onChange={(e) => setSelectedLocation(e.target.value as 'noida' | 'delhi')}
+                  className="font-paragraph text-sm bg-transparent border-none outline-none cursor-pointer text-foreground flex-1"
+                >
+                  <option value="noida">Noida Clinic</option>
+                  <option value="delhi">Delhi Clinic</option>
+                </select>
+              </div>
+            )}
           </nav>
         )}
       </div>

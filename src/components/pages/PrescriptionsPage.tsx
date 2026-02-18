@@ -58,7 +58,11 @@ export default function PrescriptionsPage() {
       ]);
       setPrescriptions(prescriptionsResult.items);
       setPatients(patientsResult.items);
-      setDoctors(doctorsResult.items);
+      // Filter doctors to only include Dr. R.C. Upadhayay and Dr. Priya Upadhyay
+      const filteredDoctors = doctorsResult.items.filter(doc => 
+        doc.doctorName === 'Dr. R.C. Upadhayay' || doc.doctorName === 'Dr. Priya Upadhyay'
+      );
+      setDoctors(filteredDoctors);
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {

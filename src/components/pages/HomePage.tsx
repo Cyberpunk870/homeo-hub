@@ -1,4 +1,3 @@
-// HPI 1.7-V
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform, AnimatePresence, useInView } from 'framer-motion';
@@ -153,124 +152,98 @@ const ParallaxSection = ({ children, className = "" }: { children: React.ReactNo
 };
 
 export default function HomePage() {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isVisible, setIsVisible] = useState(true);
-
-  // Custom Carousel Logic: Visible 2s -> Hidden 1s -> Next Image
-  useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
-    
-    const cycle = () => {
-      // Phase 1: Visible for 2 seconds
-      setIsVisible(true);
-      
-      timeoutId = setTimeout(() => {
-        // Phase 2: Hide
-        setIsVisible(false);
-        
-        // Phase 3: Wait 1 second then switch image and restart
-        setTimeout(() => {
-          setCurrentImageIndex((prev) => (prev + 1) % splashImages.length);
-          cycle();
-        }, 1000);
-      }, 2000);
-    };
-
-    cycle();
-
-    return () => clearTimeout(timeoutId);
-  }, []);
 
   return (
     <div className="min-h-screen bg-background font-paragraph text-foreground selection:bg-primary/20">
       <Header />
 
       {/* --- Hero Section --- */}
-      <section className="relative w-full min-h-[90vh] flex flex-col lg:flex-row overflow-hidden">
-        {/* Left: Content */}
-        <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 lg:px-20 py-20 z-10 bg-background/80 backdrop-blur-sm lg:bg-transparent">
-          <FadeIn>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/30 bg-primary/5 text-primary text-sm font-medium mb-8">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-              </span>
-              Advanced Clinic Management System
-            </div>
-          </FadeIn>
-          
-          <FadeIn delay={0.1}>
-            <h1 className="font-heading text-6xl lg:text-8xl font-bold leading-[0.9] tracking-tight text-foreground mb-8">
-              The Serene <br />
-              <span className="text-primary italic">Apothecary</span>
-            </h1>
-          </FadeIn>
+      <section className="relative w-full min-h-[90vh] flex flex-col overflow-hidden">
+        {/* Top Navigation - Stacked Vertically */}
+        <nav className="w-full bg-white border-b border-secondary/30 px-8 py-6">
+          <div className="max-w-[120rem] mx-auto flex flex-col gap-4">
+            {[
+              { name: 'Inventory', path: '/inventory' },
+              { name: 'Stock Management', path: '/stock-management' },
+              { name: 'Alerts', path: '/alerts' },
+              { name: 'Prescriptions', path: '/prescriptions' },
+              { name: 'Reports', path: '/reports' },
+              { name: 'About', path: '/about' }
+            ].map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                className="font-paragraph text-base text-foreground/70 hover:text-primary transition-colors"
+              >
+                {link.name}
+              </Link>
+            ))}
+          </div>
+        </nav>
 
-          <FadeIn delay={0.2}>
-            <p className="text-xl text-foreground/70 max-w-xl leading-relaxed mb-10 border-l-2 border-primary/30 pl-6">
-              Precision inventory tracking meets holistic care. Designed exclusively for 
-              <span className="font-semibold text-foreground"> Dr. Upadhyaya's Homeopathy</span>, 
-              bridging the gap between ancient wisdom and modern efficiency.
-            </p>
-          </FadeIn>
+        {/* Main Hero Content */}
+        <div className="flex flex-col lg:flex-row flex-1">
+          {/* Left: Content */}
+          <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 lg:px-20 py-20 z-10 bg-background/80 backdrop-blur-sm lg:bg-transparent">
+            <FadeIn>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-green-600/30 bg-green-600/5 text-green-600 text-sm font-medium mb-8">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-600 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-600"></span>
+                </span>
+                Advanced Clinic Management System
+              </div>
+            </FadeIn>
+            
+            <FadeIn delay={0.1}>
+              <h1 className="font-heading text-6xl lg:text-8xl font-bold leading-[0.9] tracking-tight text-foreground mb-8">
+                Dr. Upadhyaya's <br />
+                <span className="text-green-600 italic">Homeopathy</span>
+              </h1>
+            </FadeIn>
 
-          <FadeIn delay={0.3}>
-            <div className="flex flex-wrap gap-4">
-              <Button asChild className="h-14 px-8 rounded-full bg-foreground text-background hover:bg-primary transition-all duration-500 text-lg">
-                <Link to="/inventory">
-                  Access Inventory <ArrowRight className="ml-2 w-5 h-5" />
-                </Link>
-              </Button>
-              <Button asChild variant="outline" className="h-14 px-8 rounded-full border-foreground/20 hover:bg-secondary/20 text-lg">
-                <Link to="/about">Clinic Profile</Link>
-              </Button>
-            </div>
-          </FadeIn>
-        </div>
+            <FadeIn delay={0.2}>
+              <p className="text-xl text-foreground/70 max-w-xl leading-relaxed mb-10 border-l-2 border-green-600/30 pl-6">
+                Precision inventory tracking meets holistic care. Designed exclusively for 
+                <span className="font-semibold text-foreground"> Dr. Upadhyaya's Homeopathy</span>, 
+                bridging the gap between ancient wisdom and modern efficiency.
+              </p>
+            </FadeIn>
 
-        {/* Right: Dynamic Carousel */}
-        <div className="w-full lg:w-1/2 relative min-h-[50vh] lg:min-h-auto bg-secondary/10 flex items-center justify-center overflow-hidden">
-          {/* Abstract Background Shapes */}
-          <div className="absolute inset-0 opacity-30">
-             <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s' }} />
-             <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-accent-gold/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '6s' }} />
+            <FadeIn delay={0.3}>
+              <div className="flex flex-wrap gap-4">
+                <Button asChild className="h-14 px-8 rounded-full bg-foreground text-background hover:bg-green-600 transition-all duration-500 text-lg">
+                  <Link to="/inventory">
+                    Access Inventory <ArrowRight className="ml-2 w-5 h-5" />
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" className="h-14 px-8 rounded-full border-foreground/20 hover:bg-secondary/20 text-lg">
+                  <Link to="/about">Clinic Profile</Link>
+                </Button>
+              </div>
+            </FadeIn>
           </div>
 
-          {/* The Carousel Container */}
-          <div className="relative w-[400px] h-[400px] md:w-[500px] md:h-[500px]">
-            <AnimatePresence mode="wait">
-              {isVisible && (
+          {/* Right: Horizontal Carousel with 4 Images */}
+          <div className="w-full lg:w-1/2 relative min-h-[50vh] lg:min-h-auto bg-secondary/10 flex items-center justify-center overflow-hidden p-8">
+            <div className="w-full flex gap-6 overflow-x-auto pb-4">
+              {splashImages.map((image, index) => (
                 <motion.div
-                  key={currentImageIndex}
-                  initial={{ opacity: 0, scale: 0.95, filter: 'blur(10px)' }}
-                  animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-                  exit={{ opacity: 0, scale: 1.05, filter: 'blur(10px)' }}
-                  transition={{ duration: 0.8, ease: "easeInOut" }}
-                  className="absolute inset-0 rounded-full overflow-hidden border-[1px] border-white/50 shadow-2xl"
+                  key={index}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="flex-shrink-0 w-40 h-40 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-white shadow-lg"
                 >
                   <Image
-                    src={splashImages[currentImageIndex].url}
-                    alt={splashImages[currentImageIndex].alt}
-                    width={600}
+                    src={image.url}
+                    alt={image.alt}
+                    width={300}
                     className="w-full h-full object-cover"
                   />
-                  {/* Overlay Gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
                 </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Orbiting Elements */}
-            <motion.div 
-              animate={{ rotate: 360 }}
-              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-              className="absolute inset-[-40px] border border-primary/20 rounded-full border-dashed pointer-events-none"
-            />
-            <motion.div 
-              animate={{ rotate: -360 }}
-              transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-              className="absolute inset-[-80px] border border-secondary/30 rounded-full opacity-50 pointer-events-none"
-            />
+              ))}
+            </div>
           </div>
         </div>
       </section>
