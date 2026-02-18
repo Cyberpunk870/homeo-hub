@@ -204,7 +204,7 @@ export default function InventoryPage() {
             </motion.div>
           ) : (
             <div className="flex flex-col items-center justify-center py-20">
-              <Package className="w-16 h-16 text-foreground/20 mb-4" />
+              <Package className="w-16 h-16 text-foreground/60 mb-4" />
               <p className="font-paragraph text-lg text-foreground/60">No medicines found</p>
             </div>
           )}

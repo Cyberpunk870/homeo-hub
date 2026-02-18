@@ -207,7 +207,7 @@ export default function AlertsPage() {
                 </motion.div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-20">
-                  <AlertCircle className="w-16 h-16 text-foreground/20 mb-4" />
+                  <AlertCircle className="w-16 h-16 text-foreground/60 mb-4" />
                   <p className="font-paragraph text-lg text-foreground/60">No low stock alerts</p>
                 </div>
               )}
@@ -290,7 +290,7 @@ export default function AlertsPage() {
                 </motion.div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-20">
-                  <Clock className="w-16 h-16 text-foreground/20 mb-4" />
+                  <Clock className="w-16 h-16 text-foreground/60 mb-4" />
                   <p className="font-paragraph text-lg text-foreground/60">No expiry alerts</p>
                 </div>
               )}

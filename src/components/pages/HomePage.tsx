@@ -240,7 +240,7 @@ export default function HomePage() {
                     <div className="w-3 h-3 rounded-full bg-yellow-400" />
                     <div className="w-3 h-3 rounded-full bg-green-400" />
                   </div>
-                  <span className="text-xs font-mono text-foreground/40">POTENCY_MATRIX.EXE</span>
+                  <span className="text-xs font-mono text-foreground/60">POTENCY_MATRIX.EXE</span>
                 </div>
                 <div className="space-y-4">
                   {[
