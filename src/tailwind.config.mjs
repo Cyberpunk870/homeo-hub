@@ -26,12 +26,12 @@ export default {
                 'accent-gold': '#D4AF37',
                 destructive: '#E57373',
                 'destructive-foreground': '#FFFFFF',
-                background: '#F8F5F2',
-                secondary: '#D4C9BC',
-                foreground: '#333333',
-                'secondary-foreground': '#333333',
-                'primary-foreground': '#FFFFFF',
-                primary: '#A08C7D'
+                background: '#1B5E20',
+                secondary: '#2E7D32',
+                foreground: '#FFFFFF',
+                'secondary-foreground': '#FFFFFF',
+                'primary-foreground': '#1B5E20',
+                primary: '#4CAF50'
             },
         },
     },

@@ -14,16 +14,16 @@ export default function Footer() {
   };
 
   return (
-    <footer className="w-full bg-foreground text-white py-16">
+    <footer className="w-full bg-primary text-white py-16">
       <div className="max-w-[100rem] mx-auto px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
           {/* Clinic Info */}
           <div className="space-y-6">
             <div>
               <h3 className="font-heading text-3xl mb-2">Dr. Upadhyaya's</h3>
-              <p className="font-paragraph text-white/80">Homeopathy</p>
+              <p className="font-paragraph text-white/90">Homeopathy</p>
             </div>
-            <p className="font-paragraph text-sm text-white/70 leading-relaxed">
+            <p className="font-paragraph text-sm text-white/80 leading-relaxed">
               Providing compassionate homeopathic care with precision inventory management 
               across our Noida and Delhi locations.
             </p>

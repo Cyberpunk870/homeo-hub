@@ -24,17 +24,17 @@ export default function Header() {
   const isHomePage = location.pathname === '/';
 
   return (
-    <header className="w-full bg-white border-b border-secondary/30 sticky top-0 z-50">
+    <header className="w-full bg-primary border-b border-secondary/30 sticky top-0 z-50">
       <div className="max-w-[120rem] mx-auto px-8 py-6">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full overflow-hidden bg-green-600 flex items-center justify-center shadow-md">
-              <span className="font-heading text-2xl text-white font-bold">UP</span>
+            <div className="w-16 h-16 rounded-full overflow-hidden bg-accent-gold flex items-center justify-center shadow-md">
+              <span className="font-heading text-2xl text-background font-bold">UP</span>
             </div>
             <div>
               <h1 className="font-heading text-2xl text-foreground">Dr. Upadhyaya's</h1>
-              <p className="font-paragraph text-sm text-foreground/60">Homeopathy</p>
+              <p className="font-paragraph text-sm text-foreground/80">Homeopathy</p>
             </div>
           </Link>
 
@@ -47,8 +47,8 @@ export default function Header() {
                   to={link.path}
                   className={`font-paragraph text-base transition-colors ${
                     isActive(link.path)
-                      ? 'text-primary font-medium'
-                      : 'text-foreground/70 hover:text-primary'
+                      ? 'text-accent-gold font-medium'
+                      : 'text-foreground/80 hover:text-accent-gold'
                   }`}
                 >
                   {link.name}
@@ -61,8 +61,8 @@ export default function Header() {
           <div className="flex items-center gap-4">
             {/* Location Selector */}
             {!isHomePage && (
-              <div className="hidden md:flex items-center gap-2 bg-background px-4 py-2 rounded-lg">
-                <MapPin className="w-4 h-4 text-primary" />
+              <div className="hidden md:flex items-center gap-2 bg-secondary px-4 py-2 rounded-lg">
+                <MapPin className="w-4 h-4 text-accent-gold" />
                 <select
                   value={selectedLocation}
                   onChange={(e) => setSelectedLocation(e.target.value as 'noida' | 'delhi')}
@@ -77,7 +77,7 @@ export default function Header() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="lg:hidden p-2 text-foreground hover:text-primary transition-colors"
+              className="lg:hidden p-2 text-foreground hover:text-accent-gold transition-colors"
               aria-label="Toggle menu"
             >
               {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -95,8 +95,8 @@ export default function Header() {
                 onClick={() => setIsMenuOpen(false)}
                 className={`block font-paragraph text-base py-2 transition-colors ${
                   isActive(link.path)
-                    ? 'text-primary font-medium'
-                    : 'text-foreground/70 hover:text-primary'
+                    ? 'text-accent-gold font-medium'
+                    : 'text-foreground/80 hover:text-accent-gold'
                 }`}
               >
                 {link.name}
@@ -105,8 +105,8 @@ export default function Header() {
             
             {/* Mobile Location Selector */}
             {!isHomePage && (
-              <div className="flex items-center gap-2 bg-background px-4 py-3 rounded-lg md:hidden">
-                <MapPin className="w-4 h-4 text-primary" />
+              <div className="flex items-center gap-2 bg-secondary px-4 py-3 rounded-lg md:hidden">
+                <MapPin className="w-4 h-4 text-accent-gold" />
                 <select
                   value={selectedLocation}
                   onChange={(e) => setSelectedLocation(e.target.value as 'noida' | 'delhi')}

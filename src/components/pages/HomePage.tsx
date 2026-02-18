@@ -159,9 +159,9 @@ export default function HomePage() {
 
       {/* --- Hero Section --- */}
       <section className="relative w-full min-h-[90vh] flex flex-col overflow-hidden">
-        {/* Top Navigation - Stacked Vertically */}
-        <nav className="w-full bg-white border-b border-secondary/30 px-8 py-6">
-          <div className="max-w-[120rem] mx-auto flex flex-col gap-4">
+        {/* Top Navigation - Stacked Horizontally */}
+        <nav className="w-full bg-primary border-b border-secondary/30 px-8 py-4">
+          <div className="max-w-[120rem] mx-auto flex flex-wrap gap-8 justify-center">
             {[
               { name: 'Inventory', path: '/inventory' },
               { name: 'Stock Management', path: '/stock-management' },
@@ -173,7 +173,7 @@ export default function HomePage() {
               <Link
                 key={link.path}
                 to={link.path}
-                className="font-paragraph text-base text-foreground/70 hover:text-primary transition-colors"
+                className="font-paragraph text-base text-white hover:text-accent-gold transition-colors"
               >
                 {link.name}
               </Link>
@@ -185,25 +185,55 @@ export default function HomePage() {
         <div className="flex flex-col lg:flex-row flex-1">
           {/* Left: Content */}
           <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 lg:px-20 py-20 z-10 bg-background/80 backdrop-blur-sm lg:bg-transparent">
+            {/* Top Logo Images */}
+            <div className="mb-12 flex gap-6 items-center">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6 }}
+                className="w-24 h-24 rounded-full overflow-hidden border-4 border-primary shadow-lg flex-shrink-0"
+              >
+                <Image
+                  src="https://static.wixstatic.com/media/3fbaca_fb69eca258004dabb70a8e7194db7b28~mv2.png"
+                  alt="Homeopathic Medicines"
+                  width={200}
+                  className="w-full h-full object-cover"
+                />
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="w-24 h-24 rounded-full overflow-hidden border-4 border-primary shadow-lg flex-shrink-0"
+              >
+                <Image
+                  src="https://static.wixstatic.com/media/3fbaca_247171c8c6594e6581cacd4e6e57215b~mv2.png"
+                  alt="Dr. Upadhyaya's Credentials"
+                  width={200}
+                  className="w-full h-full object-cover"
+                />
+              </motion.div>
+            </div>
+
             <FadeIn>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-green-600/30 bg-green-600/5 text-green-600 text-sm font-medium mb-8">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-accent-gold/30 bg-accent-gold/5 text-accent-gold text-sm font-medium mb-8">
                 <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-600 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-600"></span>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-gold opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-accent-gold"></span>
                 </span>
-                Advanced Clinic Management System
+                Clinic Management System
               </div>
             </FadeIn>
             
             <FadeIn delay={0.1}>
               <h1 className="font-heading text-6xl lg:text-8xl font-bold leading-[0.9] tracking-tight text-foreground mb-8">
                 Dr. Upadhyaya's <br />
-                <span className="text-green-600 italic">Homeopathy</span>
+                <span className="text-accent-gold italic">Homeopathy</span>
               </h1>
             </FadeIn>
 
             <FadeIn delay={0.2}>
-              <p className="text-xl text-foreground/70 max-w-xl leading-relaxed mb-10 border-l-2 border-green-600/30 pl-6">
+              <p className="text-xl text-foreground/90 max-w-xl leading-relaxed mb-10 border-l-2 border-accent-gold/30 pl-6">
                 Precision inventory tracking meets holistic care. Designed exclusively for 
                 <span className="font-semibold text-foreground"> Dr. Upadhyaya's Homeopathy</span>, 
                 bridging the gap between ancient wisdom and modern efficiency.
@@ -212,12 +242,12 @@ export default function HomePage() {
 
             <FadeIn delay={0.3}>
               <div className="flex flex-wrap gap-4">
-                <Button asChild className="h-14 px-8 rounded-full bg-foreground text-background hover:bg-green-600 transition-all duration-500 text-lg">
+                <Button asChild className="h-14 px-8 rounded-full bg-accent-gold text-background hover:bg-accent-gold/90 transition-all duration-500 text-lg">
                   <Link to="/inventory">
                     Access Inventory <ArrowRight className="ml-2 w-5 h-5" />
                   </Link>
                 </Button>
-                <Button asChild variant="outline" className="h-14 px-8 rounded-full border-foreground/20 hover:bg-secondary/20 text-lg">
+                <Button asChild variant="outline" className="h-14 px-8 rounded-full border-foreground/20 hover:bg-primary/20 text-lg text-foreground">
                   <Link to="/about">Clinic Profile</Link>
                 </Button>
               </div>
@@ -233,7 +263,7 @@ export default function HomePage() {
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  className="flex-shrink-0 w-40 h-40 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-white shadow-lg"
+                  className="flex-shrink-0 w-40 h-40 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-accent-gold shadow-lg"
                 >
                   <Image
                     src={image.url}
@@ -249,12 +279,12 @@ export default function HomePage() {
       </section>
 
       {/* --- Ticker Section --- */}
-      <div className="w-full bg-foreground text-background py-4 overflow-hidden border-y border-white/10">
+      <div className="w-full bg-primary text-white py-4 overflow-hidden border-y border-accent-gold/10">
         <div className="flex whitespace-nowrap">
           <motion.div 
             animate={{ x: "-50%" }}
             transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            className="flex gap-12 text-sm uppercase tracking-[0.2em] font-medium opacity-80"
+            className="flex gap-12 text-sm uppercase tracking-[0.2em] font-medium opacity-90"
           >
             {Array(10).fill("Holistic Healing • Precision Potency • Natural Care • Dr. Upadhyaya's Homeopathy •").map((text, i) => (
               <span key={i}>{text}</span>
@@ -270,13 +300,10 @@ export default function HomePage() {
             <h2 className="font-heading text-5xl md:text-6xl text-foreground mb-6">
               Clinic Ecosystem
             </h2>
-            <p className="text-xl text-foreground/60 font-light">
+            <p className="text-xl text-foreground/80 font-light">
               A unified interface for managing the complex inventory of homeopathic medicines, 
               patient records, and multi-clinic operations.
             </p>
-          </div>
-          <div className="hidden md:block pb-2">
-            <span className="text-sm font-mono text-primary/80">SYSTEM STATUS: ONLINE</span>
           </div>
         </div>
 
@@ -290,28 +317,28 @@ export default function HomePage() {
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
               <Link to={action.link} className="group block h-full">
-                <div className="relative h-full bg-white rounded-2xl p-8 border border-secondary/30 hover:border-primary/50 transition-all duration-500 hover:shadow-xl hover:shadow-secondary/20 overflow-hidden">
+                <div className="relative h-full bg-secondary rounded-2xl p-8 border border-primary/30 hover:border-accent-gold/50 transition-all duration-500 hover:shadow-xl hover:shadow-primary/20 overflow-hidden">
                   {/* Hover Background Effect */}
-                  <div className="absolute inset-0 bg-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   
                   <div className="relative z-10 flex flex-col h-full justify-between">
                     <div>
-                      <div className={`w-14 h-14 rounded-xl bg-${action.color}/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500`}>
-                        <action.icon className={`w-7 h-7 text-${action.color}`} />
+                      <div className={`w-14 h-14 rounded-xl bg-accent-gold/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500`}>
+                        <action.icon className={`w-7 h-7 text-accent-gold`} />
                       </div>
-                      <h3 className="font-heading text-2xl text-foreground mb-3 group-hover:text-primary transition-colors">
+                      <h3 className="font-heading text-2xl text-foreground mb-3 group-hover:text-accent-gold transition-colors">
                         {action.title}
                       </h3>
-                      <p className="text-foreground/60 leading-relaxed mb-8">
+                      <p className="text-foreground/70 leading-relaxed mb-8">
                         {action.description}
                       </p>
                     </div>
                     
-                    <div className="flex items-center justify-between pt-6 border-t border-secondary/20">
-                      <span className="text-xs font-bold tracking-wider uppercase text-primary/80">
+                    <div className="flex items-center justify-between pt-6 border-t border-primary/20">
+                      <span className="text-xs font-bold tracking-wider uppercase text-accent-gold/80">
                         {action.stat}
                       </span>
-                      <ArrowRight className="w-5 h-5 text-secondary group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                      <ArrowRight className="w-5 h-5 text-accent-gold group-hover:text-accent-gold group-hover:translate-x-1 transition-all" />
                     </div>
                   </div>
                 </div>
@@ -322,13 +349,13 @@ export default function HomePage() {
       </section>
 
       {/* --- Feature Spotlight: Potency Matrix --- */}
-      <section className="w-full bg-secondary/10 py-32 overflow-hidden">
+      <section className="w-full bg-secondary py-32 overflow-hidden">
         <div className="max-w-[120rem] mx-auto px-4 md:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
             <div className="order-2 lg:order-1 relative">
               {/* Abstract UI Representation */}
-              <div className="relative z-10 bg-white rounded-xl shadow-2xl border border-secondary/20 p-8 max-w-xl mx-auto lg:mx-0 transform rotate-[-2deg] hover:rotate-0 transition-transform duration-700">
-                <div className="flex items-center justify-between mb-8 border-b border-secondary/10 pb-4">
+              <div className="relative z-10 bg-background rounded-xl shadow-2xl border border-primary/20 p-8 max-w-xl mx-auto lg:mx-0 transform rotate-[-2deg] hover:rotate-0 transition-transform duration-700">
+                <div className="flex items-center justify-between mb-8 border-b border-primary/10 pb-4">
                   <div className="flex items-center gap-3">
                     <div className="w-3 h-3 rounded-full bg-red-400" />
                     <div className="w-3 h-3 rounded-full bg-yellow-400" />
@@ -343,19 +370,19 @@ export default function HomePage() {
                     { name: "Arnica Montana", p6: 5, p30: 60, p200: 12 },
                     { name: "Nux Vomica", p6: 18, p30: 22, p200: 4 }
                   ].map((item, i) => (
-                    <div key={i} className="flex items-center justify-between text-sm p-3 hover:bg-secondary/10 rounded-lg transition-colors">
+                    <div key={i} className="flex items-center justify-between text-sm p-3 hover:bg-primary/10 rounded-lg transition-colors">
                       <span className="font-medium text-foreground w-1/3">{item.name}</span>
                       <div className="flex gap-2 w-2/3 justify-end">
-                        <span className="px-2 py-1 bg-primary/10 text-primary rounded text-xs">6C: {item.p6}</span>
-                        <span className="px-2 py-1 bg-primary/10 text-primary rounded text-xs">30C: {item.p30}</span>
-                        <span className="px-2 py-1 bg-primary/10 text-primary rounded text-xs">200C: {item.p200}</span>
+                        <span className="px-2 py-1 bg-accent-gold/20 text-accent-gold rounded text-xs">6C: {item.p6}</span>
+                        <span className="px-2 py-1 bg-accent-gold/20 text-accent-gold rounded text-xs">30C: {item.p30}</span>
+                        <span className="px-2 py-1 bg-accent-gold/20 text-accent-gold rounded text-xs">200C: {item.p200}</span>
                       </div>
                     </div>
                   ))}
                 </div>
-                <div className="mt-8 pt-4 border-t border-secondary/10 flex justify-between items-center">
-                  <div className="h-2 w-32 bg-secondary/20 rounded-full overflow-hidden">
-                    <div className="h-full w-2/3 bg-primary" />
+                <div className="mt-8 pt-4 border-t border-primary/10 flex justify-between items-center">
+                  <div className="h-2 w-32 bg-primary/20 rounded-full overflow-hidden">
+                    <div className="h-full w-2/3 bg-accent-gold" />
                   </div>
                   <span className="text-xs text-foreground/50">Stock Level: Optimal</span>
                 </div>
@@ -374,7 +401,7 @@ export default function HomePage() {
               <h2 className="font-heading text-5xl lg:text-6xl text-foreground">
                 The Potency Matrix
               </h2>
-              <p className="text-xl text-foreground/70 leading-relaxed">
+              <p className="text-xl text-foreground/80 leading-relaxed">
                 Homeopathy requires a different dimension of inventory management. 
                 Our system tracks not just the medicine, but the intricate matrix of 
                 potencies (6C, 30C, 200C, 1M) and forms (Globules, Dilutions, Mother Tinctures).
@@ -386,9 +413,9 @@ export default function HomePage() {
                   "Batch expiry management",
                   "Small quantity unit support (Drams, ML)"
                 ].map((item, i) => (
-                  <li key={i} className="flex items-center gap-3 text-foreground/80">
-                    <div className="w-6 h-6 rounded-full bg-white border border-primary/30 flex items-center justify-center flex-shrink-0">
-                      <div className="w-2 h-2 rounded-full bg-primary" />
+                  <li key={i} className="flex items-center gap-3 text-foreground/90">
+                    <div className="w-6 h-6 rounded-full bg-accent-gold border border-accent-gold/30 flex items-center justify-center flex-shrink-0">
+                      <div className="w-2 h-2 rounded-full bg-background" />
                     </div>
                     {item}
                   </li>
@@ -436,10 +463,22 @@ export default function HomePage() {
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: i * 0.05 }}
-                      className="flex items-center gap-4 p-4 rounded-lg bg-white border border-secondary/20 hover:border-primary/40 transition-colors"
+                      className="group relative overflow-hidden p-4 rounded-lg bg-secondary border border-primary/30 hover:border-accent-gold/40 transition-all duration-300 cursor-pointer"
                     >
-                      <Leaf className="w-5 h-5 text-primary/60" />
-                      <span className="text-foreground/80">{spec}</span>
+                      <div className="relative z-10">
+                        <div className="flex items-center gap-3 mb-2">
+                          <Leaf className="w-5 h-5 text-accent-gold/60" />
+                          <span className="text-foreground font-medium">{spec}</span>
+                        </div>
+                        {/* Hidden info on hover */}
+                        <div className="max-h-0 overflow-hidden group-hover:max-h-40 transition-all duration-300">
+                          <p className="text-foreground/80 text-sm mt-3 pt-3 border-t border-primary/20">
+                            Expert treatment for {spec.toLowerCase()} using personalized homeopathic remedies and proven therapeutic protocols.
+                          </p>
+                        </div>
+                      </div>
+                      {/* Hover background effect */}
+                      <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
                     </motion.div>
                   ))}
                 </div>
@@ -450,18 +489,18 @@ export default function HomePage() {
                 <h2 className="font-heading text-4xl text-foreground mb-10">Our Locations</h2>
                 <div className="space-y-8">
                   {clinicInfo.locations.map((loc, i) => (
-                    <div key={i} className="bg-secondary/5 p-8 rounded-2xl border border-secondary/20">
-                      <h3 className="font-heading text-2xl text-primary mb-4">{loc.name}</h3>
+                    <div key={i} className="bg-secondary p-8 rounded-2xl border border-primary/30">
+                      <h3 className="font-heading text-2xl text-accent-gold mb-4">{loc.name}</h3>
                       <div className="space-y-4">
                         <div className="flex items-start gap-4">
-                          <MapPin className="w-6 h-6 text-foreground/40 mt-1 flex-shrink-0" />
-                          <p className="text-foreground/70 text-lg">{loc.address}</p>
+                          <MapPin className="w-6 h-6 text-accent-gold/60 mt-1 flex-shrink-0" />
+                          <p className="text-foreground/90 text-lg">{loc.address}</p>
                         </div>
                         <div className="flex items-start gap-4">
-                          <Phone className="w-6 h-6 text-foreground/40 mt-1 flex-shrink-0" />
+                          <Phone className="w-6 h-6 text-accent-gold/60 mt-1 flex-shrink-0" />
                           <div className="flex flex-col">
                             {loc.phones.map((phone, idx) => (
-                              <span key={idx} className="text-foreground/70 text-lg">{phone}</span>
+                              <span key={idx} className="text-foreground/90 text-lg">{phone}</span>
                             ))}
                           </div>
                         </div>
@@ -477,20 +516,20 @@ export default function HomePage() {
       </section>
 
       {/* --- Visual Breather / Parallax --- */}
-      <section className="w-full h-[60vh] relative overflow-hidden flex items-center justify-center">
+      <section className="w-full h-[60vh] relative overflow-hidden flex items-center justify-center bg-secondary">
         <ParallaxSection className="absolute inset-0">
           <Image
             src="https://static.wixstatic.com/media/3fbaca_e2b4cf1af34e4fb992258cbdf513ae85~mv2.jpeg"
             alt="Homeopathic Care"
             width={1920}
-            className="w-full h-full object-cover opacity-40"
+            className="w-full h-full object-cover opacity-30"
           />
         </ParallaxSection>
         <div className="relative z-10 text-center px-4">
           <h2 className="font-heading text-5xl md:text-7xl text-foreground mb-6">
             Nature's Science.
           </h2>
-          <p className="text-xl md:text-2xl text-foreground/60 font-light max-w-2xl mx-auto">
+          <p className="text-xl md:text-2xl text-foreground/80 font-light max-w-2xl mx-auto">
             Restoring balance through precise, individualized treatment plans.
           </p>
         </div>

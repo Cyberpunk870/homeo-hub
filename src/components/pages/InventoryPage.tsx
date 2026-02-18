@@ -92,7 +92,7 @@ export default function InventoryPage() {
           className="mb-12"
         >
           <h1 className="font-heading text-5xl text-foreground mb-4">Medicine Inventory</h1>
-          <p className="font-paragraph text-lg text-foreground/70">
+          <p className="font-paragraph text-lg text-foreground/80">
             Browse and manage your homeopathic medicine catalog
           </p>
         </motion.div>

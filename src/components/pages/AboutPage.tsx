@@ -54,7 +54,7 @@ export default function AboutPage() {
       <Header />
       
       {/* Hero Section */}
-      <section className="w-full bg-white py-20">
+      <section className="w-full bg-secondary py-20">
         <div className="max-w-[100rem] mx-auto px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -64,7 +64,7 @@ export default function AboutPage() {
             <h1 className="font-heading text-6xl text-foreground mb-6">
               Dr. Upadhyaya's Homeopathy
             </h1>
-            <p className="font-paragraph text-xl text-foreground/70 leading-relaxed">
+            <p className="font-paragraph text-xl text-foreground/80 leading-relaxed">
               Providing compassionate homeopathic care with a focus on holistic healing 
               and personalized treatment plans across our Noida and Delhi locations.
             </p>
@@ -81,7 +81,7 @@ export default function AboutPage() {
           className="mb-12"
         >
           <h2 className="font-heading text-4xl text-foreground mb-4">Our Doctors</h2>
-          <p className="font-paragraph text-lg text-foreground/70">
+          <p className="font-paragraph text-lg text-foreground/80">
             Experienced homeopathic practitioners dedicated to your health
           </p>
         </motion.div>
@@ -93,15 +93,15 @@ export default function AboutPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="bg-white p-8 rounded-lg border border-secondary/30"
+            className="bg-secondary p-8 rounded-lg border border-primary/30"
           >
             <div className="flex flex-col items-center text-center space-y-6">
-              <div className="w-32 h-32 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="font-heading text-4xl text-primary">RU</span>
+              <div className="w-32 h-32 rounded-full bg-accent-gold/20 flex items-center justify-center">
+                <span className="font-heading text-4xl text-accent-gold">RU</span>
               </div>
               <div>
                 <h3 className="font-heading text-2xl text-foreground mb-2">Dr. R.C. Upadhyaya</h3>
-                <p className="font-paragraph text-sm text-foreground/60 mb-4">D.H.M.S. (JAIPUR)</p>
+                <p className="font-paragraph text-sm text-foreground/80 mb-4">D.H.M.S. (JAIPUR)</p>
                 <Badge variant="outline" className="font-paragraph">Homeopathic Medicine</Badge>
               </div>
             </div>
@@ -113,16 +113,16 @@ export default function AboutPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="bg-white p-8 rounded-lg border border-secondary/30"
+            className="bg-secondary p-8 rounded-lg border border-primary/30"
           >
             <div className="flex flex-col items-center text-center space-y-6">
-              <div className="w-32 h-32 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="font-heading text-4xl text-primary">PU</span>
+              <div className="w-32 h-32 rounded-full bg-accent-gold/20 flex items-center justify-center">
+                <span className="font-heading text-4xl text-accent-gold">PU</span>
               </div>
               <div>
                 <h3 className="font-heading text-2xl text-foreground mb-2">Dr. Priya Upadhyaya</h3>
-                <p className="font-paragraph text-sm text-foreground/60 mb-2">B.H.M.S. (DELHI)</p>
-                <p className="font-paragraph text-sm text-foreground/60 mb-4">M.D.(HOM.) (JAIPUR)</p>
+                <p className="font-paragraph text-sm text-foreground/80 mb-2">B.H.M.S. (DELHI)</p>
+                <p className="font-paragraph text-sm text-foreground/80 mb-4">M.D.(HOM.) (JAIPUR)</p>
                 <Badge variant="outline" className="font-paragraph">Homeopathic Medicine</Badge>
               </div>
             </div>
@@ -131,7 +131,7 @@ export default function AboutPage() {
       </section>
 
       {/* Treatments Section */}
-      <section className="w-full bg-white py-20">
+      <section className="w-full bg-secondary py-20">
         <div className="max-w-[100rem] mx-auto px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -140,7 +140,7 @@ export default function AboutPage() {
             className="mb-12"
           >
             <h2 className="font-heading text-4xl text-foreground mb-4">Treatments Offered</h2>
-            <p className="font-paragraph text-lg text-foreground/70">
+            <p className="font-paragraph text-lg text-foreground/80">
               Comprehensive homeopathic care for a wide range of conditions
             </p>
           </motion.div>
@@ -153,12 +153,22 @@ export default function AboutPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.05 }}
-                className="bg-background p-6 rounded-lg border border-secondary/30"
+                className="group relative overflow-hidden bg-background p-6 rounded-lg border border-primary/30 hover:border-accent-gold/40 transition-all duration-300 cursor-pointer"
               >
-                <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0" />
-                  <p className="font-paragraph text-base text-foreground">{treatment}</p>
+                <div className="relative z-10">
+                  <div className="flex items-start gap-3">
+                    <div className="w-2 h-2 rounded-full bg-accent-gold mt-2 flex-shrink-0" />
+                    <p className="font-paragraph text-base text-foreground font-medium">{treatment}</p>
+                  </div>
+                  {/* Hidden info on hover */}
+                  <div className="max-h-0 overflow-hidden group-hover:max-h-40 transition-all duration-300">
+                    <p className="text-foreground/80 text-sm mt-3 pt-3 border-t border-primary/20">
+                      Expert homeopathic treatment for {treatment.toLowerCase()} using personalized remedies and proven therapeutic protocols.
+                    </p>
+                  </div>
                 </div>
+                {/* Hover background effect */}
+                <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
               </motion.div>
             ))}
           </div>
@@ -174,7 +184,7 @@ export default function AboutPage() {
           className="mb-12"
         >
           <h2 className="font-heading text-4xl text-foreground mb-4">Our Locations</h2>
-          <p className="font-paragraph text-lg text-foreground/70">
+          <p className="font-paragraph text-lg text-foreground/80">
             Visit us at either of our convenient clinic locations
           </p>
         </motion.div>
@@ -186,31 +196,31 @@ export default function AboutPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="bg-white p-8 rounded-lg border border-secondary/30"
+            className="bg-secondary p-8 rounded-lg border border-primary/30"
           >
             <h3 className="font-heading text-2xl text-foreground mb-6">Clinic 1 - Noida</h3>
             <div className="space-y-4">
               <div className="flex gap-4">
-                <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                <MapPin className="w-5 h-5 text-accent-gold flex-shrink-0 mt-1" />
                 <div>
-                  <p className="font-paragraph text-sm text-foreground/60 mb-1">Address</p>
+                  <p className="font-paragraph text-sm text-foreground/80 mb-1">Address</p>
                   <p className="font-paragraph text-base text-foreground">
                     102, Jaipuria Plaza, Sec-26, Noida
                   </p>
                 </div>
               </div>
               <div className="flex gap-4">
-                <Phone className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                <Phone className="w-5 h-5 text-accent-gold flex-shrink-0 mt-1" />
                 <div>
-                  <p className="font-paragraph text-sm text-foreground/60 mb-1">Phone</p>
+                  <p className="font-paragraph text-sm text-foreground/80 mb-1">Phone</p>
                   <p className="font-paragraph text-base text-foreground">0120-4295211</p>
                   <p className="font-paragraph text-base text-foreground">8010877211</p>
                 </div>
               </div>
               <div className="flex gap-4">
-                <Clock className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                <Clock className="w-5 h-5 text-accent-gold flex-shrink-0 mt-1" />
                 <div>
-                  <p className="font-paragraph text-sm text-foreground/60 mb-1">Hours</p>
+                  <p className="font-paragraph text-sm text-foreground/80 mb-1">Hours</p>
                   <p className="font-paragraph text-base text-foreground">Mon-Sat: 10:00 AM - 7:00 PM</p>
                 </div>
               </div>
@@ -223,31 +233,31 @@ export default function AboutPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="bg-white p-8 rounded-lg border border-secondary/30"
+            className="bg-secondary p-8 rounded-lg border border-primary/30"
           >
             <h3 className="font-heading text-2xl text-foreground mb-6">Clinic 2 - Delhi</h3>
             <div className="space-y-4">
               <div className="flex gap-4">
-                <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                <MapPin className="w-5 h-5 text-accent-gold flex-shrink-0 mt-1" />
                 <div>
-                  <p className="font-paragraph text-sm text-foreground/60 mb-1">Address</p>
+                  <p className="font-paragraph text-sm text-foreground/80 mb-1">Address</p>
                   <p className="font-paragraph text-base text-foreground">
                     G-16, Vardhman Sun-Rise Plaza, Vasundhara Enclave, Delhi-96
                   </p>
                 </div>
               </div>
               <div className="flex gap-4">
-                <Phone className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                <Phone className="w-5 h-5 text-accent-gold flex-shrink-0 mt-1" />
                 <div>
-                  <p className="font-paragraph text-sm text-foreground/60 mb-1">Phone</p>
+                  <p className="font-paragraph text-sm text-foreground/80 mb-1">Phone</p>
                   <p className="font-paragraph text-base text-foreground">011-47520627</p>
                   <p className="font-paragraph text-base text-foreground">9205664653</p>
                 </div>
               </div>
               <div className="flex gap-4">
-                <Clock className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                <Clock className="w-5 h-5 text-accent-gold flex-shrink-0 mt-1" />
                 <div>
-                  <p className="font-paragraph text-sm text-foreground/60 mb-1">Hours</p>
+                  <p className="font-paragraph text-sm text-foreground/80 mb-1">Hours</p>
                   <p className="font-paragraph text-base text-foreground">Mon-Sat: 10:00 AM - 7:00 PM</p>
                 </div>
               </div>
@@ -257,7 +267,7 @@ export default function AboutPage() {
       </section>
 
       {/* Why Choose Us */}
-      <section className="w-full bg-white py-20">
+      <section className="w-full bg-secondary py-20">
         <div className="max-w-[100rem] mx-auto px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -268,29 +278,29 @@ export default function AboutPage() {
             <h2 className="font-heading text-4xl text-foreground mb-8">Why Choose Us</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="space-y-4">
-                <div className="inline-block p-4 bg-primary/10 rounded-full">
-                  <Award className="w-8 h-8 text-primary" />
+                <div className="inline-block p-4 bg-accent-gold/20 rounded-full">
+                  <Award className="w-8 h-8 text-accent-gold" />
                 </div>
                 <h3 className="font-heading text-xl text-foreground">Experienced Doctors</h3>
-                <p className="font-paragraph text-sm text-foreground/70">
+                <p className="font-paragraph text-sm text-foreground/80">
                   Qualified homeopathic practitioners with years of experience
                 </p>
               </div>
               <div className="space-y-4">
-                <div className="inline-block p-4 bg-primary/10 rounded-full">
-                  <MapPin className="w-8 h-8 text-primary" />
+                <div className="inline-block p-4 bg-accent-gold/20 rounded-full">
+                  <MapPin className="w-8 h-8 text-accent-gold" />
                 </div>
                 <h3 className="font-heading text-xl text-foreground">Convenient Locations</h3>
-                <p className="font-paragraph text-sm text-foreground/70">
+                <p className="font-paragraph text-sm text-foreground/80">
                   Two clinics in Noida and Delhi for easy access
                 </p>
               </div>
               <div className="space-y-4">
-                <div className="inline-block p-4 bg-primary/10 rounded-full">
-                  <Clock className="w-8 h-8 text-primary" />
+                <div className="inline-block p-4 bg-accent-gold/20 rounded-full">
+                  <Clock className="w-8 h-8 text-accent-gold" />
                 </div>
                 <h3 className="font-heading text-xl text-foreground">Flexible Hours</h3>
-                <p className="font-paragraph text-sm text-foreground/70">
+                <p className="font-paragraph text-sm text-foreground/80">
                   Open six days a week to accommodate your schedule
                 </p>
               </div>
