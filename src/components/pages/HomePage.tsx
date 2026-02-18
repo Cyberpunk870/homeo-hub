@@ -158,9 +158,9 @@ export default function HomePage() {
       <Header />
 
       {/* --- Hero Section --- */}
-      <section className="relative w-full min-h-[90vh] flex flex-col overflow-hidden">
+      <section className="relative w-full min-h-[70vh] flex flex-col overflow-hidden">
         {/* Top Navigation - Stacked Horizontally */}
-        <nav className="w-full bg-primary border-b border-secondary/30 px-8 py-4">
+        <nav className="w-full bg-primary border-b border-secondary/30 px-8 py-3">
           <div className="max-w-[120rem] mx-auto flex flex-wrap gap-8 justify-center">
             {[
               { name: 'Inventory', path: '/inventory' },
@@ -184,26 +184,16 @@ export default function HomePage() {
         {/* Main Hero Content */}
         <div className="flex flex-col lg:flex-row flex-1">
           {/* Left: Content */}
-          <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 lg:px-20 py-20 z-10 bg-background/80 backdrop-blur-sm lg:bg-transparent">
-            <FadeIn>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-accent-gold/30 bg-accent-gold/5 text-accent-gold text-sm font-medium mb-8">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-gold opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-accent-gold"></span>
-                </span>
-                Clinic Management System
-              </div>
-            </FadeIn>
-            
+          <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 lg:px-20 py-16 z-10 bg-background/80 backdrop-blur-sm lg:bg-transparent">
             <FadeIn delay={0.1}>
-              <h1 className="font-heading text-6xl lg:text-8xl font-bold leading-[0.9] tracking-tight text-foreground mb-8">
+              <h1 className="font-heading text-6xl lg:text-8xl font-bold leading-[0.9] tracking-tight text-foreground mb-6">
                 Dr. Upadhyaya's <br />
                 <span className="text-accent-gold italic">Homeopathy</span>
               </h1>
             </FadeIn>
 
             <FadeIn delay={0.2}>
-              <p className="text-xl text-foreground/90 max-w-xl leading-relaxed mb-10 border-l-2 border-accent-gold/30 pl-6">
+              <p className="text-lg text-foreground/90 max-w-xl leading-relaxed mb-8 border-l-2 border-accent-gold/30 pl-6">
                 Precision inventory tracking meets holistic care. Designed exclusively for 
                 <span className="font-semibold text-foreground"> Dr. Upadhyaya's Homeopathy</span>, 
                 bridging the gap between ancient wisdom and modern efficiency.
@@ -212,12 +202,12 @@ export default function HomePage() {
 
             <FadeIn delay={0.3}>
               <div className="flex flex-wrap gap-4">
-                <Button asChild className="h-14 px-8 rounded-full bg-accent-gold text-background hover:bg-accent-gold/90 transition-all duration-500 text-lg">
+                <Button asChild className="h-12 px-8 rounded-full bg-accent-gold text-background hover:bg-accent-gold/90 transition-all duration-500 text-base">
                   <Link to="/inventory">
-                    Access Inventory <ArrowRight className="ml-2 w-5 h-5" />
+                    Access Inventory <ArrowRight className="ml-2 w-4 h-4" />
                   </Link>
                 </Button>
-                <Button asChild variant="outline" className="h-14 px-8 rounded-full border-foreground/20 hover:bg-primary/20 text-lg text-foreground">
+                <Button asChild variant="outline" className="h-12 px-8 rounded-full border-foreground/20 hover:bg-primary/20 text-base text-foreground">
                   <Link to="/about">Clinic Profile</Link>
                 </Button>
               </div>
@@ -229,7 +219,7 @@ export default function HomePage() {
       </section>
 
       {/* --- Ticker Section --- */}
-      <div className="w-full bg-primary text-white py-4 overflow-hidden border-y border-accent-gold/10">
+      <div className="w-full bg-primary text-white py-3 overflow-hidden border-y border-accent-gold/10">
         <div className="flex whitespace-nowrap">
           <motion.div 
             animate={{ x: "-50%" }}
@@ -244,13 +234,13 @@ export default function HomePage() {
       </div>
 
       {/* --- System Modules (Quick Actions) --- */}
-      <section className="w-full max-w-[120rem] mx-auto px-4 md:px-8 py-32">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-20">
+      <section className="w-full max-w-[120rem] mx-auto px-4 md:px-8 py-20">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-12">
           <div className="max-w-2xl">
-            <h2 className="font-heading text-5xl md:text-6xl text-foreground mb-6">
+            <h2 className="font-heading text-5xl md:text-6xl text-foreground mb-4">
               Clinic Ecosystem
             </h2>
-            <p className="text-xl text-foreground/80 font-light">
+            <p className="text-lg text-foreground/80 font-light">
               A unified interface for managing the complex inventory of homeopathic medicines, 
               patient records, and multi-clinic operations.
             </p>
@@ -299,7 +289,7 @@ export default function HomePage() {
       </section>
 
       {/* --- Feature Spotlight: Potency Matrix --- */}
-      <section className="w-full bg-secondary py-32 overflow-hidden">
+      <section className="w-full bg-secondary py-20 overflow-hidden">
         <div className="max-w-[120rem] mx-auto px-4 md:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
             <div className="order-2 lg:order-1 relative">
@@ -377,16 +367,16 @@ export default function HomePage() {
       </section>
 
       {/* --- Clinic Information & Specialties --- */}
-      <section className="w-full py-32 bg-background relative">
+      <section className="w-full py-20 bg-background relative">
         <div className="max-w-[120rem] mx-auto px-4 md:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
             
             {/* Content & Locations */}
-            <div className="lg:col-span-12 space-y-20">
+            <div className="lg:col-span-12 space-y-12">
               
               {/* Specialties */}
               <div>
-                <h2 className="font-heading text-4xl text-foreground mb-10">Specialized Treatments</h2>
+                <h2 className="font-heading text-4xl text-foreground mb-6">Specialized Treatments</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {clinicInfo.specialties.map((spec, i) => (
                     <motion.div 
@@ -418,7 +408,7 @@ export default function HomePage() {
 
               {/* Locations */}
               <div>
-                <h2 className="font-heading text-4xl text-foreground mb-10">Our Locations</h2>
+                <h2 className="font-heading text-4xl text-foreground mb-6">Our Locations</h2>
                 <div className="space-y-8">
                   {clinicInfo.locations.map((loc, i) => (
                     <div key={i} className="bg-secondary p-8 rounded-2xl border border-primary/30">
@@ -448,7 +438,7 @@ export default function HomePage() {
       </section>
 
       {/* --- Visual Breather / Parallax --- */}
-      <section className="w-full h-[60vh] relative overflow-hidden flex items-center justify-center bg-secondary">
+      <section className="w-full h-[40vh] relative overflow-hidden flex items-center justify-center bg-secondary">
         <ParallaxSection className="absolute inset-0">
           <Image
             src="https://static.wixstatic.com/media/3fbaca_e2b4cf1af34e4fb992258cbdf513ae85~mv2.jpeg"
@@ -458,10 +448,10 @@ export default function HomePage() {
           />
         </ParallaxSection>
         <div className="relative z-10 text-center px-4">
-          <h2 className="font-heading text-5xl md:text-7xl text-foreground mb-6">
+          <h2 className="font-heading text-5xl md:text-6xl text-foreground mb-4">
             Nature's Science.
           </h2>
-          <p className="text-xl md:text-2xl text-foreground/80 font-light max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-foreground/80 font-light max-w-2xl mx-auto">
             Restoring balance through precise, individualized treatment plans.
           </p>
         </div>
