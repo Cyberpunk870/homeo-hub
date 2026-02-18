@@ -431,26 +431,8 @@ export default function HomePage() {
         <div className="max-w-[120rem] mx-auto px-4 md:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
             
-            {/* Left: Sticky Info Card */}
-            <div className="lg:col-span-5 relative">
-              <div className="sticky top-32">
-                <div className="relative rounded-3xl overflow-hidden shadow-2xl aspect-[4/5] group">
-                  <Image
-                    src="https://static.wixstatic.com/media/3fbaca_55af41eb68914b3a85b967748f59444a~mv2.jpeg"
-                    alt="Clinic Information Card"
-                    width={800}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-10">
-                    <h3 className="text-white font-heading text-3xl mb-2">Dr. Upadhyaya's</h3>
-                    <p className="text-white/80 font-light">Excellence in Homeopathy</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Right: Content & Locations */}
-            <div className="lg:col-span-7 space-y-20">
+            {/* Content & Locations */}
+            <div className="lg:col-span-12 space-y-20">
               
               {/* Specialties */}
               <div>
