@@ -187,16 +187,16 @@ export default function AlertsPage() {
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-paragraph text-sm">
                               <div>
-                                <p className="text-foreground/60">Current Stock</p>
-                                <p className="font-medium text-destructive">{alert.currentStock} units</p>
+                                <p className="text-gray-600 font-medium">Current Stock</p>
+                                <p className="font-medium text-destructive text-base">{alert.currentStock} units</p>
                               </div>
                               <div>
-                                <p className="text-foreground/60">Reorder Level</p>
-                                <p className="font-medium">{alert.reorderLevel} units</p>
+                                <p className="text-gray-600 font-medium">Reorder Level</p>
+                                <p className="font-medium text-gray-900 text-base">{alert.reorderLevel} units</p>
                               </div>
                               <div>
-                                <p className="text-foreground/60">Manufacturer</p>
-                                <p className="font-medium">{alert.medicine.manufacturer}</p>
+                                <p className="text-gray-600 font-medium">Manufacturer</p>
+                                <p className="font-medium text-gray-900 text-base">{alert.medicine.manufacturer}</p>
                               </div>
                             </div>
                           </div>
@@ -266,22 +266,22 @@ export default function AlertsPage() {
                               </div>
                               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 font-paragraph text-sm">
                                 <div>
-                                  <p className="text-foreground/60">Batch Number</p>
-                                  <p className="font-medium">{alert.batch.batchNumber}</p>
+                                  <p className="text-gray-600 font-medium">Batch Number</p>
+                                  <p className="font-medium text-gray-900 text-base">{alert.batch.batchNumber}</p>
                                 </div>
                                 <div>
-                                  <p className="text-foreground/60">Quantity</p>
-                                  <p className="font-medium">{alert.batch.quantityAvailable} units</p>
+                                  <p className="text-gray-600 font-medium">Quantity</p>
+                                  <p className="font-medium text-gray-900 text-base">{alert.batch.quantityAvailable} units</p>
                                 </div>
                                 <div>
-                                  <p className="text-foreground/60">Expiry Date</p>
-                                  <p className="font-medium">
+                                  <p className="text-gray-600 font-medium">Expiry Date</p>
+                                  <p className="font-medium text-gray-900 text-base">
                                     {alert.batch.expiryDate ? new Date(alert.batch.expiryDate).toLocaleDateString() : 'N/A'}
                                   </p>
                                 </div>
                                 <div>
-                                  <p className="text-foreground/60">Supplier</p>
-                                  <p className="font-medium">{alert.batch.supplierName}</p>
+                                  <p className="text-gray-600 font-medium">Supplier</p>
+                                  <p className="font-medium text-gray-900 text-base">{alert.batch.supplierName}</p>
                                 </div>
                               </div>
                             </div>
