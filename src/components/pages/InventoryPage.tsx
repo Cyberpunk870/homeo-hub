@@ -102,12 +102,12 @@ export default function InventoryPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="md:col-span-1">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground/40" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <Input
                   placeholder="Search medicines..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 font-paragraph"
+                  className="pl-10 font-paragraph text-gray-900"
                 />
               </div>
             </div>
@@ -179,7 +179,7 @@ export default function InventoryPage() {
                         )}
                       </div>
 
-                      <div className="space-y-2 font-paragraph text-sm text-foreground/70">
+                      <div className="space-y-2 font-paragraph text-sm text-gray-700">
                         <p><span className="font-medium">Manufacturer:</span> {medicine.manufacturer}</p>
                         <p><span className="font-medium">Pack Size:</span> {medicine.packSize}</p>
                         <p><span className="font-medium">Total Stock:</span> {totalStock} units</p>

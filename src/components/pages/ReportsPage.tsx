@@ -233,19 +233,19 @@ export default function ReportsPage() {
                     topMedicines.map((medicine, index) => (
                       <div key={index} className="flex items-center justify-between p-4 bg-background rounded-lg">
                         <div className="flex-1">
-                          <p className="font-paragraph font-medium text-foreground">{medicine.name}</p>
-                          <p className="font-paragraph text-sm text-foreground/60">
+                          <p className="font-paragraph font-medium text-gray-900">{medicine.name}</p>
+                          <p className="font-paragraph text-sm text-gray-600">
                             {medicine.batches} batches
                           </p>
                         </div>
                         <div className="text-right">
                           <p className="font-heading text-xl text-primary">{medicine.totalStock}</p>
-                          <p className="font-paragraph text-xs text-foreground/60">units</p>
+                          <p className="font-paragraph text-xs text-gray-600">units</p>
                         </div>
                       </div>
                     ))
                   ) : (
-                    <p className="font-paragraph text-sm text-foreground/60 text-center py-8">
+                    <p className="font-paragraph text-sm text-gray-600 text-center py-8">
                       No data available
                     </p>
                   )}
@@ -270,11 +270,11 @@ export default function ReportsPage() {
                     recentTransactions.map((transaction) => (
                       <div key={transaction._id} className="flex items-start justify-between p-4 bg-background rounded-lg">
                         <div className="flex-1">
-                          <p className="font-paragraph font-medium text-foreground">{transaction.medicineSku}</p>
-                          <p className="font-paragraph text-sm text-foreground/60">
+                          <p className="font-paragraph font-medium text-gray-900">{transaction.medicineSku}</p>
+                          <p className="font-paragraph text-sm text-gray-600">
                             {transaction.transactionType} • {transaction.auditReason}
                           </p>
-                          <p className="font-paragraph text-xs text-foreground/50 mt-1">
+                          <p className="font-paragraph text-xs text-gray-500 mt-1">
                             {transaction.transactionDateTime ? new Date(transaction.transactionDateTime).toLocaleString() : 'N/A'}
                           </p>
                         </div>
@@ -284,12 +284,12 @@ export default function ReportsPage() {
                           }`}>
                             {(transaction.quantityChange || 0) > 0 ? '+' : ''}{transaction.quantityChange}
                           </p>
-                          <p className="font-paragraph text-xs text-foreground/60">units</p>
+                          <p className="font-paragraph text-xs text-gray-600">units</p>
                         </div>
                       </div>
                     ))
                   ) : (
-                    <p className="font-paragraph text-sm text-foreground/60 text-center py-8">
+                    <p className="font-paragraph text-sm text-gray-600 text-center py-8">
                       No transactions found
                     </p>
                   )}
@@ -313,37 +313,37 @@ export default function ReportsPage() {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="p-6 bg-background rounded-lg">
-                  <p className="font-paragraph text-sm text-foreground/60 mb-2">Stock Health</p>
-                  <p className="font-heading text-2xl text-foreground mb-1">
+                  <p className="font-paragraph text-sm text-gray-600 mb-2">Stock Health</p>
+                  <p className="font-heading text-2xl text-gray-900 mb-1">
                     {summary.totalMedicines > 0 
                       ? Math.round(((summary.totalMedicines - summary.lowStockCount) / summary.totalMedicines) * 100)
                       : 0}%
                   </p>
-                  <p className="font-paragraph text-xs text-foreground/60">
+                  <p className="font-paragraph text-xs text-gray-600">
                     Medicines above reorder level
                   </p>
                 </div>
 
                 <div className="p-6 bg-background rounded-lg">
-                  <p className="font-paragraph text-sm text-foreground/60 mb-2">Batch Coverage</p>
-                  <p className="font-heading text-2xl text-foreground mb-1">
+                  <p className="font-paragraph text-sm text-gray-600 mb-2">Batch Coverage</p>
+                  <p className="font-heading text-2xl text-gray-900 mb-1">
                     {summary.totalMedicines > 0 
                       ? (summary.totalBatches / summary.totalMedicines).toFixed(1)
                       : 0}
                   </p>
-                  <p className="font-paragraph text-xs text-foreground/60">
+                  <p className="font-paragraph text-xs text-gray-600">
                     Average batches per medicine
                   </p>
                 </div>
 
                 <div className="p-6 bg-background rounded-lg">
-                  <p className="font-paragraph text-sm text-foreground/60 mb-2">Expiry Risk</p>
-                  <p className="font-heading text-2xl text-foreground mb-1">
+                  <p className="font-paragraph text-sm text-gray-600 mb-2">Expiry Risk</p>
+                  <p className="font-heading text-2xl text-gray-900 mb-1">
                     {summary.totalBatches > 0 
                       ? Math.round((summary.expiringCount / summary.totalBatches) * 100)
                       : 0}%
                   </p>
-                  <p className="font-paragraph text-xs text-foreground/60">
+                  <p className="font-paragraph text-xs text-gray-600">
                     Batches expiring in 3 months
                   </p>
                 </div>

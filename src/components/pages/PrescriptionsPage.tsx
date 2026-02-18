@@ -138,12 +138,12 @@ export default function PrescriptionsPage() {
         {/* Search */}
         <div className="bg-white p-6 rounded-lg border border-secondary/30 mb-8">
           <div className="relative max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground/40" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <Input
               placeholder="Search by patient, doctor, or prescription ID..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 font-paragraph"
+              className="pl-10 font-paragraph text-gray-900"
             />
           </div>
         </div>
