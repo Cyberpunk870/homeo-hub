@@ -107,7 +107,7 @@ export default function InventoryPage() {
                   placeholder="Search medicines..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 font-paragraph text-gray-900"
+                  className="pl-10 font-paragraph text-gray-900 placeholder:text-gray-500"
                 />
               </div>
             </div>
