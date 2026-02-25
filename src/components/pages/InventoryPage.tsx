@@ -93,13 +93,13 @@ export default function InventoryPage() {
         >
           <h1 className="font-heading text-4xl sm:text-5xl text-foreground mb-4">Medicine Inventory</h1>
           <p className="font-paragraph text-base sm:text-lg text-foreground/80">
-            Browse and manage your homeopathic medicine catalog
+            Quick view of all medicines in stock
           </p>
         </motion.div>
 
         {/* Search and Filters */}
-        <div className="bg-white p-8 rounded-lg border border-secondary/30 mb-8 space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-white p-6 rounded-lg border border-secondary/30 mb-8 space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div className="md:col-span-1">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -107,13 +107,13 @@ export default function InventoryPage() {
                   placeholder="Search medicines..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 font-paragraph text-gray-900 placeholder:text-gray-500"
+                  className="pl-10 font-paragraph text-gray-900 placeholder:text-gray-500 text-base"
                 />
               </div>
             </div>
             
             <Select value={filterPotency} onValueChange={setFilterPotency}>
-              <SelectTrigger className="font-paragraph">
+              <SelectTrigger className="font-paragraph text-gray-900">
                 <SelectValue placeholder="Filter by Potency" />
               </SelectTrigger>
               <SelectContent>
@@ -125,7 +125,7 @@ export default function InventoryPage() {
             </Select>
 
             <Select value={filterForm} onValueChange={setFilterForm}>
-              <SelectTrigger className="font-paragraph">
+              <SelectTrigger className="font-paragraph text-gray-900">
                 <SelectValue placeholder="Filter by Form" />
               </SelectTrigger>
               <SelectContent>
@@ -162,14 +162,14 @@ export default function InventoryPage() {
                     <div className="space-y-4">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
-                          <h3 className="font-heading text-xl text-foreground mb-2">
+                          <h3 className="font-heading text-lg text-gray-900 mb-2">
                             {medicine.medicineName}
                           </h3>
                           <div className="flex flex-wrap gap-2">
-                            <Badge variant="outline" className="font-paragraph text-xs">
+                            <Badge className="font-paragraph text-xs bg-primary/10 text-primary border border-primary/30">
                               {medicine.potency}
                             </Badge>
-                            <Badge variant="outline" className="font-paragraph text-xs">
+                            <Badge className="font-paragraph text-xs bg-secondary/10 text-secondary border border-secondary/30">
                               {medicine.formType}
                             </Badge>
                           </div>
@@ -180,20 +180,19 @@ export default function InventoryPage() {
                       </div>
 
                       <div className="space-y-2 font-paragraph text-sm text-gray-700">
-                        <p><span className="font-medium">Manufacturer:</span> {medicine.manufacturer}</p>
-                        <p><span className="font-medium">Pack Size:</span> {medicine.packSize}</p>
-                        <p><span className="font-medium">Total Stock:</span> {totalStock} units</p>
+                        <p><span className="font-medium text-gray-900">Manufacturer:</span> {medicine.manufacturer}</p>
+                        <p><span className="font-medium text-gray-900">Pack Size:</span> {medicine.packSize}</p>
+                        <p><span className="font-medium text-gray-900">Total Stock:</span> <span className="text-primary font-bold">{totalStock} units</span></p>
                         {lowStock && (
                           <p className="text-destructive font-medium">
-                            Low Stock (Reorder at {medicine.reorderLevel})
+                            ⚠️ Low Stock (Reorder at {medicine.reorderLevel})
                           </p>
                         )}
                       </div>
 
                       <Button
                         onClick={() => handleViewDetails(medicine)}
-                        variant="outline"
-                        className="w-full border-primary text-primary hover:bg-primary/10"
+                        className="w-full bg-primary text-white hover:bg-primary/90 font-paragraph"
                       >
                         View Details
                       </Button>

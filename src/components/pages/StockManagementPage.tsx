@@ -186,7 +186,7 @@ export default function StockManagementPage() {
         >
           <h1 className="font-heading text-4xl sm:text-5xl text-foreground mb-4">Stock Management</h1>
           <p className="font-paragraph text-base sm:text-lg text-foreground/70">
-            Add new stock entries and record medicine dispensing
+            Add stock or dispense medicines with just a few clicks
           </p>
         </motion.div>
 
@@ -207,29 +207,29 @@ export default function StockManagementPage() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white p-8 rounded-lg border border-secondary/30 max-w-2xl"
+              className="bg-white p-6 rounded-lg border border-secondary/30 max-w-2xl"
             >
               <div className="flex items-center gap-3 mb-6">
                 <div className="p-3 bg-primary/10 rounded-lg">
                   <Plus className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h2 className="font-heading text-2xl text-foreground">Add Stock Entry</h2>
-                  <p className="font-paragraph text-sm text-foreground/60">
+                  <h2 className="font-heading text-2xl text-gray-900">Add Stock</h2>
+                  <p className="font-paragraph text-sm text-gray-600">
                     Record new medicine purchases
                   </p>
                 </div>
               </div>
 
-              <form onSubmit={handleStockIn} className="space-y-6">
+              <form onSubmit={handleStockIn} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="medicine-in" className="font-paragraph">Medicine</Label>
+                  <Label htmlFor="medicine-in" className="font-paragraph text-gray-900">Medicine</Label>
                   <Select
                     value={stockInForm.medicineSKU}
                     onValueChange={(value) => setStockInForm({ ...stockInForm, medicineSKU: value })}
                     required
                   >
-                    <SelectTrigger id="medicine-in">
+                    <SelectTrigger id="medicine-in" className="text-gray-900">
                       <SelectValue placeholder="Select medicine" />
                     </SelectTrigger>
                     <SelectContent>
@@ -242,32 +242,34 @@ export default function StockManagementPage() {
                   </Select>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-2">
-                    <Label htmlFor="batch-in" className="font-paragraph">Batch Number</Label>
+                    <Label htmlFor="batch-in" className="font-paragraph text-gray-900">Batch Number</Label>
                     <Input
                       id="batch-in"
                       value={stockInForm.batchNumber}
                       onChange={(e) => setStockInForm({ ...stockInForm, batchNumber: e.target.value })}
                       placeholder="e.g., BATCH001"
+                      className="text-gray-900"
                       required
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="expiry-in" className="font-paragraph">Expiry Date</Label>
+                    <Label htmlFor="expiry-in" className="font-paragraph text-gray-900">Expiry Date</Label>
                     <Input
                       id="expiry-in"
                       type="date"
                       value={stockInForm.expiryDate}
                       onChange={(e) => setStockInForm({ ...stockInForm, expiryDate: e.target.value })}
+                      className="text-gray-900"
                       required
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="quantity-in" className="font-paragraph">Quantity</Label>
+                  <Label htmlFor="quantity-in" className="font-paragraph text-gray-900">Quantity</Label>
                   <Input
                     id="quantity-in"
                     type="number"
@@ -275,18 +277,19 @@ export default function StockManagementPage() {
                     value={stockInForm.quantity}
                     onChange={(e) => setStockInForm({ ...stockInForm, quantity: e.target.value })}
                     placeholder="Enter quantity"
+                    className="text-gray-900"
                     required
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="supplier-in" className="font-paragraph">Supplier</Label>
+                  <Label htmlFor="supplier-in" className="font-paragraph text-gray-900">Supplier</Label>
                   <Select
                     value={stockInForm.supplierName}
                     onValueChange={(value) => setStockInForm({ ...stockInForm, supplierName: value })}
                     required
                   >
-                    <SelectTrigger id="supplier-in">
+                    <SelectTrigger id="supplier-in" className="text-gray-900">
                       <SelectValue placeholder="Select supplier" />
                     </SelectTrigger>
                     <SelectContent>
@@ -299,7 +302,7 @@ export default function StockManagementPage() {
                   </Select>
                 </div>
 
-                <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+                <Button type="submit" className="w-full bg-primary text-white hover:bg-primary/90 font-paragraph">
                   Add Stock Entry
                 </Button>
               </form>
@@ -311,29 +314,29 @@ export default function StockManagementPage() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white p-8 rounded-lg border border-secondary/30 max-w-2xl"
+              className="bg-white p-6 rounded-lg border border-secondary/30 max-w-2xl"
             >
               <div className="flex items-center gap-3 mb-6">
                 <div className="p-3 bg-destructive/10 rounded-lg">
                   <Minus className="w-6 h-6 text-destructive" />
                 </div>
                 <div>
-                  <h2 className="font-heading text-2xl text-foreground">Dispense Stock</h2>
-                  <p className="font-paragraph text-sm text-foreground/60">
+                  <h2 className="font-heading text-2xl text-gray-900">Dispense Stock</h2>
+                  <p className="font-paragraph text-sm text-gray-600">
                     Record medicine dispensed to patients
                   </p>
                 </div>
               </div>
 
-              <form onSubmit={handleStockOut} className="space-y-6">
+              <form onSubmit={handleStockOut} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="medicine-out" className="font-paragraph">Medicine</Label>
+                  <Label htmlFor="medicine-out" className="font-paragraph text-gray-900">Medicine</Label>
                   <Select
                     value={stockOutForm.medicineSKU}
                     onValueChange={(value) => setStockOutForm({ ...stockOutForm, medicineSKU: value })}
                     required
                   >
-                    <SelectTrigger id="medicine-out">
+                    <SelectTrigger id="medicine-out" className="text-gray-900">
                       <SelectValue placeholder="Select medicine" />
                     </SelectTrigger>
                     <SelectContent>
@@ -347,18 +350,19 @@ export default function StockManagementPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="batch-out" className="font-paragraph">Batch Number</Label>
+                  <Label htmlFor="batch-out" className="font-paragraph text-gray-900">Batch Number</Label>
                   <Input
                     id="batch-out"
                     value={stockOutForm.batchNumber}
                     onChange={(e) => setStockOutForm({ ...stockOutForm, batchNumber: e.target.value })}
                     placeholder="e.g., BATCH001"
+                    className="text-gray-900"
                     required
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="quantity-out" className="font-paragraph">Quantity to Dispense</Label>
+                  <Label htmlFor="quantity-out" className="font-paragraph text-gray-900">Quantity to Dispense</Label>
                   <Input
                     id="quantity-out"
                     type="number"
@@ -366,21 +370,23 @@ export default function StockManagementPage() {
                     value={stockOutForm.quantity}
                     onChange={(e) => setStockOutForm({ ...stockOutForm, quantity: e.target.value })}
                     placeholder="Enter quantity"
+                    className="text-gray-900"
                     required
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="reference-out" className="font-paragraph">Reference ID (Optional)</Label>
+                  <Label htmlFor="reference-out" className="font-paragraph text-gray-900">Reference ID (Optional)</Label>
                   <Input
                     id="reference-out"
                     value={stockOutForm.referenceId}
                     onChange={(e) => setStockOutForm({ ...stockOutForm, referenceId: e.target.value })}
                     placeholder="e.g., Patient ID or Prescription ID"
+                    className="text-gray-900"
                   />
                 </div>
 
-                <Button type="submit" className="w-full bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                <Button type="submit" className="w-full bg-destructive text-white hover:bg-destructive/90 font-paragraph">
                   Dispense Stock
                 </Button>
               </form>
