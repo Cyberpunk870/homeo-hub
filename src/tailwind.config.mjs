@@ -23,15 +23,15 @@ export default {
                 paragraph: "sora"
             },
             colors: {
-                'accent-gold': '#D4AF37',
-                destructive: '#E57373',
+                'accent-gold': '#D4A574',
+                destructive: '#E8704A',
                 'destructive-foreground': '#FFFFFF',
-                background: '#1B5E20',
-                secondary: '#2E7D32',
-                foreground: '#FFFFFF',
+                background: '#F5EFE7',
+                secondary: '#D4A574',
+                foreground: '#3D2817',
                 'secondary-foreground': '#FFFFFF',
-                'primary-foreground': '#1B5E20',
-                primary: '#4CAF50'
+                'primary-foreground': '#FFFFFF',
+                primary: '#C17A4A'
             },
         },
     },
