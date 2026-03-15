@@ -1,41 +1,11 @@
-import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Phone, Mail, Clock, Award } from 'lucide-react';
-import { BaseCrudService } from '@/integrations';
-import { Doctors, Treatments, ClinicLocations } from '@/entities';
+import { MapPin, Phone, Clock, Award } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Image } from '@/components/ui/image';
 import { Badge } from '@/components/ui/badge';
 
 export default function AboutPage() {
-  const [doctors, setDoctors] = useState<Doctors[]>([]);
-  const [treatments, setTreatments] = useState<Treatments[]>([]);
-  const [locations, setLocations] = useState<ClinicLocations[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
-    setIsLoading(true);
-    try {
-      const [doctorsResult, treatmentsResult, locationsResult] = await Promise.all([
-        BaseCrudService.getAll<Doctors>('doctors'),
-        BaseCrudService.getAll<Treatments>('treatments'),
-        BaseCrudService.getAll<ClinicLocations>('cliniclocations')
-      ]);
-      setDoctors(doctorsResult.items);
-      setTreatments(treatmentsResult.items);
-      setLocations(locationsResult.items);
-    } catch (error) {
-      console.error('Error loading data:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const treatmentsList = [
     'Migraine',
     'Respiratory Diseases',

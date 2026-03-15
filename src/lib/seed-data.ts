@@ -1,0 +1,227 @@
+export type SeedRecord = Record<string, unknown>;
+export type SeedCollections = Record<string, SeedRecord[]>;
+
+function nowIso() {
+  return new Date().toISOString();
+}
+
+export function createSeedCollections(): SeedCollections {
+  const created = nowIso();
+
+  return {
+    cliniclocations: [
+      {
+        _id: 'clinic-noida',
+        _createdDate: created,
+        _updatedDate: created,
+        locationName: 'Noida',
+        address: '102, Jaipuria Plaza, Sec-26, Noida',
+        contactNumber: '0120-4295211',
+        operatingHours: 'Mon-Sat 10:00 AM - 7:00 PM',
+        email: 'noida@drupadhyayahomeopathy.in',
+      },
+      {
+        _id: 'clinic-delhi',
+        _createdDate: created,
+        _updatedDate: created,
+        locationName: 'Delhi',
+        address: 'G-16, Vardhman Sun-Rise Plaza, Vasundhara Enclave, Delhi-96',
+        contactNumber: '011-47520627',
+        operatingHours: 'Mon-Sat 10:00 AM - 7:00 PM',
+        email: 'delhi@drupadhyayahomeopathy.in',
+      },
+    ],
+    doctors: [
+      {
+        _id: 'doc-rc',
+        _createdDate: created,
+        _updatedDate: created,
+        doctorName: 'Dr. R.C. Upadhyaya',
+        specialization: 'Classical Homeopathy',
+        qualifications: 'D.H.M.S. (JAIPUR)',
+        yearsOfExperience: 25,
+        clinicLocation: 'Noida',
+      },
+      {
+        _id: 'doc-priya',
+        _createdDate: created,
+        _updatedDate: created,
+        doctorName: 'Dr. Priya Upadhyaya',
+        specialization: 'Homeopathic Medicine',
+        qualifications: 'B.H.M.S., M.D. (Hom.)',
+        yearsOfExperience: 15,
+        clinicLocation: 'Delhi',
+      },
+    ],
+    treatments: [
+      { _id: 'tr-1', _createdDate: created, _updatedDate: created, treatmentName: 'Migraine' },
+      { _id: 'tr-2', _createdDate: created, _updatedDate: created, treatmentName: 'Respiratory Diseases' },
+      { _id: 'tr-3', _createdDate: created, _updatedDate: created, treatmentName: 'Skin Problems' },
+    ],
+    suppliers: [
+      {
+        _id: 'sup-1',
+        _createdDate: created,
+        _updatedDate: created,
+        supplierName: 'SBL Pharma Distributor',
+        contactPerson: 'Amit Sharma',
+        phoneNumber: '9876543210',
+      },
+      {
+        _id: 'sup-2',
+        _createdDate: created,
+        _updatedDate: created,
+        supplierName: 'Dr. Reckeweg Supply',
+        contactPerson: 'Neha Verma',
+        phoneNumber: '9876501234',
+      },
+    ],
+    homeopathicmedicines: [
+      {
+        _id: 'med-arnica-30',
+        _createdDate: created,
+        _updatedDate: created,
+        medicineName: 'Arnica Montana',
+        potency: '30C',
+        formType: 'Globules',
+        manufacturer: 'SBL',
+        packSize: '30g',
+        reorderLevel: 20,
+      },
+      {
+        _id: 'med-bell-200',
+        _createdDate: created,
+        _updatedDate: created,
+        medicineName: 'Belladonna',
+        potency: '200C',
+        formType: 'Globules',
+        manufacturer: 'Dr. Reckeweg',
+        packSize: '30g',
+        reorderLevel: 15,
+      },
+      {
+        _id: 'med-rhustox-q',
+        _createdDate: created,
+        _updatedDate: created,
+        medicineName: 'Rhus Tox',
+        potency: 'Q',
+        formType: 'Liquid',
+        manufacturer: 'SBL',
+        packSize: '30ml',
+        reorderLevel: 10,
+      },
+    ],
+    inventorybatches: [
+      {
+        _id: 'batch-1',
+        _createdDate: created,
+        _updatedDate: created,
+        clinicLocation: 'Noida',
+        medicineSKU: 'Arnica Montana',
+        batchNumber: 'ARN-30C-01',
+        expiryDate: '2027-08-31',
+        quantityAvailable: 35,
+        supplierName: 'SBL Pharma Distributor',
+      },
+      {
+        _id: 'batch-2',
+        _createdDate: created,
+        _updatedDate: created,
+        clinicLocation: 'Delhi',
+        medicineSKU: 'Arnica Montana',
+        batchNumber: 'ARN-30C-02',
+        expiryDate: '2027-11-30',
+        quantityAvailable: 12,
+        supplierName: 'SBL Pharma Distributor',
+      },
+      {
+        _id: 'batch-3',
+        _createdDate: created,
+        _updatedDate: created,
+        clinicLocation: 'Delhi',
+        medicineSKU: 'Belladonna',
+        batchNumber: 'BEL-200-01',
+        expiryDate: '2026-06-20',
+        quantityAvailable: 8,
+        supplierName: 'Dr. Reckeweg Supply',
+      },
+    ],
+    patients: [
+      {
+        _id: 'pat-1',
+        _createdDate: created,
+        _updatedDate: created,
+        patientName: 'Rohan Mehta',
+        phoneNumber: '9810012345',
+        gender: 'Male',
+        clinicLocation: 'Noida',
+      },
+      {
+        _id: 'pat-2',
+        _createdDate: created,
+        _updatedDate: created,
+        patientName: 'Ananya Gupta',
+        phoneNumber: '9810098765',
+        gender: 'Female',
+        clinicLocation: 'Delhi',
+      },
+    ],
+    prescriptions: [
+      {
+        _id: 'rx-1',
+        _createdDate: created,
+        _updatedDate: created,
+        prescriptionId: 'RX001',
+        patientName: 'Rohan Mehta',
+        doctorName: 'Dr. R.C. Upadhyaya',
+        prescriptionDate: '2026-02-20',
+        medicinesAndDosages: 'Arnica Montana 30C - 4 pills TDS',
+        notes: 'Review after 7 days',
+        clinicLocation: 'Noida',
+      },
+      {
+        _id: 'rx-2',
+        _createdDate: created,
+        _updatedDate: created,
+        prescriptionId: 'RX002',
+        patientName: 'Ananya Gupta',
+        doctorName: 'Dr. Priya Upadhyaya',
+        prescriptionDate: '2026-02-22',
+        medicinesAndDosages: 'Belladonna 200C - SOS',
+        notes: '',
+        clinicLocation: 'Delhi',
+      },
+    ],
+    stocktransactionledger: [
+      {
+        _id: 'txn-1',
+        _createdDate: created,
+        _updatedDate: created,
+        transactionType: 'Stock In',
+        medicineSku: 'Arnica Montana',
+        quantityChange: 20,
+        transactionDateTime: '2026-02-18T10:00:00.000Z',
+        referenceIdentifier: 'ARN-30C-02',
+        auditReason: 'Purchase Entry',
+        clinicLocation: 'Delhi',
+      },
+      {
+        _id: 'txn-2',
+        _createdDate: created,
+        _updatedDate: created,
+        transactionType: 'Stock Out',
+        medicineSku: 'Belladonna',
+        quantityChange: -2,
+        transactionDateTime: '2026-02-22T15:30:00.000Z',
+        referenceIdentifier: 'RX002',
+        auditReason: 'Dispensed to Patient',
+        clinicLocation: 'Delhi',
+      },
+    ],
+    homesplashimages: [],
+  };
+}
+
+export function cloneSeedCollections(): SeedCollections {
+  return JSON.parse(JSON.stringify(createSeedCollections())) as SeedCollections;
+}

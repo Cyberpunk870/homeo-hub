@@ -48,6 +48,8 @@ export interface Doctors {
   qualifications?: string;
   /** @wixFieldType number */
   yearsOfExperience?: number;
+  /** App field (recommended): primary clinic assignment */
+  clinicLocation?: string;
 }
 
 
@@ -115,6 +117,8 @@ export interface InventoryBatches {
   quantityAvailable?: number;
   /** @wixFieldType text */
   supplierName?: string;
+  /** App field (recommended): clinic that holds this batch */
+  clinicLocation?: string;
 }
 
 
@@ -140,6 +144,8 @@ export interface Patients {
   gender?: string;
   /** @wixFieldType text */
   medicalHistorySummary?: string;
+  /** App field (recommended): default clinic */
+  clinicLocation?: string;
 }
 
 
@@ -163,6 +169,8 @@ export interface Prescriptions {
   medicinesAndDosages?: string;
   /** @wixFieldType text */
   notes?: string;
+  /** App field (recommended): issuing clinic */
+  clinicLocation?: string;
 }
 
 
@@ -186,6 +194,8 @@ export interface StockTransactionLedger {
   referenceIdentifier?: string;
   /** @wixFieldType text */
   auditReason?: string;
+  /** App field (recommended): clinic where transaction occurred */
+  clinicLocation?: string;
 }
 
 

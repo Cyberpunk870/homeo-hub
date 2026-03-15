@@ -7,6 +7,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useClinicLocation } from '@/hooks/use-clinic-location';
 
 interface LowStockAlert {
   medicine: HomeopathicMedicines;
@@ -24,27 +25,29 @@ export default function AlertsPage() {
   const [lowStockAlerts, setLowStockAlerts] = useState<LowStockAlert[]>([]);
   const [expiryAlerts, setExpiryAlerts] = useState<ExpiryAlert[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const clinicLocation = useClinicLocation();
+  const normalizeKey = (value?: string | null) => (value || '').trim().toLowerCase();
 
   useEffect(() => {
     loadAlerts();
-  }, []);
+  }, [clinicLocation]);
 
   const loadAlerts = async () => {
     setIsLoading(true);
     try {
       const [medicinesResult, batchesResult] = await Promise.all([
-        BaseCrudService.getAll<HomeopathicMedicines>('homeopathicmedicines'),
-        BaseCrudService.getAll<InventoryBatches>('inventorybatches')
+        BaseCrudService.getAllItems<HomeopathicMedicines>('homeopathicmedicines'),
+        BaseCrudService.getAllItems<InventoryBatches>('inventorybatches')
       ]);
 
-      const medicines = medicinesResult.items;
-      const batches = batchesResult.items;
+      const medicines = medicinesResult;
+      const batches = batchesResult.filter((batch) => (batch.clinicLocation || 'Noida') === clinicLocation);
 
       // Calculate low stock alerts
       const lowStock: LowStockAlert[] = [];
       medicines.forEach(medicine => {
         const totalStock = batches
-          .filter(b => b.medicineSKU === medicine.medicineName)
+          .filter(b => normalizeKey(b.medicineSKU) === normalizeKey(medicine.medicineName))
           .reduce((sum, b) => sum + (b.quantityAvailable || 0), 0);
         
         if (totalStock <= (medicine.reorderLevel || 0)) {
@@ -67,7 +70,7 @@ export default function AlertsPage() {
           const expiryDate = new Date(batch.expiryDate);
           if (expiryDate <= sixMonthsFromNow && expiryDate >= today) {
             const daysUntilExpiry = Math.floor((expiryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-            const medicine = medicines.find(m => m.medicineName === batch.medicineSKU);
+            const medicine = medicines.find(m => normalizeKey(m.medicineName) === normalizeKey(batch.medicineSKU));
             expiring.push({
               batch,
               daysUntilExpiry,
@@ -107,7 +110,7 @@ export default function AlertsPage() {
         >
           <h1 className="font-heading text-4xl sm:text-5xl text-foreground mb-4">Stock Alerts</h1>
           <p className="font-paragraph text-base sm:text-lg text-foreground/70">
-            Monitor low stock warnings and medicines approaching expiry
+            Monitor low stock warnings and medicines approaching expiry for {clinicLocation} clinic
           </p>
         </motion.div>
 

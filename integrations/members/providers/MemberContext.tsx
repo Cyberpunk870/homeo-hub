@@ -12,8 +12,8 @@ export interface MemberState {
 // Member actions interface
 export interface MemberActions {
   loadCurrentMember: () => Promise<void>;
-  login: () => void;
-  logout: () => void;
+  login: (credentials: { email: string; password: string }) => Promise<{ success: boolean; error?: string }>;
+  logout: () => Promise<void>;
   clearMember: () => void;
 }
 

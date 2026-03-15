@@ -1,11 +1,14 @@
-import { useState, useEffect } from 'react';
+import { type ChangeEvent, useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { BarChart3, TrendingUp, Package, DollarSign } from 'lucide-react';
 import { BaseCrudService } from '@/integrations';
 import { HomeopathicMedicines, InventoryBatches, StockTransactionLedger } from '@/entities';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useClinicLocation } from '@/hooks/use-clinic-location';
+import { useToast } from '@/hooks/use-toast';
 
 interface StockSummary {
   totalMedicines: number;
@@ -29,24 +32,27 @@ export default function ReportsPage() {
   });
   const [topMedicines, setTopMedicines] = useState<TopMedicine[]>([]);
   const [recentTransactions, setRecentTransactions] = useState<StockTransactionLedger[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const clinicLocation = useClinicLocation();
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const { toast } = useToast();
+  const isHostedBackupEnabled = (import.meta.env.PUBLIC_DATA_BACKEND ?? 'local').toLowerCase() === 'postgres';
+  const normalizeKey = (value?: string | null) => (value || '').trim().toLowerCase();
 
   useEffect(() => {
     loadReports();
-  }, []);
+  }, [clinicLocation]);
 
   const loadReports = async () => {
-    setIsLoading(true);
     try {
       const [medicinesResult, batchesResult, transactionsResult] = await Promise.all([
-        BaseCrudService.getAll<HomeopathicMedicines>('homeopathicmedicines'),
-        BaseCrudService.getAll<InventoryBatches>('inventorybatches'),
-        BaseCrudService.getAll<StockTransactionLedger>('stocktransactionledger')
+        BaseCrudService.getAllItems<HomeopathicMedicines>('homeopathicmedicines'),
+        BaseCrudService.getAllItems<InventoryBatches>('inventorybatches'),
+        BaseCrudService.getAllItems<StockTransactionLedger>('stocktransactionledger')
       ]);
 
-      const medicines = medicinesResult.items;
-      const batches = batchesResult.items;
-      const transactions = transactionsResult.items;
+      const medicines = medicinesResult;
+      const batches = batchesResult.filter((batch) => (batch.clinicLocation || 'Noida') === clinicLocation);
+      const transactions = transactionsResult.filter((tx) => (tx.clinicLocation || 'Noida') === clinicLocation);
 
       // Calculate summary
       let lowStockCount = 0;
@@ -56,7 +62,7 @@ export default function ReportsPage() {
 
       medicines.forEach(medicine => {
         const totalStock = batches
-          .filter(b => b.medicineSKU === medicine.medicineName)
+          .filter(b => normalizeKey(b.medicineSKU) === normalizeKey(medicine.medicineName))
           .reduce((sum, b) => sum + (b.quantityAvailable || 0), 0);
         
         if (totalStock <= (medicine.reorderLevel || 0)) {
@@ -82,7 +88,9 @@ export default function ReportsPage() {
 
       // Calculate top medicines by stock
       const medicineStocks = medicines.map(medicine => {
-        const medicineBatches = batches.filter(b => b.medicineSKU === medicine.medicineName);
+        const medicineBatches = batches.filter(
+          b => normalizeKey(b.medicineSKU) === normalizeKey(medicine.medicineName)
+        );
         const totalStock = medicineBatches.reduce((sum, b) => sum + (b.quantityAvailable || 0), 0);
         return {
           name: medicine.medicineName || '',
@@ -104,8 +112,63 @@ export default function ReportsPage() {
 
     } catch (error) {
       console.error('Error loading reports:', error);
+    }
+  };
+
+  const handleExportBackup = async () => {
+    try {
+      const response = await fetch('/api/data/export', { credentials: 'include' });
+      if (!response.ok) {
+        throw new Error('Failed to export backup');
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = `homeo-hub-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      anchor.click();
+      URL.revokeObjectURL(url);
+      toast({ title: 'Backup Downloaded', description: 'Backup file has been downloaded successfully' });
+    } catch (error) {
+      toast({
+        title: 'Backup Failed',
+        description: error instanceof Error ? error.message : 'Could not export backup',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleImportBackup = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      const payload = JSON.parse(text);
+      const response = await fetch('/api/data/import', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to restore backup');
+      }
+
+      await loadReports();
+      toast({ title: 'Backup Restored', description: 'Backup has been restored into the hosted database' });
+    } catch (error) {
+      toast({
+        title: 'Restore Failed',
+        description: error instanceof Error ? error.message : 'Could not restore backup',
+        variant: 'destructive',
+      });
     } finally {
-      setIsLoading(false);
+      event.target.value = '';
     }
   };
 
@@ -117,12 +180,31 @@ export default function ReportsPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-12"
+          className="mb-12 flex flex-col gap-4 md:flex-row md:items-end md:justify-between"
         >
-          <h1 className="font-heading text-4xl sm:text-5xl text-foreground mb-4">Reports & Analytics</h1>
-          <p className="font-paragraph text-base sm:text-lg text-foreground/70">
-            View inventory analytics, consumption trends, and stock summaries
-          </p>
+          <div>
+            <h1 className="font-heading text-4xl sm:text-5xl text-foreground mb-4">Reports & Analytics</h1>
+            <p className="font-paragraph text-base sm:text-lg text-foreground/70">
+              View inventory analytics, consumption trends, and stock summaries for {clinicLocation} clinic
+            </p>
+          </div>
+          {isHostedBackupEnabled && (
+            <div className="flex flex-wrap gap-3">
+              <Button type="button" variant="outline" onClick={handleExportBackup}>
+                Download Backup
+              </Button>
+              <Button type="button" onClick={() => fileInputRef.current?.click()}>
+                Restore Backup
+              </Button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="application/json"
+                className="hidden"
+                onChange={handleImportBackup}
+              />
+            </div>
+          )}
         </motion.div>
 
         {/* Summary Cards */}

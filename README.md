@@ -1,147 +1,80 @@
-# Wixstro - Wix Astro Template
+# Homeo Hub
 
-A modern, full-featured Wix Astro template built with React, TypeScript, and Tailwind CSS. This template provides a solid foundation for building dynamic, interactive websites with Wix's powerful ecosystem.
+Hosted clinic operations software for a homeopathy practice with two clinics: Delhi and Noida. The app covers inventory, stock movements, alerts, patients, prescriptions, reports, doctor-only authentication, and JSON backup/restore.
 
-## 🚀 Features
+## Product status
 
-- **Astro Framework** - Modern static site generator with server-side rendering
-- **React Integration** - Full React support with JSX components
-- **TypeScript** - Type-safe development experience
-- **Tailwind CSS** - Utility-first CSS framework with custom components
-- **Wix Integration** - Seamless integration with Wix services and APIs
-- **Modern UI Components** - Radix UI components with custom styling
-- **Authentication** - Built-in member authentication and protected routes
-- **CMS Integration** - Content management system integration
-- **Client-side Routing** - React Router for seamless navigation
-- **Responsive Design** - Mobile-first responsive design
-- **Testing** - Vitest testing framework setup
-- **Development Tools** - ESLint, TypeScript checking, and more
+- Shared PostgreSQL backend for hosted use
+- Doctor-only session authentication
+- Clinic-aware patient, prescription, stock, alert, and reporting flows
+- Backup export and restore from the reports screen
+- Production Node build via Astro standalone server
 
-## 🛠️ Tech Stack
+## Local development
 
-- **Framework**: Astro 5.8.0
-- **Frontend**: React 18.3.0
-- **Styling**: Tailwind CSS 3.4.14
-- **Language**: TypeScript 5.8.3
-- **UI Components**: Radix UI
-- **State Management**: Zustand
-- **Forms**: React Hook Form with Zod validation
-- **Testing**: Vitest
-- **Build Tool**: Vite
-- **Deployment**: Cloudflare
-
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- Node.js (version 18 or higher)
-- npm or yarn package manager
-- Wix account and site
-
-### Installation
-
-1. **Install dependencies**:
+1. Install dependencies:
    ```bash
    npm install
    ```
-
-2. **Set up environment variables**:
+2. Create environment file:
    ```bash
-   npm run env
+   cp .env.example .env
    ```
-
-3. **Start development server**:
+3. Start the app:
    ```bash
    npm run dev
    ```
 
-The development server will start and you can view your site at `http://localhost:4321`.
-
-## 📁 Project Structure
-
-```
-main/
-├── src/
-│   ├── components/          # React components
-│   │   ├── ui/             # Reusable UI components
-│   │   ├── Head.tsx        # Page head component
-│   │   └── Router.tsx      # Routing component
-│   ├── hooks/              # Custom React hooks
-│   ├── lib/                # Utility functions
-│   ├── pages/              # Astro pages
-│   └── styles/             # Global styles
-├── integrations/           # Wix integrations
-│   ├── cms/               # CMS integration
-│   └── members/           # Member authentication
-├── public/                # Static assets
-└── eslint-rules/          # Custom ESLint rules
-```
-
-## 🎨 UI Components
-
-This template includes a comprehensive set of UI components built with Radix UI and styled with Tailwind CSS:
-
-- **Layout**: Accordion, Collapsible, Tabs, Sheet
-- **Forms**: Input, Select, Checkbox, Radio Group, Switch
-- **Navigation**: Navigation Menu, Menubar, Breadcrumb
-- **Feedback**: Alert, Toast, Progress, Skeleton
-- **Overlays**: Dialog, Popover, Tooltip, Hover Card
-- **Data Display**: Table, Card, Badge, Avatar
-- **Interactive**: Button, Toggle, Slider, Command
-
-## 🔧 Available Scripts
-
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run release` - Release to Wix
-- `npm run env` - Pull environment variables
-- `npm run check` - Type check with Astro
-- `npm run test:run` - Run tests
-- `npm install` - Install dependencies
-
-## 🧪 Testing
-
-The project includes Vitest for testing:
+## Required environment variables
 
 ```bash
-npm run test:run
+PUBLIC_DATA_BACKEND=postgres
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/homeo_hub
+DOCTOR_EMAIL=doctor@example.com
+DOCTOR_PASSWORD=change-this-password
+DOCTOR_NAME=Dr. Upadhyaya
+SESSION_SECRET=replace-with-a-long-random-secret
+PUBLIC_APP_NAME=Homeo Hub
 ```
 
-## 📱 Responsive Design
+`PUBLIC_DATA_BACKEND=local` is still available for quick demo mode, but hosted deployment should use `postgres`.
 
-The template is built with a mobile-first approach and includes:
+## Scripts
 
-- Responsive breakpoints
-- Touch-friendly interactions
-- Optimized images
-- Flexible layouts
+- `npm run dev` starts the development server
+- `npm run check` runs Astro type checks
+- `npm run test:run` runs the Vitest suite
+- `npm run build` creates the production bundle
+- `npm run start` runs the built Node server from `dist/`
 
-## 🚀 Deployment
+## Hosting flow
 
-The template is configured for deployment on Cloudflare:
+1. Provision PostgreSQL
+2. Set the environment variables above
+3. Build the app:
+   ```bash
+   npm run build
+   ```
+4. Start the server:
+   ```bash
+   npm run start
+   ```
 
-```bash
-npm run build
-```
+The database schema is created automatically on first boot and seeded with starter clinic data if the tables are empty.
 
-## 🤝 Contributing
+For Railway, the repo now includes [railway.json](/home/kg110/homeo-hub-1/railway.json) and a health endpoint at `/api/health`.
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests and linting
-5. Submit a pull request
+## Backups
 
-## 🆘 Support
+- Export: `GET /api/data/export`
+- Import: `POST /api/data/import`
+- Both routes require a valid doctor session
+- The same actions are available from the reports screen when running in Postgres mode
 
-For support and questions:
+## Verification
 
-- Check the [Wix Developer Documentation](https://dev.wix.com/)
-- Review the [Astro Documentation](https://docs.astro.build/)
+The current repo passes:
 
-
----
-
-Built with ❤️ using Wix Vibe, Astro, and modern web technologies.
+- `npm run check`
+- `npm run test:run`
+- `npm run build`

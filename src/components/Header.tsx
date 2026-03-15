@@ -1,19 +1,26 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, MapPin } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Image } from '@/components/ui/image';
+import { useMember } from '@/integrations';
+import { getStoredClinicLocation, setStoredClinicLocation } from '@/lib/clinic';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<'noida' | 'delhi'>('noida');
   const location = useLocation();
+  const { member, actions } = useMember();
+
+  useEffect(() => {
+    const stored = getStoredClinicLocation();
+    setSelectedLocation(stored.toLowerCase() as 'noida' | 'delhi');
+  }, []);
 
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Inventory', path: '/inventory' },
     { name: 'Stock Management', path: '/stock-management' },
     { name: 'Alerts', path: '/alerts' },
+    { name: 'Patients', path: '/patients' },
     { name: 'Prescriptions', path: '/prescriptions' },
     { name: 'Reports', path: '/reports' },
     { name: 'About', path: '/about' }
@@ -22,6 +29,10 @@ export default function Header() {
   const isActive = (path: string) => location.pathname === path;
 
   const isHomePage = location.pathname === '/';
+  const handleLocationChange = (value: 'noida' | 'delhi') => {
+    setSelectedLocation(value);
+    setStoredClinicLocation(value);
+  };
 
   return (
     <header className="w-full bg-primary border-b border-secondary/30 sticky top-0 z-50">
@@ -62,13 +73,22 @@ export default function Header() {
                 <MapPin className="w-4 h-4 text-primary" />
                 <select
                   value={selectedLocation}
-                  onChange={(e) => setSelectedLocation(e.target.value as 'noida' | 'delhi')}
+                  onChange={(e) => handleLocationChange(e.target.value as 'noida' | 'delhi')}
                   className="font-paragraph text-sm bg-transparent border-none outline-none cursor-pointer text-gray-900"
                 >
                   <option value="noida">Noida</option>
                   <option value="delhi">Delhi</option>
                 </select>
               </div>
+            )}
+            {!isHomePage && member && (
+              <button
+                type="button"
+                onClick={() => void actions.logout()}
+                className="hidden md:inline-flex items-center rounded-lg border border-secondary/30 px-4 py-2 text-sm font-paragraph text-foreground/80 transition-colors hover:text-accent-gold"
+              >
+                Sign Out
+              </button>
             )}
 
             {/* Mobile Menu Button */}
@@ -106,13 +126,22 @@ export default function Header() {
                 <MapPin className="w-4 h-4 text-primary" />
                 <select
                   value={selectedLocation}
-                  onChange={(e) => setSelectedLocation(e.target.value as 'noida' | 'delhi')}
+                  onChange={(e) => handleLocationChange(e.target.value as 'noida' | 'delhi')}
                   className="font-paragraph text-sm bg-transparent border-none outline-none cursor-pointer text-gray-900 flex-1"
                 >
                   <option value="noida">Noida Clinic</option>
                   <option value="delhi">Delhi Clinic</option>
                 </select>
               </div>
+            )}
+            {!isHomePage && member && (
+              <button
+                type="button"
+                onClick={() => void actions.logout()}
+                className="block w-full rounded-lg border border-secondary/30 px-4 py-3 text-left font-paragraph text-base text-foreground/80 transition-colors hover:text-accent-gold"
+              >
+                Sign Out
+              </button>
             )}
           </nav>
         )}

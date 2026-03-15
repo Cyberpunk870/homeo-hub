@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useRef, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, useScroll, useTransform, AnimatePresence, useInView } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { Image } from '@/components/ui/image';
-import { Button } from '@/components/ui/button';
 import { 
   Package, 
   FileText, 
@@ -10,8 +9,7 @@ import {
   BarChart3, 
   Building2, 
   Pill, 
-  Search, 
-  Clock, 
+  Users,
   MapPin, 
   Phone, 
   ArrowRight, 
@@ -23,29 +21,6 @@ import Footer from '@/components/Footer';
 
 // --- Canonical Data Sources ---
 // Preserving original data structures while incorporating user assets.
-
-const splashImages = [
-  {
-    // User provided asset: Logo/Branding
-    url: 'https://static.wixstatic.com/media/3fbaca_e0ed6d313c284936a515d045b97f08d4~mv2.jpeg',
-    alt: 'Dr. Upadhyaya Homeopathy Logo'
-  },
-  {
-    // User provided asset: Doctors Profile
-    url: 'https://static.wixstatic.com/media/3fbaca_e2b4cf1af34e4fb992258cbdf513ae85~mv2.jpeg',
-    alt: 'Our Doctors'
-  },
-  {
-    // User provided asset: Clinic Info
-    url: 'https://static.wixstatic.com/media/3fbaca_55af41eb68914b3a85b967748f59444a~mv2.jpeg',
-    alt: 'Clinic Information and Specialties'
-  },
-  {
-    // Fallback/Additional image to meet the "4 images" request pattern
-    url: 'https://static.wixstatic.com/media/3fbaca_f63b2beac20040cfbb1a0e43c1848fbf~mv2.png?originWidth=448&originHeight=448',
-    alt: 'Homeopathic Medicine Vials'
-  }
-];
 
 const quickActions = [
   {
@@ -71,6 +46,14 @@ const quickActions = [
     link: '/alerts',
     color: 'destructive',
     stat: '3 Critical'
+  },
+  {
+    icon: Users,
+    title: 'Patients',
+    description: 'Register and manage patient records by clinic.',
+    link: '/patients',
+    color: 'primary',
+    stat: 'OPD Registry'
   },
   {
     icon: FileText,
@@ -121,23 +104,7 @@ const clinicInfo = {
 
 // --- Components ---
 
-const FadeIn = ({ children, delay = 0, className = "" }: { children: React.ReactNode, delay?: number, className?: string }) => {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-50px" });
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 20 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-      transition={{ duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
-};
-
-const ParallaxSection = ({ children, className = "" }: { children: React.ReactNode, className?: string }) => {
+const ParallaxSection = ({ children, className = "" }: { children: ReactNode, className?: string }) => {
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "15%"]);

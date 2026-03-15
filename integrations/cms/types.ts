@@ -1,4 +1,11 @@
-import { items } from "@wix/data";
+export interface WixDataItem {
+  _id: string;
+  _createdDate?: Date | string;
+  _updatedDate?: Date | string;
+  [key: string]: unknown;
+}
 
-export type WixDataItem = items.WixDataItem;
-export type WixDataQueryResult = items.WixDataResult;
+export interface WixDataQueryResult<T = WixDataItem> {
+  items: T[];
+  totalCount?: number;
+}

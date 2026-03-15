@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Filter, Package, AlertCircle } from 'lucide-react';
+import { Search, Package, AlertCircle } from 'lucide-react';
 import { BaseCrudService } from '@/integrations';
 import { HomeopathicMedicines, InventoryBatches } from '@/entities';
 import Header from '@/components/Header';
@@ -21,6 +21,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { useClinicLocation } from '@/hooks/use-clinic-location';
 
 export default function InventoryPage() {
   const [medicines, setMedicines] = useState<HomeopathicMedicines[]>([]);
@@ -31,6 +32,8 @@ export default function InventoryPage() {
   const [filterForm, setFilterForm] = useState<string>('all');
   const [selectedMedicine, setSelectedMedicine] = useState<HomeopathicMedicines | null>(null);
   const [selectedBatches, setSelectedBatches] = useState<InventoryBatches[]>([]);
+  const clinicLocation = useClinicLocation();
+  const normalizeKey = (value?: string | null) => (value || '').trim().toLowerCase();
 
   useEffect(() => {
     loadData();
@@ -40,11 +43,11 @@ export default function InventoryPage() {
     setIsLoading(true);
     try {
       const [medicinesResult, batchesResult] = await Promise.all([
-        BaseCrudService.getAll<HomeopathicMedicines>('homeopathicmedicines'),
-        BaseCrudService.getAll<InventoryBatches>('inventorybatches')
+        BaseCrudService.getAllItems<HomeopathicMedicines>('homeopathicmedicines'),
+        BaseCrudService.getAllItems<InventoryBatches>('inventorybatches')
       ]);
-      setMedicines(medicinesResult.items);
-      setBatches(batchesResult.items);
+      setMedicines(medicinesResult);
+      setBatches(batchesResult);
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
@@ -52,9 +55,13 @@ export default function InventoryPage() {
     }
   };
 
-  const handleViewDetails = async (medicine: HomeopathicMedicines) => {
+  const handleViewDetails = (medicine: HomeopathicMedicines) => {
     setSelectedMedicine(medicine);
-    const medicineBatches = batches.filter(b => b.medicineSKU === medicine.medicineName);
+    const medicineBatches = batches.filter(
+      (b) =>
+        normalizeKey(b.medicineSKU) === normalizeKey(medicine.medicineName) &&
+        (b.clinicLocation || 'Noida') === clinicLocation
+    );
     setSelectedBatches(medicineBatches);
   };
 
@@ -71,7 +78,8 @@ export default function InventoryPage() {
 
   const getTotalStock = (medicineName: string) => {
     return batches
-      .filter(b => b.medicineSKU === medicineName)
+      .filter((b) => normalizeKey(b.medicineSKU) === normalizeKey(medicineName))
+      .filter((b) => (b.clinicLocation || 'Noida') === clinicLocation)
       .reduce((sum, b) => sum + (b.quantityAvailable || 0), 0);
   };
 
@@ -93,7 +101,7 @@ export default function InventoryPage() {
         >
           <h1 className="font-heading text-4xl sm:text-5xl text-foreground mb-4">Medicine Inventory</h1>
           <p className="font-paragraph text-base sm:text-lg text-foreground/80">
-            Quick view of all medicines in stock
+            Quick view of all medicines in stock for {clinicLocation} clinic
           </p>
         </motion.div>
 

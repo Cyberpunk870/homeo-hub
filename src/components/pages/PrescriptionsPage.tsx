@@ -24,6 +24,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
+import { CLINIC_LOCATIONS, getStoredClinicLocation } from '@/lib/clinic';
+import { useClinicLocation } from '@/hooks/use-clinic-location';
+import { normalizeText, validatePrescriptionDraft } from '@/lib/validators';
 
 export default function PrescriptionsPage() {
   const [prescriptions, setPrescriptions] = useState<Prescriptions[]>([]);
@@ -34,15 +37,26 @@ export default function PrescriptionsPage() {
   const [selectedPrescription, setSelectedPrescription] = useState<Prescriptions | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const { toast } = useToast();
+  const clinicLocation = useClinicLocation();
 
   const [newPrescription, setNewPrescription] = useState({
     prescriptionId: '',
+    clinicLocation: 'Noida',
     patientName: '',
     doctorName: '',
     prescriptionDate: '',
     medicinesAndDosages: '',
     notes: ''
   });
+
+  useEffect(() => {
+    const activeClinic = getStoredClinicLocation();
+    setNewPrescription((prev) => ({ ...prev, clinicLocation: activeClinic }));
+  }, []);
+
+  useEffect(() => {
+    setNewPrescription((prev) => ({ ...prev, clinicLocation }));
+  }, [clinicLocation]);
 
   useEffect(() => {
     loadData();
@@ -52,17 +66,20 @@ export default function PrescriptionsPage() {
     setIsLoading(true);
     try {
       const [prescriptionsResult, patientsResult, doctorsResult] = await Promise.all([
-        BaseCrudService.getAll<Prescriptions>('prescriptions'),
-        BaseCrudService.getAll<Patients>('patients'),
-        BaseCrudService.getAll<Doctors>('doctors')
+        BaseCrudService.getAllItems<Prescriptions>('prescriptions'),
+        BaseCrudService.getAllItems<Patients>('patients'),
+        BaseCrudService.getAllItems<Doctors>('doctors')
       ]);
-      setPrescriptions(prescriptionsResult.items);
-      setPatients(patientsResult.items);
+      setPrescriptions(prescriptionsResult);
+      setPatients(patientsResult);
       // Filter doctors to only include Dr. R.C. Upadhayay and Dr. Priya Upadhyay
-      const filteredDoctors = doctorsResult.items.filter(doc => 
-        doc.doctorName === 'Dr. R.C. Upadhayay' || doc.doctorName === 'Dr. Priya Upadhyay'
+      const filteredDoctors = doctorsResult.filter(doc => {
+        const name = (doc.doctorName || '').toLowerCase();
+        return name.includes('upadhya') || name.includes('upadhyay');
+      });
+      setDoctors(
+        filteredDoctors.length > 0 ? filteredDoctors : doctorsResult
       );
-      setDoctors(filteredDoctors);
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
@@ -72,11 +89,26 @@ export default function PrescriptionsPage() {
 
   const handleAddPrescription = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
+    const validationError = validatePrescriptionDraft(newPrescription, prescriptions);
+    if (validationError) {
+      toast({
+        title: 'Prescription Not Saved',
+        description: validationError,
+        variant: 'destructive'
+      });
+      return;
+    }
+
     try {
       await BaseCrudService.create<Prescriptions>('prescriptions', {
         _id: crypto.randomUUID(),
-        ...newPrescription
+        ...newPrescription,
+        prescriptionId: normalizeText(newPrescription.prescriptionId),
+        patientName: normalizeText(newPrescription.patientName),
+        doctorName: normalizeText(newPrescription.doctorName),
+        medicinesAndDosages: normalizeText(newPrescription.medicinesAndDosages),
+        notes: normalizeText(newPrescription.notes),
       });
 
       toast({
@@ -87,6 +119,7 @@ export default function PrescriptionsPage() {
       setIsAddDialogOpen(false);
       setNewPrescription({
         prescriptionId: '',
+        clinicLocation: newPrescription.clinicLocation,
         patientName: '',
         doctorName: '',
         prescriptionDate: '',
@@ -104,10 +137,14 @@ export default function PrescriptionsPage() {
   };
 
   const filteredPrescriptions = prescriptions.filter(prescription => {
+    const matchesClinic = (prescription.clinicLocation || 'Noida') === clinicLocation;
     const query = searchQuery.toLowerCase();
-    return prescription.patientName?.toLowerCase().includes(query) ||
+    return matchesClinic && (
+           prescription.patientName?.toLowerCase().includes(query) ||
            prescription.doctorName?.toLowerCase().includes(query) ||
-           prescription.prescriptionId?.toLowerCase().includes(query);
+           prescription.prescriptionId?.toLowerCase().includes(query) ||
+           prescription.clinicLocation?.toLowerCase().includes(query)
+    );
   });
 
   return (
@@ -123,7 +160,7 @@ export default function PrescriptionsPage() {
           <div>
             <h1 className="font-heading text-5xl text-foreground mb-4">Prescriptions</h1>
             <p className="font-paragraph text-lg text-foreground/70">
-              Manage patient prescriptions and medical records
+              Manage patient prescriptions and medical records for {clinicLocation} clinic
             </p>
           </div>
           <Button
@@ -179,7 +216,7 @@ export default function PrescriptionsPage() {
                             {prescription.prescriptionId}
                           </Badge>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-paragraph text-sm">
+                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 font-paragraph text-sm">
                           <div>
                             <p className="text-gray-600 font-medium">Doctor</p>
                             <p className="font-medium text-gray-900">{prescription.doctorName}</p>
@@ -189,6 +226,10 @@ export default function PrescriptionsPage() {
                             <p className="font-medium text-gray-900">
                               {prescription.prescriptionDate ? new Date(prescription.prescriptionDate).toLocaleDateString() : 'N/A'}
                             </p>
+                          </div>
+                          <div>
+                            <p className="text-gray-600 font-medium">Clinic</p>
+                            <p className="font-medium text-gray-900">{prescription.clinicLocation || 'Noida'}</p>
                           </div>
                           <div>
                             <p className="text-gray-600 font-medium">Medicines</p>
@@ -235,6 +276,10 @@ export default function PrescriptionsPage() {
                 <div>
                   <p className="text-gray-600 mb-1 font-medium">Patient Name</p>
                   <p className="font-medium text-gray-900">{selectedPrescription.patientName}</p>
+                </div>
+                <div>
+                  <p className="text-gray-600 mb-1 font-medium">Clinic</p>
+                  <p className="font-medium text-gray-900">{selectedPrescription.clinicLocation || 'Noida'}</p>
                 </div>
                 <div>
                   <p className="text-gray-600 mb-1 font-medium">Doctor Name</p>
@@ -297,6 +342,24 @@ export default function PrescriptionsPage() {
             </div>
 
             <div className="space-y-2">
+              <Label htmlFor="clinic" className="font-paragraph">Clinic</Label>
+              <Select
+                value={newPrescription.clinicLocation}
+                onValueChange={(value) => setNewPrescription({ ...newPrescription, clinicLocation: value })}
+                required
+              >
+                <SelectTrigger id="clinic">
+                  <SelectValue placeholder="Select clinic" />
+                </SelectTrigger>
+                <SelectContent>
+                  {CLINIC_LOCATIONS.map((clinic) => (
+                    <SelectItem key={clinic} value={clinic}>{clinic}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="patient" className="font-paragraph">Patient</Label>
               <Select
                 value={newPrescription.patientName}
@@ -307,8 +370,11 @@ export default function PrescriptionsPage() {
                   <SelectValue placeholder="Select patient" />
                 </SelectTrigger>
                 <SelectContent>
-                  {patients.map(patient => (
-                    <SelectItem key={patient._id} value={patient.patientName || ''}>
+                  {patients
+                    .filter((patient) => !!patient.patientName)
+                    .filter((patient) => (patient.clinicLocation || 'Noida') === newPrescription.clinicLocation)
+                    .map(patient => (
+                    <SelectItem key={patient._id} value={patient.patientName!}>
                       {patient.patientName}
                     </SelectItem>
                   ))}
@@ -327,8 +393,11 @@ export default function PrescriptionsPage() {
                   <SelectValue placeholder="Select doctor" />
                 </SelectTrigger>
                 <SelectContent>
-                  {doctors.map(doctor => (
-                    <SelectItem key={doctor._id} value={doctor.doctorName || ''}>
+                  {doctors
+                    .filter((doctor) => !!doctor.doctorName)
+                    .filter((doctor) => !doctor.clinicLocation || doctor.clinicLocation === newPrescription.clinicLocation)
+                    .map(doctor => (
+                    <SelectItem key={doctor._id} value={doctor.doctorName!}>
                       {doctor.doctorName}
                     </SelectItem>
                   ))}

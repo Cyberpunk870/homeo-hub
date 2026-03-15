@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Minus, Package } from 'lucide-react';
+import { Plus, Minus } from 'lucide-react';
 import { BaseCrudService } from '@/integrations';
 import { HomeopathicMedicines, InventoryBatches, StockTransactionLedger, Suppliers } from '@/entities';
 import Header from '@/components/Header';
@@ -17,15 +17,19 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
+import { CLINIC_LOCATIONS, getStoredClinicLocation } from '@/lib/clinic';
+import { useClinicLocation } from '@/hooks/use-clinic-location';
+import { normalizeText, validateStockDraft } from '@/lib/validators';
 
 export default function StockManagementPage() {
   const [medicines, setMedicines] = useState<HomeopathicMedicines[]>([]);
   const [suppliers, setSuppliers] = useState<Suppliers[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+  const clinicLocation = useClinicLocation();
 
   // Stock In Form State
   const [stockInForm, setStockInForm] = useState({
+    clinicLocation: 'Noida',
     medicineSKU: '',
     batchNumber: '',
     expiryDate: '',
@@ -35,6 +39,7 @@ export default function StockManagementPage() {
 
   // Stock Out Form State
   const [stockOutForm, setStockOutForm] = useState({
+    clinicLocation: 'Noida',
     medicineSKU: '',
     batchNumber: '',
     quantity: '',
@@ -42,48 +47,86 @@ export default function StockManagementPage() {
   });
 
   useEffect(() => {
+    const activeClinic = getStoredClinicLocation();
+    setStockInForm((prev) => ({ ...prev, clinicLocation: activeClinic }));
+    setStockOutForm((prev) => ({ ...prev, clinicLocation: activeClinic }));
     loadData();
   }, []);
 
+  useEffect(() => {
+    setStockInForm((prev) => ({ ...prev, clinicLocation }));
+    setStockOutForm((prev) => ({ ...prev, clinicLocation }));
+  }, [clinicLocation]);
+
   const loadData = async () => {
-    setIsLoading(true);
     try {
       const [medicinesResult, suppliersResult] = await Promise.all([
-        BaseCrudService.getAll<HomeopathicMedicines>('homeopathicmedicines'),
-        BaseCrudService.getAll<Suppliers>('suppliers')
+        BaseCrudService.getAllItems<HomeopathicMedicines>('homeopathicmedicines'),
+        BaseCrudService.getAllItems<Suppliers>('suppliers')
       ]);
-      setMedicines(medicinesResult.items);
-      setSuppliers(suppliersResult.items);
+      setMedicines(medicinesResult);
+      setSuppliers(suppliersResult);
     } catch (error) {
       console.error('Error loading data:', error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const handleStockIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    try {
-      // Create inventory batch
-      await BaseCrudService.create<InventoryBatches>('inventorybatches', {
-        _id: crypto.randomUUID(),
-        medicineSKU: stockInForm.medicineSKU,
-        batchNumber: stockInForm.batchNumber,
-        expiryDate: stockInForm.expiryDate,
-        quantityAvailable: Number(stockInForm.quantity),
-        supplierName: stockInForm.supplierName
+
+    const validationError = validateStockDraft(stockInForm, 'in');
+    if (validationError) {
+      toast({
+        title: 'Stock Entry Not Saved',
+        description: validationError,
+        variant: 'destructive'
       });
+      return;
+    }
+
+    const quantity = Number(stockInForm.quantity);
+    const batchNumber = normalizeText(stockInForm.batchNumber);
+
+    try {
+      // If same batch already exists for the same clinic, increment instead of creating duplicates.
+      const batches = await BaseCrudService.getAllItems<InventoryBatches>('inventorybatches');
+      const existingBatch = batches.find(
+        (b) =>
+          b.medicineSKU === stockInForm.medicineSKU &&
+          b.batchNumber === batchNumber &&
+          (b.clinicLocation || 'Noida') === stockInForm.clinicLocation
+      );
+
+      if (existingBatch) {
+        await BaseCrudService.update<InventoryBatches>('inventorybatches', {
+          _id: existingBatch._id,
+          expiryDate: stockInForm.expiryDate,
+          supplierName: stockInForm.supplierName,
+          clinicLocation: stockInForm.clinicLocation,
+          quantityAvailable: (existingBatch.quantityAvailable || 0) + quantity
+        });
+      } else {
+        await BaseCrudService.create<InventoryBatches>('inventorybatches', {
+          _id: crypto.randomUUID(),
+          medicineSKU: normalizeText(stockInForm.medicineSKU),
+          batchNumber,
+          expiryDate: stockInForm.expiryDate,
+          quantityAvailable: quantity,
+          supplierName: normalizeText(stockInForm.supplierName),
+          clinicLocation: stockInForm.clinicLocation
+        });
+      }
 
       // Create transaction ledger entry
       await BaseCrudService.create<StockTransactionLedger>('stocktransactionledger', {
         _id: crypto.randomUUID(),
         transactionType: 'Stock In',
-        medicineSku: stockInForm.medicineSKU,
-        quantityChange: Number(stockInForm.quantity),
+        medicineSku: normalizeText(stockInForm.medicineSKU),
+        quantityChange: quantity,
         transactionDateTime: new Date().toISOString(),
-        referenceIdentifier: stockInForm.batchNumber,
-        auditReason: 'Purchase Entry'
+        referenceIdentifier: batchNumber,
+        auditReason: 'Purchase Entry',
+        clinicLocation: stockInForm.clinicLocation
       });
 
       toast({
@@ -92,12 +135,14 @@ export default function StockManagementPage() {
       });
 
       setStockInForm({
+        clinicLocation: stockInForm.clinicLocation,
         medicineSKU: '',
         batchNumber: '',
         expiryDate: '',
         quantity: '',
         supplierName: ''
       });
+      await loadData();
     } catch (error) {
       toast({
         title: 'Error',
@@ -109,12 +154,28 @@ export default function StockManagementPage() {
 
   const handleStockOut = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
+    const validationError = validateStockDraft(stockOutForm, 'out');
+    if (validationError) {
+      toast({
+        title: 'Stock Out Not Saved',
+        description: validationError,
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    const quantity = Number(stockOutForm.quantity);
+    const batchNumber = normalizeText(stockOutForm.batchNumber);
+
     try {
       // Get batch to update
-      const batchesResult = await BaseCrudService.getAll<InventoryBatches>('inventorybatches');
-      const batch = batchesResult.items.find(
-        b => b.medicineSKU === stockOutForm.medicineSKU && b.batchNumber === stockOutForm.batchNumber
+      const batches = await BaseCrudService.getAllItems<InventoryBatches>('inventorybatches');
+      const batch = batches.find(
+        b =>
+          b.medicineSKU === stockOutForm.medicineSKU &&
+          b.batchNumber === batchNumber &&
+          (b.clinicLocation || 'Noida') === stockOutForm.clinicLocation
       );
 
       if (!batch) {
@@ -126,7 +187,7 @@ export default function StockManagementPage() {
         return;
       }
 
-      const newQuantity = (batch.quantityAvailable || 0) - Number(stockOutForm.quantity);
+      const newQuantity = (batch.quantityAvailable || 0) - quantity;
       
       if (newQuantity < 0) {
         toast({
@@ -147,11 +208,12 @@ export default function StockManagementPage() {
       await BaseCrudService.create<StockTransactionLedger>('stocktransactionledger', {
         _id: crypto.randomUUID(),
         transactionType: 'Stock Out',
-        medicineSku: stockOutForm.medicineSKU,
-        quantityChange: -Number(stockOutForm.quantity),
+        medicineSku: normalizeText(stockOutForm.medicineSKU),
+        quantityChange: -quantity,
         transactionDateTime: new Date().toISOString(),
-        referenceIdentifier: stockOutForm.referenceId,
-        auditReason: 'Dispensed to Patient'
+        referenceIdentifier: normalizeText(stockOutForm.referenceId),
+        auditReason: 'Dispensed to Patient',
+        clinicLocation: stockOutForm.clinicLocation
       });
 
       toast({
@@ -160,11 +222,13 @@ export default function StockManagementPage() {
       });
 
       setStockOutForm({
+        clinicLocation: stockOutForm.clinicLocation,
         medicineSKU: '',
         batchNumber: '',
         quantity: '',
         referenceId: ''
       });
+      await loadData();
     } catch (error) {
       toast({
         title: 'Error',
@@ -186,7 +250,7 @@ export default function StockManagementPage() {
         >
           <h1 className="font-heading text-4xl sm:text-5xl text-foreground mb-4">Stock Management</h1>
           <p className="font-paragraph text-base sm:text-lg text-foreground/70">
-            Add stock or dispense medicines with just a few clicks
+            Add stock or dispense medicines for {clinicLocation} clinic
           </p>
         </motion.div>
 
@@ -223,6 +287,24 @@ export default function StockManagementPage() {
 
               <form onSubmit={handleStockIn} className="space-y-4">
                 <div className="space-y-2">
+                  <Label htmlFor="clinic-in" className="font-paragraph text-gray-900">Clinic</Label>
+                  <Select
+                    value={stockInForm.clinicLocation}
+                    onValueChange={(value) => setStockInForm({ ...stockInForm, clinicLocation: value })}
+                    required
+                  >
+                    <SelectTrigger id="clinic-in" className="text-gray-900">
+                      <SelectValue placeholder="Select clinic" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CLINIC_LOCATIONS.map((clinic) => (
+                        <SelectItem key={clinic} value={clinic}>{clinic}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
                   <Label htmlFor="medicine-in" className="font-paragraph text-gray-900">Medicine</Label>
                   <Select
                     value={stockInForm.medicineSKU}
@@ -233,8 +315,8 @@ export default function StockManagementPage() {
                       <SelectValue placeholder="Select medicine" />
                     </SelectTrigger>
                     <SelectContent>
-                      {medicines.map(medicine => (
-                        <SelectItem key={medicine._id} value={medicine.medicineName || ''}>
+                      {medicines.filter((medicine) => !!medicine.medicineName).map(medicine => (
+                        <SelectItem key={medicine._id} value={medicine.medicineName!}>
                           {medicine.medicineName} - {medicine.potency}
                         </SelectItem>
                       ))}
@@ -293,8 +375,8 @@ export default function StockManagementPage() {
                       <SelectValue placeholder="Select supplier" />
                     </SelectTrigger>
                     <SelectContent>
-                      {suppliers.map(supplier => (
-                        <SelectItem key={supplier._id} value={supplier.supplierName || ''}>
+                      {suppliers.filter((supplier) => !!supplier.supplierName).map(supplier => (
+                        <SelectItem key={supplier._id} value={supplier.supplierName!}>
                           {supplier.supplierName}
                         </SelectItem>
                       ))}
@@ -330,6 +412,24 @@ export default function StockManagementPage() {
 
               <form onSubmit={handleStockOut} className="space-y-4">
                 <div className="space-y-2">
+                  <Label htmlFor="clinic-out" className="font-paragraph text-gray-900">Clinic</Label>
+                  <Select
+                    value={stockOutForm.clinicLocation}
+                    onValueChange={(value) => setStockOutForm({ ...stockOutForm, clinicLocation: value })}
+                    required
+                  >
+                    <SelectTrigger id="clinic-out" className="text-gray-900">
+                      <SelectValue placeholder="Select clinic" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CLINIC_LOCATIONS.map((clinic) => (
+                        <SelectItem key={clinic} value={clinic}>{clinic}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
                   <Label htmlFor="medicine-out" className="font-paragraph text-gray-900">Medicine</Label>
                   <Select
                     value={stockOutForm.medicineSKU}
@@ -340,8 +440,8 @@ export default function StockManagementPage() {
                       <SelectValue placeholder="Select medicine" />
                     </SelectTrigger>
                     <SelectContent>
-                      {medicines.map(medicine => (
-                        <SelectItem key={medicine._id} value={medicine.medicineName || ''}>
+                      {medicines.filter((medicine) => !!medicine.medicineName).map(medicine => (
+                        <SelectItem key={medicine._id} value={medicine.medicineName!}>
                           {medicine.medicineName} - {medicine.potency}
                         </SelectItem>
                       ))}

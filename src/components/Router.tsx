@@ -1,4 +1,5 @@
 import { MemberProvider } from '@/integrations';
+import { MemberProtectedRoute } from '@/components/ui/member-protected-route';
 import { createBrowserRouter, RouterProvider, Navigate, Outlet } from 'react-router-dom';
 import { ScrollToTop } from '@/lib/scroll-to-top';
 import ErrorPage from '@/integrations/errorHandlers/ErrorPage';
@@ -7,16 +8,17 @@ import InventoryPage from '@/components/pages/InventoryPage';
 import StockManagementPage from '@/components/pages/StockManagementPage';
 import AlertsPage from '@/components/pages/AlertsPage';
 import PrescriptionsPage from '@/components/pages/PrescriptionsPage';
+import PatientsPage from '@/components/pages/PatientsPage';
 import ReportsPage from '@/components/pages/ReportsPage';
 import AboutPage from '@/components/pages/AboutPage';
 
 // Layout component that includes ScrollToTop
 function Layout() {
   return (
-    <>
+    <MemberProtectedRoute>
       <ScrollToTop />
       <Outlet />
-    </>
+    </MemberProtectedRoute>
   );
 }
 
@@ -52,6 +54,13 @@ const router = createBrowserRouter([
         element: <AlertsPage />,
         routeMetadata: {
           pageIdentifier: 'alerts',
+        },
+      },
+      {
+        path: "patients",
+        element: <PatientsPage />,
+        routeMetadata: {
+          pageIdentifier: 'patients',
         },
       },
       {

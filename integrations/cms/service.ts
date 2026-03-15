@@ -1,290 +1,308 @@
-import { items } from "@wix/data";
-import { WixDataItem } from ".";
+import { WixDataItem } from '.';
+import { cloneSeedCollections } from '@/lib/seed-data';
 
-/**
- * Pagination options for querying collections
- */
 export interface PaginationOptions {
-  /** Number of items per page (default: 50, max: 1000) */
   limit?: number;
-  /** Number of items to skip (for offset-based pagination) */
   skip?: number;
 }
 
-/**
- * Metadata for a multi-reference field (available on item._refMeta[fieldName])
- * Only populated by getById, not getAll
- */
 export interface RefFieldMeta {
-  /** Total count of referenced items */
   totalCount: number;
-  /** Number of items returned */
   returnedCount: number;
-  /** Whether there are more items beyond what was returned */
   hasMore: boolean;
 }
 
-/**
- * Paginated result with metadata for infinite scroll
- */
 export interface PaginatedResult<T> {
-  /** Array of items for current page */
   items: T[];
-  /** Total number of items in the collection */
   totalCount: number;
-  /** Whether there are more items after current page */
   hasNext: boolean;
-  /** Current page number (0-indexed) */
   currentPage: number;
-  /** Number of items per page */
   pageSize: number;
-  /** Offset to use for next page */
   nextSkip: number | null;
 }
 
-/**
- * Generic CRUD Service class for Wix Data collections
- * Provides type-safe CRUD operations with error handling
- */
+type CrudItemBase = {
+  _id: string;
+  _createdDate?: Date | string;
+  _updatedDate?: Date | string;
+};
+
+type CollectionRecord = Record<string, WixDataItem[]>;
+
+const DB_STORAGE_KEY = 'homeo-hub:db:v1';
+const DATA_BACKEND = (import.meta.env.PUBLIC_DATA_BACKEND ?? 'local').toLowerCase();
+
+function nowIso() {
+  return new Date().toISOString();
+}
+
+function ensureId<T extends WixDataItem>(item: Partial<T> | Record<string, unknown>) {
+  const maybeId = (item as { _id?: string })._id;
+  return maybeId && String(maybeId).trim() ? String(maybeId) : crypto.randomUUID();
+}
+
+function safeParse<T>(value: string | null, fallback: T): T {
+  if (!value) return fallback;
+  try {
+    return JSON.parse(value) as T;
+  } catch {
+    return fallback;
+  }
+}
+
+function isBrowser() {
+  return typeof window !== 'undefined';
+}
+
+function clone<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value)) as T;
+}
+
+let memoryDb: CollectionRecord | null = null;
+
+function loadDb(): CollectionRecord {
+  const seed = cloneSeedCollections() as unknown as CollectionRecord;
+
+  if (isBrowser()) {
+    const existing = safeParse<CollectionRecord | null>(window.localStorage.getItem(DB_STORAGE_KEY), null);
+    if (existing && typeof existing === 'object') return existing;
+    window.localStorage.setItem(DB_STORAGE_KEY, JSON.stringify(seed));
+    return seed;
+  }
+
+  if (!memoryDb) memoryDb = seed;
+  return memoryDb;
+}
+
+function saveDb(db: CollectionRecord) {
+  if (isBrowser()) {
+    window.localStorage.setItem(DB_STORAGE_KEY, JSON.stringify(db));
+    return;
+  }
+  memoryDb = db;
+}
+
+function getCollection(db: CollectionRecord, collectionId: string): WixDataItem[] {
+  if (!db[collectionId]) {
+    db[collectionId] = [];
+  }
+  return db[collectionId];
+}
+
+function sortStableByCreatedDate(items: WixDataItem[]) {
+  return [...items].sort((a, b) => {
+    const aTime = new Date(String(a._createdDate ?? 0)).getTime();
+    const bTime = new Date(String(b._createdDate ?? 0)).getTime();
+    return bTime - aTime;
+  });
+}
+
+function shouldUsePostgresApi() {
+  return DATA_BACKEND === 'postgres' && isBrowser();
+}
+
+async function apiRequest<T>(path: string, init?: RequestInit): Promise<T> {
+  const response = await fetch(`/api/data${path}`, {
+    ...init,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(init?.headers ?? {}),
+    },
+  });
+
+  const body = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw new Error((body && typeof body.error === 'string' && body.error) || `Request failed: ${response.status}`);
+  }
+
+  return body as T;
+}
+
 export class BaseCrudService {
-  /**
-   * Populates multi-reference fields for a single item using queryReferenced()
-   * Fetches up to 1000 items and provides metadata for further pagination
-   */
-  private static async populateMultiRefs<T extends WixDataItem>(
-    collectionId: string,
+  private static async populateMultiRefs<T extends CrudItemBase>(
+    _collectionId: string,
     item: T,
     multiRefs: string[]
   ): Promise<T> {
-    if (multiRefs.length === 0) return item;
-
-    const itemWithRefs = { ...item } as any;
-    itemWithRefs._refMeta = {};
-
-    for (const refField of multiRefs) {
-      try {
-        // Fetch up to 1000 referenced items with total count
-        const result = await items.queryReferenced(collectionId, item._id, refField, {
-          limit: 1000,
-          returnTotalCount: true
-        });
-
-        itemWithRefs[refField] = result.items;
-        itemWithRefs._refMeta[refField] = {
-          totalCount: result.totalCount ?? result.items.length,
-          returnedCount: result.items.length,
-          hasMore: result.hasNext()
-        };
-      } catch {
-        itemWithRefs[refField] = [];
-        itemWithRefs._refMeta[refField] = { totalCount: 0, returnedCount: 0, hasMore: false };
-      }
+    if (!multiRefs.length) return item;
+    const withRefs = { ...(item as Record<string, unknown>) } as Record<string, unknown>;
+    (withRefs as { _refMeta?: Record<string, RefFieldMeta> })._refMeta = {};
+    for (const field of multiRefs) {
+      withRefs[field] = Array.isArray(withRefs[field]) ? withRefs[field] : [];
+      (withRefs as { _refMeta: Record<string, RefFieldMeta> })._refMeta[field] = {
+        totalCount: Array.isArray(withRefs[field]) ? (withRefs[field] as unknown[]).length : 0,
+        returnedCount: Array.isArray(withRefs[field]) ? (withRefs[field] as unknown[]).length : 0,
+        hasMore: false,
+      };
     }
-    return itemWithRefs as T;
+    return withRefs as T;
   }
 
-  /**
-   * Creates a new item in the collection
-   * @param itemData - Data for the new item (single reference fields should be IDs: string)
-   * @param multiReferences - Multi-reference fields as Record<fieldName, arrayOfIds>
-   * @returns Promise<T> - The created item
-   */
-  static async create<T extends WixDataItem>(
+  static async create<T extends CrudItemBase>(
     collectionId: string,
     itemData: Partial<T> | Record<string, unknown>,
-    multiReferences?: Record<string, any>
+    _multiReferences?: Record<string, any>
   ): Promise<T> {
-    try {
-      const result = await items.insert(collectionId, itemData as Record<string, unknown>);
-
-      if (multiReferences && Object.keys(multiReferences).length > 0 && result._id) {
-        for (const [propertyName, refIds] of Object.entries(multiReferences)) {
-          if (Array.isArray(refIds) && refIds.length > 0) {
-            await items.insertReference(collectionId, propertyName, result._id, refIds as string[]);
-          }
-        }
-      }
-
-      return result as T;
-    } catch (error) {
-      // Should consider reverting the insert with a remove in order to prevent partial insert.
-      console.error(`Error creating ${collectionId}:`, error);
-      throw new Error(
-        error instanceof Error ? error.message : `Failed to create ${collectionId}`
-      );
+    if (shouldUsePostgresApi()) {
+      return apiRequest<T>(`/records/${collectionId}`, {
+        method: 'POST',
+        body: JSON.stringify({ itemData }),
+      });
     }
+
+    const db = loadDb();
+    const collection = getCollection(db, collectionId);
+    const timestamp = nowIso();
+    const item = {
+      ...(itemData as Record<string, unknown>),
+      _id: ensureId(itemData),
+      _createdDate: (itemData as { _createdDate?: string })._createdDate ?? timestamp,
+      _updatedDate: timestamp,
+    } as T;
+    collection.push(clone(item));
+    saveDb(db);
+    return clone(item);
   }
 
-  /**
-   * Retrieves items from the collection with pagination (default: 50 per page)
-   * @param includeRefs - { singleRef: [...], multiRef: [...] } or string[] for backward compatibility
-   */
-  static async getAll<T extends WixDataItem>(
+  static async getAll<T extends CrudItemBase>(
     collectionId: string,
-    includeRefs?: { singleRef?: string[]; multiRef?: string[] } | string[],
+    _includeRefs?: { singleRef?: string[]; multiRef?: string[] } | string[],
     pagination?: PaginationOptions
   ): Promise<PaginatedResult<T>> {
-    try {
-      const limit = Math.min(pagination?.limit ?? 50, 1000);
-      const skip = pagination?.skip ?? 0;
+    const limit = Math.min(pagination?.limit ?? 50, 1000);
+    const skip = pagination?.skip ?? 0;
 
-      // Support both old format (string[]) and new format ({ singleRef, multiRef })
-      const allRefs = Array.isArray(includeRefs)
-        ? includeRefs
-        : [...(includeRefs?.singleRef || []), ...(includeRefs?.multiRef || [])];
-
-      let query = items.query(collectionId);
-      if (allRefs.length > 0) {
-        query = query.include(...allRefs);
-      }
-
-      const result = await query.skip(skip).limit(limit).find({ returnTotalCount: true });
-      const hasNext = result.hasNext();
-
-      return {
-        items: result.items as T[],
-        totalCount: result.totalCount ?? result.items.length,
-        hasNext,
-        currentPage: Math.floor(skip / limit),
-        pageSize: limit,
-        nextSkip: hasNext ? skip + limit : null,
-      };
-    } catch (error) {
-      console.error(`Error fetching ${collectionId}s:`, error);
-      throw new Error(
-        error instanceof Error ? error.message : `Failed to fetch ${collectionId}s`
-      );
+    if (shouldUsePostgresApi()) {
+      const query = new URLSearchParams({ limit: String(limit), skip: String(skip) });
+      return apiRequest<PaginatedResult<T>>(`/records/${collectionId}?${query.toString()}`);
     }
+
+    const db = loadDb();
+    const collection = sortStableByCreatedDate(getCollection(db, collectionId)) as T[];
+    const items = collection.slice(skip, skip + limit).map(clone);
+    const totalCount = collection.length;
+    const nextSkip = skip + limit < totalCount ? skip + limit : null;
+
+    return {
+      items,
+      totalCount,
+      hasNext: nextSkip != null,
+      currentPage: Math.floor(skip / limit),
+      pageSize: limit,
+      nextSkip,
+    };
   }
 
-  /**
-   * Retrieves a single item by ID with full reference support
-   * Use this for detail pages where you need multi-reference fields populated
-   * @param includeRefs - { singleRef: [...], multiRef: [...] } or string[] for backward compatibility
-   */
-  static async getById<T extends WixDataItem>(
+  static async getAllItems<T extends CrudItemBase>(
+    collectionId: string,
+    includeRefs?: { singleRef?: string[]; multiRef?: string[] } | string[],
+    pagination?: Omit<PaginationOptions, 'skip'>
+  ): Promise<T[]> {
+    const page = await this.getAll<T>(collectionId, includeRefs, { limit: pagination?.limit ?? 1000, skip: 0 });
+    return page.items;
+  }
+
+  static async getById<T extends CrudItemBase>(
     collectionId: string,
     itemId: string,
     includeRefs?: { singleRef?: string[]; multiRef?: string[] } | string[]
   ): Promise<T | null> {
-    try {
-      // Support both old format (string[]) and new format ({ singleRef, multiRef })
-      const isLegacyFormat = Array.isArray(includeRefs);
-      const singleRefs = isLegacyFormat ? includeRefs : (includeRefs?.singleRef || []);
-      const multiRefs = isLegacyFormat ? [] : (includeRefs?.multiRef || []);
-
-      let query = items.query(collectionId).eq("_id", itemId);
-      if (singleRefs.length > 0) {
-        query = query.include(...singleRefs);
+    if (shouldUsePostgresApi()) {
+      try {
+        return await apiRequest<T>(`/records/${collectionId}/${itemId}`);
+      } catch {
+        return null;
       }
-
-      const result = await query.find();
-      if (result.items.length === 0) return null;
-
-      // Populate multi-refs using queryReferenced (only for single item - efficient)
-      return this.populateMultiRefs<T>(collectionId, result.items[0] as T, multiRefs);
-    } catch (error) {
-      console.error(`Error fetching ${collectionId} by ID:`, error);
-      throw new Error(
-        error instanceof Error ? error.message : `Failed to fetch ${collectionId}`
-      );
     }
+
+    const db = loadDb();
+    const collection = getCollection(db, collectionId) as T[];
+    const found = collection.find((item) => item._id === itemId);
+    if (!found) return null;
+
+    const isLegacy = Array.isArray(includeRefs);
+    const multiRefs = isLegacy ? [] : includeRefs?.multiRef ?? [];
+    return this.populateMultiRefs(collectionId, clone(found), multiRefs);
   }
 
-  /**
-   * Updates an existing item
-   * @param itemData - Updated item data (must include _id, only include fields to update)
-   * @returns Promise<T> - The updated item
-   */
-  static async update<T extends WixDataItem>(collectionId: string, itemData: T): Promise<T> {
-    try {
-      if (!itemData._id) {
-        throw new Error(`${collectionId} ID is required for update`);
-      }
-
-      const currentItem = await this.getById<T>(collectionId, itemData._id);
-
-      const mergedData = { ...currentItem, ...itemData };
-
-      const result = await items.update(collectionId, mergedData);
-      return result as T;
-    } catch (error) {
-      console.error(`Error updating ${collectionId}:`, error);
-      throw new Error(
-        error instanceof Error ? error.message : `Failed to update ${collectionId}`
-      );
+  static async update<T extends CrudItemBase>(
+    collectionId: string,
+    itemData: Partial<T> & Pick<T, '_id'>
+  ): Promise<T> {
+    if (shouldUsePostgresApi()) {
+      return apiRequest<T>(`/records/${collectionId}/${itemData._id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(itemData),
+      });
     }
+
+    const db = loadDb();
+    const collection = getCollection(db, collectionId) as T[];
+    const index = collection.findIndex((item) => item._id === itemData._id);
+    if (index < 0) {
+      throw new Error(`${collectionId} item not found for update: ${itemData._id}`);
+    }
+
+    const current = collection[index];
+    const next = {
+      ...current,
+      ...clone(itemData),
+      _id: current._id,
+      _createdDate: current._createdDate ?? nowIso(),
+      _updatedDate: nowIso(),
+    } as T;
+    collection[index] = next;
+    saveDb(db);
+    return clone(next);
   }
 
-  /**
-   * Deletes an item by ID
-   * @param itemId - ID of the item to delete
-   * @returns Promise<T> - The deleted item
-   */
-  static async delete<T extends WixDataItem>(collectionId: string, itemId: string): Promise<T> {
-    try {
-      if (!itemId) {
-        throw new Error(`${collectionId} ID is required for deletion`);
-      }
-
-      const result = await items.remove(collectionId, itemId);
-      return result as T;
-    } catch (error) {
-      console.error(`Error deleting ${collectionId}:`, error);
-      throw new Error(
-        error instanceof Error ? error.message : `Failed to delete ${collectionId}`
-      );
+  static async delete<T extends CrudItemBase>(collectionId: string, itemId: string): Promise<T> {
+    if (shouldUsePostgresApi()) {
+      return apiRequest<T>(`/records/${collectionId}/${itemId}`, {
+        method: 'DELETE',
+      });
     }
+
+    const db = loadDb();
+    const collection = getCollection(db, collectionId) as T[];
+    const index = collection.findIndex((item) => item._id === itemId);
+    if (index < 0) {
+      throw new Error(`${collectionId} item not found for deletion: ${itemId}`);
+    }
+    const [removed] = collection.splice(index, 1);
+    saveDb(db);
+    return clone(removed);
   }
 
-  /**
-   * Adds references to a multi-reference field
-   * @param collectionId - The collection containing the item
-   * @param itemId - The item to add references to
-   * @param references - Record of field names to arrays of reference IDs
-   */
   static async addReferences(
     collectionId: string,
     itemId: string,
     references: Record<string, string[]>
   ): Promise<void> {
-    try {
-      for (const [fieldName, refIds] of Object.entries(references)) {
-        if (refIds.length > 0) {
-          await items.insertReference(collectionId, fieldName, itemId, refIds);
-        }
-      }
-    } catch (error) {
-      console.error(`Error adding references to ${collectionId}:`, error);
-      throw new Error(
-        error instanceof Error ? error.message : `Failed to add references to ${collectionId}`
-      );
+    const item = await this.getById<Record<string, unknown> & WixDataItem>(collectionId, itemId);
+    if (!item) throw new Error(`${collectionId} item not found for addReferences: ${itemId}`);
+
+    const patch: Record<string, unknown> = {};
+    for (const [fieldName, refIds] of Object.entries(references)) {
+      const current = Array.isArray(item[fieldName]) ? (item[fieldName] as string[]) : [];
+      patch[fieldName] = Array.from(new Set([...current, ...refIds]));
     }
+    await this.update(collectionId, { _id: itemId, ...patch } as any);
   }
 
-  /**
-   * Removes references from a multi-reference field
-   * @param collectionId - The collection containing the item
-   * @param itemId - The item to remove references from
-   * @param references - Record of field names to arrays of reference IDs to remove
-   */
   static async removeReferences(
     collectionId: string,
     itemId: string,
     references: Record<string, string[]>
   ): Promise<void> {
-    try {
-      for (const [fieldName, refIds] of Object.entries(references)) {
-        if (refIds.length > 0) {
-          await items.removeReference(collectionId, fieldName, itemId, refIds);
-        }
-      }
-    } catch (error) {
-      console.error(`Error removing references from ${collectionId}:`, error);
-      throw new Error(
-        error instanceof Error ? error.message : `Failed to remove references from ${collectionId}`
-      );
-    }
-  }
+    const item = await this.getById<Record<string, unknown> & WixDataItem>(collectionId, itemId);
+    if (!item) throw new Error(`${collectionId} item not found for removeReferences: ${itemId}`);
 
+    const patch: Record<string, unknown> = {};
+    for (const [fieldName, refIds] of Object.entries(references)) {
+      const current = Array.isArray(item[fieldName]) ? (item[fieldName] as string[]) : [];
+      patch[fieldName] = current.filter((id) => !refIds.includes(id));
+    }
+    await this.update(collectionId, { _id: itemId, ...patch } as any);
+  }
 }
