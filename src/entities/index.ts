@@ -75,6 +75,12 @@ export interface HomeopathicMedicines {
   reorderLevel?: number;
   /** @wixFieldType text */
   storageRequirements?: string;
+  /** App field: whether the medicine should appear in active inventory workflows */
+  isActive?: boolean;
+  /** App field: suggested days of inventory to keep on hand */
+  targetCoverageDays?: number;
+  /** App field: optional medicine notes */
+  notes?: string;
 }
 
 
@@ -119,6 +125,14 @@ export interface InventoryBatches {
   supplierName?: string;
   /** App field (recommended): clinic that holds this batch */
   clinicLocation?: string;
+  /** App field: acquisition cost per unit */
+  unitCost?: number;
+  /** App field: supplier invoice or GRN reference */
+  purchaseInvoiceNumber?: string;
+  /** App field: received date */
+  receivedDate?: Date | string;
+  /** App field: Active, Expiring, Expired, Quarantine */
+  stockStatus?: string;
 }
 
 
@@ -196,6 +210,20 @@ export interface StockTransactionLedger {
   auditReason?: string;
   /** App field (recommended): clinic where transaction occurred */
   clinicLocation?: string;
+  /** App field: originating clinic in transfer flows */
+  sourceClinicLocation?: string;
+  /** App field: destination clinic in transfer flows */
+  destinationClinicLocation?: string;
+  /** App field: transfer or approval group id */
+  transferGroupId?: string;
+  /** App field: Pending, Confirmed, Cancelled */
+  approvalStatus?: string;
+  /** App field: supplier or invoice context */
+  supplierName?: string;
+  /** App field: unit cost captured during purchase */
+  unitCost?: number;
+  /** App field: resulting on-hand quantity after transaction if available */
+  resultingQuantity?: number;
 }
 
 

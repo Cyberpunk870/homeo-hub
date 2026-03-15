@@ -87,6 +87,8 @@ export function createSeedCollections(): SeedCollections {
         manufacturer: 'SBL',
         packSize: '30g',
         reorderLevel: 20,
+        targetCoverageDays: 45,
+        isActive: true,
       },
       {
         _id: 'med-bell-200',
@@ -98,6 +100,8 @@ export function createSeedCollections(): SeedCollections {
         manufacturer: 'Dr. Reckeweg',
         packSize: '30g',
         reorderLevel: 15,
+        targetCoverageDays: 45,
+        isActive: true,
       },
       {
         _id: 'med-rhustox-q',
@@ -109,6 +113,8 @@ export function createSeedCollections(): SeedCollections {
         manufacturer: 'SBL',
         packSize: '30ml',
         reorderLevel: 10,
+        targetCoverageDays: 30,
+        isActive: true,
       },
     ],
     inventorybatches: [
@@ -122,6 +128,10 @@ export function createSeedCollections(): SeedCollections {
         expiryDate: '2027-08-31',
         quantityAvailable: 35,
         supplierName: 'SBL Pharma Distributor',
+        unitCost: 18,
+        purchaseInvoiceNumber: 'INV-NOI-1001',
+        receivedDate: '2026-02-14',
+        stockStatus: 'Active',
       },
       {
         _id: 'batch-2',
@@ -133,6 +143,10 @@ export function createSeedCollections(): SeedCollections {
         expiryDate: '2027-11-30',
         quantityAvailable: 12,
         supplierName: 'SBL Pharma Distributor',
+        unitCost: 18,
+        purchaseInvoiceNumber: 'INV-DEL-1003',
+        receivedDate: '2026-02-18',
+        stockStatus: 'Active',
       },
       {
         _id: 'batch-3',
@@ -144,6 +158,10 @@ export function createSeedCollections(): SeedCollections {
         expiryDate: '2026-06-20',
         quantityAvailable: 8,
         supplierName: 'Dr. Reckeweg Supply',
+        unitCost: 22,
+        purchaseInvoiceNumber: 'INV-DEL-1004',
+        receivedDate: '2026-02-20',
+        stockStatus: 'Expiring',
       },
     ],
     patients: [
@@ -204,6 +222,9 @@ export function createSeedCollections(): SeedCollections {
         referenceIdentifier: 'ARN-30C-02',
         auditReason: 'Purchase Entry',
         clinicLocation: 'Delhi',
+        supplierName: 'SBL Pharma Distributor',
+        unitCost: 18,
+        resultingQuantity: 12,
       },
       {
         _id: 'txn-2',
@@ -216,6 +237,7 @@ export function createSeedCollections(): SeedCollections {
         referenceIdentifier: 'RX002',
         auditReason: 'Dispensed to Patient',
         clinicLocation: 'Delhi',
+        resultingQuantity: 8,
       },
     ],
     homesplashimages: [],
