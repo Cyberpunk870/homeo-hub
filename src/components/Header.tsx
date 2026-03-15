@@ -28,7 +28,6 @@ export default function Header() {
 
   const isActive = (path: string) => location.pathname === path;
 
-  const isHomePage = location.pathname === '/';
   const handleLocationChange = (value: 'noida' | 'delhi') => {
     setSelectedLocation(value);
     setStoredClinicLocation(value);
@@ -47,41 +46,37 @@ export default function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          {!isHomePage && (
-            <nav className="hidden lg:flex items-center gap-8">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  className={`font-paragraph text-base transition-colors ${
-                    isActive(link.path)
-                      ? 'text-accent-gold font-medium'
-                      : 'text-foreground/80 hover:text-accent-gold'
-                  }`}
-                >
-                  {link.name}
-                </Link>
-              ))}
-            </nav>
-          )}
+          <nav className="hidden lg:flex items-center gap-8">
+            {navLinks.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`font-paragraph text-base transition-colors ${
+                  isActive(link.path)
+                    ? 'text-accent-gold font-medium'
+                    : 'text-foreground/80 hover:text-accent-gold'
+                }`}
+              >
+                {link.name}
+              </Link>
+            ))}
+          </nav>
 
           {/* Location Selector & Mobile Menu */}
           <div className="flex items-center gap-4">
             {/* Location Selector */}
-            {!isHomePage && (
-              <div className="hidden md:flex items-center gap-2 bg-white px-4 py-2 rounded-lg border border-secondary/30">
-                <MapPin className="w-4 h-4 text-primary" />
-                <select
-                  value={selectedLocation}
-                  onChange={(e) => handleLocationChange(e.target.value as 'noida' | 'delhi')}
-                  className="font-paragraph text-sm bg-transparent border-none outline-none cursor-pointer text-gray-900"
-                >
-                  <option value="noida">Noida</option>
-                  <option value="delhi">Delhi</option>
-                </select>
-              </div>
-            )}
-            {!isHomePage && member && (
+            <div className="hidden md:flex items-center gap-2 bg-white px-4 py-2 rounded-lg border border-secondary/30">
+              <MapPin className="w-4 h-4 text-primary" />
+              <select
+                value={selectedLocation}
+                onChange={(e) => handleLocationChange(e.target.value as 'noida' | 'delhi')}
+                className="font-paragraph text-sm bg-transparent border-none outline-none cursor-pointer text-gray-900"
+              >
+                <option value="noida">Noida</option>
+                <option value="delhi">Delhi</option>
+              </select>
+            </div>
+            {member && (
               <button
                 type="button"
                 onClick={() => void actions.logout()}
@@ -121,20 +116,18 @@ export default function Header() {
             ))}
             
             {/* Mobile Location Selector */}
-            {!isHomePage && (
-              <div className="flex items-center gap-2 bg-white px-4 py-3 rounded-lg md:hidden border border-secondary/30">
-                <MapPin className="w-4 h-4 text-primary" />
-                <select
-                  value={selectedLocation}
-                  onChange={(e) => handleLocationChange(e.target.value as 'noida' | 'delhi')}
-                  className="font-paragraph text-sm bg-transparent border-none outline-none cursor-pointer text-gray-900 flex-1"
-                >
-                  <option value="noida">Noida Clinic</option>
-                  <option value="delhi">Delhi Clinic</option>
-                </select>
-              </div>
-            )}
-            {!isHomePage && member && (
+            <div className="flex items-center gap-2 bg-white px-4 py-3 rounded-lg md:hidden border border-secondary/30">
+              <MapPin className="w-4 h-4 text-primary" />
+              <select
+                value={selectedLocation}
+                onChange={(e) => handleLocationChange(e.target.value as 'noida' | 'delhi')}
+                className="font-paragraph text-sm bg-transparent border-none outline-none cursor-pointer text-gray-900 flex-1"
+              >
+                <option value="noida">Noida Clinic</option>
+                <option value="delhi">Delhi Clinic</option>
+              </select>
+            </div>
+            {member && (
               <button
                 type="button"
                 onClick={() => void actions.logout()}
