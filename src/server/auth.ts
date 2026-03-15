@@ -110,6 +110,10 @@ export function requireDoctorSession(request: Request): DoctorSession {
   return session;
 }
 
+export function resolveAuditActor(request?: Request) {
+  return readDoctorSession(request ?? new Request('http://localhost'))?.email || process.env.DOCTOR_EMAIL?.trim().toLowerCase() || 'system';
+}
+
 export function verifyDoctorCredentials(email: string, password: string) {
   return email.trim().toLowerCase() === getDoctorEmail() && password === getDoctorPassword();
 }

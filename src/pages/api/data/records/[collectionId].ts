@@ -8,21 +8,19 @@ import {
   listRecords,
   parsePagination,
 } from '@/server/postgres';
-import { requireDoctorSession } from '@/server/auth';
+import { resolveAuditActor } from '@/server/auth';
 
-export const GET: APIRoute = async ({ params, request, url }) => {
+export const GET: APIRoute = async ({ params, url }) => {
   if (!isPostgresBackend()) {
     return jsonResponse({ error: 'Postgres backend is disabled. Set PUBLIC_DATA_BACKEND=postgres.' }, 400);
   }
 
   try {
-    requireDoctorSession(request);
     await initPostgres();
     const collectionId = getCollectionId(params);
     return jsonResponse(await listRecords(collectionId, parsePagination(url)));
   } catch (error) {
-    const status = error instanceof Error && error.message === 'Unauthorized' ? 401 : 500;
-    return jsonResponse({ error: error instanceof Error ? error.message : 'Failed to fetch records' }, status);
+    return jsonResponse({ error: error instanceof Error ? error.message : 'Failed to fetch records' }, 500);
   }
 };
 
@@ -32,15 +30,13 @@ export const POST: APIRoute = async ({ params, request }) => {
   }
 
   try {
-    const session = requireDoctorSession(request);
     await initPostgres();
     const collectionId = getCollectionId(params);
     const payload = await request.json();
     const record = (payload?.itemData ?? payload) as Record<string, unknown>;
-    return jsonResponse(await createRecord(collectionId, record, session.email), 201);
+    return jsonResponse(await createRecord(collectionId, record, resolveAuditActor(request)), 201);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to create record';
-    const status = message === 'Unauthorized' ? 401 : 500;
-    return jsonResponse({ error: message }, status);
+    return jsonResponse({ error: message }, 500);
   }
 };

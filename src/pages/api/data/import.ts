@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { requireDoctorSession } from '@/server/auth';
+import { resolveAuditActor } from '@/server/auth';
 import { importCollections, initPostgres, isPostgresBackend, jsonResponse } from '@/server/postgres';
 
 export const POST: APIRoute = async ({ request }) => {
@@ -8,7 +8,6 @@ export const POST: APIRoute = async ({ request }) => {
   }
 
   try {
-    const session = requireDoctorSession(request);
     await initPostgres();
     const payload = await request.json();
 
@@ -16,11 +15,10 @@ export const POST: APIRoute = async ({ request }) => {
       return jsonResponse({ error: 'Backup payload must include collections' }, 400);
     }
 
-    await importCollections(payload.collections as Record<string, Record<string, unknown>[]>, session.email);
+    await importCollections(payload.collections as Record<string, Record<string, unknown>[]>, resolveAuditActor(request));
     return jsonResponse({ imported: true });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to import data';
-    const status = message === 'Unauthorized' ? 401 : 500;
-    return jsonResponse({ error: message }, status);
+    return jsonResponse({ error: message }, 500);
   }
 };

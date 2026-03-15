@@ -1,5 +1,4 @@
 import { MemberProvider } from '@/integrations';
-import { MemberProtectedRoute } from '@/components/ui/member-protected-route';
 import { createBrowserRouter, RouterProvider, Navigate, Outlet } from 'react-router-dom';
 import { ScrollToTop } from '@/lib/scroll-to-top';
 import ErrorPage from '@/integrations/errorHandlers/ErrorPage';
@@ -15,10 +14,10 @@ import AboutPage from '@/components/pages/AboutPage';
 // Layout component that includes ScrollToTop
 function Layout() {
   return (
-    <MemberProtectedRoute>
+    <>
       <ScrollToTop />
       <Outlet />
-    </MemberProtectedRoute>
+    </>
   );
 }
 
