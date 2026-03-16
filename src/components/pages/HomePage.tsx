@@ -172,7 +172,7 @@ export default function HomePage() {
                       <div className={`w-14 h-14 rounded-xl bg-accent-gold/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500`}>
                         <action.icon className={`w-7 h-7 text-accent-gold`} />
                       </div>
-                      <h3 className="font-heading text-2xl text-foreground mb-3 group-hover:text-accent-gold transition-colors">
+                      <h3 className="font-heading text-2xl text-foreground mb-3">
                         {action.title}
                       </h3>
                       <p className="text-foreground/70 leading-relaxed mb-8">
