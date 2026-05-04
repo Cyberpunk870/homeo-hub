@@ -3,8 +3,7 @@ import { motion } from 'framer-motion';
 import { BarChart3, Download, Package, RefreshCw, TrendingUp, Truck } from 'lucide-react';
 import { BaseCrudService } from '@/integrations';
 import { HomeopathicMedicines, InventoryBatches, StockTransactionLedger, Suppliers } from '@/entities';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import DashboardShell from '@/components/dashboard/DashboardShell';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -221,18 +220,11 @@ export default function ReportsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-
-      <div className="w-full max-w-[110rem] mx-auto px-4 sm:px-8 py-16">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-12 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <h1 className="font-heading text-4xl sm:text-5xl text-foreground mb-4">Inventory Reports</h1>
-            <p className="font-paragraph text-base sm:text-lg text-foreground/70">
-              Reorder planning, supplier performance, usage trends, and exports for {clinicLocation}
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-3">
+    <DashboardShell
+      title="Inventory Reports"
+      description={`Reorder planning, supplier performance, usage trends, and exports for ${clinicLocation}`}
+      actions={(
+        <>
             <Button variant="outline" onClick={exportStockSummary}>
               <Download className="w-4 h-4 mr-2" />
               Stock CSV
@@ -256,8 +248,9 @@ export default function ReportsPage() {
                 <input ref={fileInputRef} type="file" accept="application/json" className="hidden" onChange={handleImportBackup} />
               </>
             )}
-          </div>
-        </motion.div>
+        </>
+      )}
+    >
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6 mb-12">
           {[
@@ -268,13 +261,13 @@ export default function ReportsPage() {
             { label: 'Inventory Value', value: `Rs. ${summary.inventoryValue.toFixed(0)}`, icon: Truck },
           ].map((item, index) => (
             <motion.div key={item.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.08 }}>
-              <Card className="border-secondary/30">
+              <Card className="rounded-[28px] border-emerald-100 shadow-sm">
                 <CardHeader className="pb-3">
                   <CardTitle className="font-paragraph text-sm text-foreground/60 font-normal">{item.label}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center gap-4">
-                    <div className="p-3 bg-primary/10 rounded-lg"><item.icon className="w-6 h-6 text-primary" /></div>
+                    <div className="rounded-2xl bg-gradient-to-br from-emerald-100 to-lime-50 p-3 ring-1 ring-emerald-100"><item.icon className="w-6 h-6 text-emerald-700" /></div>
                     <p className="font-heading text-2xl text-foreground">{item.value}</p>
                   </div>
                 </CardContent>
@@ -284,7 +277,7 @@ export default function ReportsPage() {
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-8">
-          <Card className="border-secondary/30">
+          <Card className="rounded-[28px] border-emerald-100 shadow-sm">
             <CardHeader>
               <CardTitle className="font-heading text-2xl">Reorder Planning Engine</CardTitle>
             </CardHeader>
@@ -317,7 +310,7 @@ export default function ReportsPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-secondary/30">
+          <Card className="rounded-[28px] border-emerald-100 shadow-sm">
             <CardHeader>
               <CardTitle className="font-heading text-2xl">Supplier Performance</CardTitle>
             </CardHeader>
@@ -352,7 +345,7 @@ export default function ReportsPage() {
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-[0.95fr,1.05fr] gap-8">
-          <Card className="border-secondary/30">
+          <Card className="rounded-[28px] border-emerald-100 shadow-sm">
             <CardHeader>
               <CardTitle className="font-heading text-2xl">Usage Trends</CardTitle>
             </CardHeader>
@@ -374,7 +367,7 @@ export default function ReportsPage() {
           </Card>
 
           <div className="space-y-8">
-            <Card className="border-secondary/30">
+            <Card className="rounded-[28px] border-emerald-100 shadow-sm">
               <CardHeader>
                 <CardTitle className="font-heading text-2xl">Top Medicines by Stock</CardTitle>
               </CardHeader>
@@ -393,7 +386,7 @@ export default function ReportsPage() {
               </CardContent>
             </Card>
 
-            <Card className="border-secondary/30">
+            <Card className="rounded-[28px] border-emerald-100 shadow-sm">
               <CardHeader>
                 <CardTitle className="font-heading text-2xl">Recent Inventory Ledger</CardTitle>
               </CardHeader>
@@ -429,9 +422,6 @@ export default function ReportsPage() {
             </Card>
           </div>
         </div>
-      </div>
-
-      <Footer />
-    </div>
+    </DashboardShell>
   );
 }

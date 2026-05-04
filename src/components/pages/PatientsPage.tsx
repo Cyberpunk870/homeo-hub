@@ -3,8 +3,7 @@ import { motion } from 'framer-motion';
 import { Plus, Search, UserRound } from 'lucide-react';
 import { BaseCrudService } from '@/integrations';
 import { Patients } from '@/entities';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import DashboardShell from '@/components/dashboard/DashboardShell';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -116,35 +115,27 @@ export default function PatientsPage() {
   });
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-
-      <div className="w-full max-w-[100rem] mx-auto px-4 sm:px-8 py-16">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-12 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"
+    <DashboardShell
+      title="Patients"
+      description={`Patient registry for ${clinicLocation} clinic`}
+      actions={(
+        <Button
+          onClick={() => setIsAddDialogOpen(true)}
+          className="h-14 rounded-2xl bg-gradient-to-r from-emerald-500 to-lime-400 px-6 text-base font-semibold text-white shadow-[0_18px_34px_rgba(72,187,120,0.24)] hover:from-emerald-600 hover:to-lime-500"
         >
-          <div>
-            <h1 className="font-heading text-4xl sm:text-5xl text-foreground mb-4">Patients</h1>
-            <p className="font-paragraph text-base sm:text-lg text-foreground/70">
-              Patient registry for {clinicLocation} clinic
-            </p>
-          </div>
-          <Button onClick={() => setIsAddDialogOpen(true)} className="bg-primary text-primary-foreground hover:bg-primary/90">
-            <Plus className="w-4 h-4 mr-2" />
-            Add Patient
-          </Button>
-        </motion.div>
-
-        <div className="bg-white p-6 rounded-lg border border-secondary/30 mb-8">
+          <Plus className="mr-2 h-4 w-4" />
+          Add Patient
+        </Button>
+      )}
+    >
+        <div className="mb-8 rounded-[28px] border border-emerald-100 bg-white/90 p-6 shadow-sm">
           <div className="relative max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
             <Input
               placeholder="Search patient by name, phone, email..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 text-gray-900"
+              className="h-12 rounded-2xl border-emerald-100 bg-white pl-10 text-slate-700 shadow-sm focus-visible:ring-emerald-200"
             />
           </div>
         </div>
@@ -159,21 +150,21 @@ export default function PatientsPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.04 }}
                   onClick={() => setSelectedPatient(patient)}
-                  className="text-left bg-white p-6 rounded-lg border border-secondary/30 hover:border-primary/40 transition-all"
+                  className="text-left rounded-[28px] border border-emerald-100 bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(126,156,130,0.14)]"
                 >
                   <div className="flex items-start gap-4">
-                    <div className="p-3 rounded-lg bg-primary/10">
-                      <UserRound className="w-5 h-5 text-primary" />
+                    <div className="rounded-2xl bg-gradient-to-br from-emerald-100 to-lime-50 p-3 ring-1 ring-emerald-100">
+                      <UserRound className="w-5 h-5 text-emerald-700" />
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <h3 className="font-heading text-xl text-gray-900">{patient.patientName}</h3>
+                        <h3 className="font-heading text-xl text-slate-800">{patient.patientName}</h3>
                         <Badge variant="outline">{patient.gender || 'N/A'}</Badge>
                       </div>
-                      <div className="space-y-1 font-paragraph text-sm text-gray-700">
-                        <p><span className="font-medium text-gray-900">Phone:</span> {patient.phoneNumber || 'N/A'}</p>
-                        <p><span className="font-medium text-gray-900">Email:</span> {patient.email || 'N/A'}</p>
-                        <p className="line-clamp-2"><span className="font-medium text-gray-900">History:</span> {patient.medicalHistorySummary || 'Not recorded'}</p>
+                      <div className="space-y-1 font-paragraph text-sm text-slate-600">
+                        <p><span className="font-medium text-slate-800">Phone:</span> {patient.phoneNumber || 'N/A'}</p>
+                        <p><span className="font-medium text-slate-800">Email:</span> {patient.email || 'N/A'}</p>
+                        <p className="line-clamp-2"><span className="font-medium text-slate-800">History:</span> {patient.medicalHistorySummary || 'Not recorded'}</p>
                       </div>
                     </div>
                   </div>
@@ -187,7 +178,7 @@ export default function PatientsPage() {
             </div>
           )}
         </div>
-      </div>
+      
 
       <Dialog open={!!selectedPatient} onOpenChange={() => setSelectedPatient(null)}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
@@ -288,7 +279,6 @@ export default function PatientsPage() {
         </DialogContent>
       </Dialog>
 
-      <Footer />
-    </div>
+    </DashboardShell>
   );
 }

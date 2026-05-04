@@ -3,8 +3,7 @@ import { motion } from 'framer-motion';
 import { Search, FileText, Plus } from 'lucide-react';
 import { BaseCrudService } from '@/integrations';
 import { Prescriptions, Patients, Doctors } from '@/entities';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import DashboardShell from '@/components/dashboard/DashboardShell';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -148,39 +147,29 @@ export default function PrescriptionsPage() {
   });
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      
-      <div className="w-full max-w-[100rem] mx-auto px-8 py-16">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-12 flex items-end justify-between"
+    <DashboardShell
+      title="Prescriptions"
+      description={`Manage patient prescriptions and medical records for ${clinicLocation} clinic`}
+      actions={(
+        <Button
+          onClick={() => setIsAddDialogOpen(true)}
+          className="h-14 rounded-2xl bg-gradient-to-r from-emerald-500 to-lime-400 px-6 text-base font-semibold text-white shadow-[0_18px_34px_rgba(72,187,120,0.24)] hover:from-emerald-600 hover:to-lime-500"
         >
-          <div>
-            <h1 className="font-heading text-5xl text-foreground mb-4">Prescriptions</h1>
-            <p className="font-paragraph text-lg text-foreground/70">
-              Manage patient prescriptions and medical records for {clinicLocation} clinic
-            </p>
-          </div>
-          <Button
-            onClick={() => setIsAddDialogOpen(true)}
-            className="bg-primary text-primary-foreground hover:bg-primary/90"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Add Prescription
-          </Button>
-        </motion.div>
+          <Plus className="mr-2 h-4 w-4" />
+          Add Prescription
+        </Button>
+      )}
+    >
 
         {/* Search */}
-        <div className="bg-white p-6 rounded-lg border border-secondary/30 mb-8">
+        <div className="mb-8 rounded-[28px] border border-emerald-100 bg-white/90 p-6 shadow-sm">
           <div className="relative max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
             <Input
               placeholder="Search by patient, doctor, or prescription ID..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 font-paragraph text-gray-900"
+              className="h-12 rounded-2xl border-emerald-100 bg-white pl-10 font-paragraph text-slate-700 shadow-sm focus-visible:ring-emerald-200"
             />
           </div>
         </div>
@@ -199,17 +188,17 @@ export default function PrescriptionsPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className="bg-white p-6 rounded-lg border border-secondary/30 hover:border-primary/50 transition-all cursor-pointer"
+                  className="cursor-pointer rounded-[28px] border border-emerald-100 bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(126,156,130,0.14)]"
                   onClick={() => setSelectedPrescription(prescription)}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex gap-4 flex-1">
-                      <div className="p-3 bg-primary/10 rounded-lg h-fit">
-                        <FileText className="w-6 h-6 text-primary" />
+                      <div className="h-fit rounded-2xl bg-gradient-to-br from-emerald-100 to-lime-50 p-3 ring-1 ring-emerald-100">
+                        <FileText className="w-6 h-6 text-emerald-700" />
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                          <h3 className="font-heading text-xl text-foreground">
+                          <h3 className="font-heading text-xl text-slate-800">
                             {prescription.patientName}
                           </h3>
                           <Badge variant="outline" className="font-paragraph text-xs">
@@ -218,22 +207,22 @@ export default function PrescriptionsPage() {
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 font-paragraph text-sm">
                           <div>
-                            <p className="text-gray-600 font-medium">Doctor</p>
-                            <p className="font-medium text-gray-900">{prescription.doctorName}</p>
+                            <p className="text-slate-500 font-medium">Doctor</p>
+                            <p className="font-medium text-slate-800">{prescription.doctorName}</p>
                           </div>
                           <div>
-                            <p className="text-gray-600 font-medium">Date</p>
-                            <p className="font-medium text-gray-900">
+                            <p className="text-slate-500 font-medium">Date</p>
+                            <p className="font-medium text-slate-800">
                               {prescription.prescriptionDate ? new Date(prescription.prescriptionDate).toLocaleDateString() : 'N/A'}
                             </p>
                           </div>
                           <div>
-                            <p className="text-gray-600 font-medium">Clinic</p>
-                            <p className="font-medium text-gray-900">{prescription.clinicLocation || 'Noida'}</p>
+                            <p className="text-slate-500 font-medium">Clinic</p>
+                            <p className="font-medium text-slate-800">{prescription.clinicLocation || 'Noida'}</p>
                           </div>
                           <div>
-                            <p className="text-gray-600 font-medium">Medicines</p>
-                            <p className="font-medium line-clamp-1 text-gray-900">{prescription.medicinesAndDosages}</p>
+                            <p className="text-slate-500 font-medium">Medicines</p>
+                            <p className="font-medium line-clamp-1 text-slate-800">{prescription.medicinesAndDosages}</p>
                           </div>
                         </div>
                       </div>
@@ -249,7 +238,6 @@ export default function PrescriptionsPage() {
             </div>
           )}
         </div>
-      </div>
 
       {/* Prescription Details Dialog */}
       <Dialog open={!!selectedPrescription} onOpenChange={() => setSelectedPrescription(null)}>
@@ -435,7 +423,6 @@ export default function PrescriptionsPage() {
         </DialogContent>
       </Dialog>
 
-      <Footer />
-    </div>
+    </DashboardShell>
   );
 }

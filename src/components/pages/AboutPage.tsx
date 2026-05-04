@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion';
 import { MapPin, Phone, Clock, Award } from 'lucide-react';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import DashboardShell from '@/components/dashboard/DashboardShell';
 import { Image } from '@/components/ui/image';
 import { Badge } from '@/components/ui/badge';
 
@@ -20,21 +19,22 @@ export default function AboutPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      
+    <DashboardShell
+      title="Clinic Profile"
+      description="Doctors, treatment coverage, clinic locations, and practice information."
+    >
       {/* Hero Section */}
-      <section className="w-full bg-secondary py-20">
-        <div className="max-w-[100rem] mx-auto px-8">
+      <section className="w-full rounded-[32px] bg-gradient-to-br from-slate-900 via-emerald-900 to-lime-700 py-16 text-white shadow-[0_24px_80px_rgba(84,140,98,0.24)]">
+        <div className="mx-auto max-w-[100rem] px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-center max-w-4xl mx-auto"
           >
-            <h1 className="font-heading text-6xl text-foreground mb-6">
+            <h1 className="font-heading text-6xl text-white mb-6">
               Dr. Upadhyaya's Homeopathy
             </h1>
-            <p className="font-paragraph text-xl text-foreground/80 leading-relaxed">
+            <p className="font-paragraph text-xl leading-relaxed text-emerald-50/85">
               Providing compassionate homeopathic care with a focus on holistic healing 
               and personalized treatment plans across our Noida and Delhi locations.
             </p>
@@ -43,7 +43,7 @@ export default function AboutPage() {
       </section>
 
       {/* Doctors Section */}
-      <section className="w-full max-w-[100rem] mx-auto px-8 py-20">
+      <section className="w-full max-w-[100rem] mx-auto px-2 py-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -63,7 +63,7 @@ export default function AboutPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="bg-secondary p-8 rounded-lg border border-primary/30 hover:border-accent-gold/40 transition-all duration-300 overflow-hidden group"
+            className="rounded-[28px] border border-emerald-100 bg-white p-8 shadow-sm transition-all duration-300 overflow-hidden group"
           >
             <div className="flex flex-col items-center text-center space-y-6">
               <div className="relative w-40 h-40 rounded-full overflow-hidden border-4 border-accent-gold/30 group-hover:border-accent-gold/60 transition-all duration-300">
@@ -89,7 +89,7 @@ export default function AboutPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="bg-secondary p-8 rounded-lg border border-primary/30 hover:border-accent-gold/40 transition-all duration-300 overflow-hidden group"
+            className="rounded-[28px] border border-emerald-100 bg-white p-8 shadow-sm transition-all duration-300 overflow-hidden group"
           >
             <div className="flex flex-col items-center text-center space-y-6">
               <div className="relative w-40 h-40 rounded-full overflow-hidden border-4 border-accent-gold/30 group-hover:border-accent-gold/60 transition-all duration-300">
@@ -113,7 +113,7 @@ export default function AboutPage() {
       </section>
 
       {/* Treatments Section */}
-      <section className="w-full bg-secondary py-20">
+      <section className="w-full rounded-[32px] bg-white py-16 shadow-sm">
         <div className="max-w-[100rem] mx-auto px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -135,7 +135,7 @@ export default function AboutPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.05 }}
-                className="group relative overflow-hidden bg-background p-6 rounded-lg border border-primary/30 hover:border-accent-gold/40 transition-all duration-300 cursor-pointer"
+                className="group relative overflow-hidden rounded-[24px] border border-emerald-100 bg-gradient-to-r from-emerald-50 to-lime-50 p-6 transition-all duration-300 cursor-pointer"
               >
                 <div className="relative z-10">
                   <div className="flex items-start gap-3">
@@ -144,13 +144,13 @@ export default function AboutPage() {
                   </div>
                   {/* Hidden info on hover */}
                   <div className="max-h-0 overflow-hidden group-hover:max-h-40 transition-all duration-300">
-                    <p className="text-foreground/80 text-sm mt-3 pt-3 border-t border-primary/20">
+                    <p className="text-foreground/80 text-sm mt-3 pt-3 border-t border-emerald-100">
                       Expert homeopathic treatment for {treatment.toLowerCase()} using personalized remedies and proven therapeutic protocols.
                     </p>
                   </div>
                 </div>
                 {/* Hover background effect */}
-                <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
+                <div className="absolute inset-0 bg-emerald-100/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
               </motion.div>
             ))}
           </div>
@@ -158,7 +158,7 @@ export default function AboutPage() {
       </section>
 
       {/* Clinic Locations */}
-      <section className="w-full max-w-[100rem] mx-auto px-8 py-20">
+      <section className="w-full max-w-[100rem] mx-auto px-2 py-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -178,7 +178,7 @@ export default function AboutPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="bg-secondary p-8 rounded-lg border border-primary/30"
+            className="rounded-[28px] border border-emerald-100 bg-white p-8 shadow-sm"
           >
             <h3 className="font-heading text-2xl text-foreground mb-6">Clinic 1 - Noida</h3>
             <div className="space-y-4">
@@ -215,7 +215,7 @@ export default function AboutPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="bg-secondary p-8 rounded-lg border border-primary/30"
+            className="rounded-[28px] border border-emerald-100 bg-white p-8 shadow-sm"
           >
             <h3 className="font-heading text-2xl text-foreground mb-6">Clinic 2 - Delhi</h3>
             <div className="space-y-4">
@@ -249,7 +249,7 @@ export default function AboutPage() {
       </section>
 
       {/* Why Choose Us */}
-      <section className="w-full bg-secondary py-20">
+      <section className="w-full rounded-[32px] bg-white py-16 shadow-sm">
         <div className="max-w-[100rem] mx-auto px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -291,7 +291,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <Footer />
-    </div>
+    </DashboardShell>
   );
 }

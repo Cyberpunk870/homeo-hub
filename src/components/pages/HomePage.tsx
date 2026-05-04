@@ -1,369 +1,355 @@
-import { useRef, type ReactNode } from 'react';
-import { Link } from 'react-router-dom';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { Image } from '@/components/ui/image';
-import { 
-  Package, 
-  FileText, 
-  AlertTriangle, 
-  BarChart3, 
-  Building2, 
-  Pill, 
+import { Link, useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import {
+  Activity,
+  ArrowRight,
+  BarChart3,
+  CalendarClock,
+  LayoutDashboard,
+  MapPin,
+  Package2,
+  Pill,
+  Settings,
+  ShoppingBag,
+  Sparkles,
+  Stethoscope,
   Users,
-  MapPin, 
-  Phone, 
-  ArrowRight, 
-  Leaf,
-  Activity
 } from 'lucide-react';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import { useMember } from '@/integrations';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { useClinicLocation } from '@/hooks/use-clinic-location';
 
-// --- Canonical Data Sources ---
-// Preserving original data structures while incorporating user assets.
-
-const quickActions = [
-  {
-    icon: Pill,
-    title: 'Medicine Inventory',
-    description: 'Master database of medicines, potencies, and forms.',
-    link: '/inventory',
-    color: 'primary',
-    stat: '2,400+ SKUs'
-  },
-  {
-    icon: Package,
-    title: 'Stock Management',
-    description: 'Track batches, stock-in, and dispensing logs.',
-    link: '/stock-management',
-    color: 'secondary',
-    stat: 'Live Tracking'
-  },
-  {
-    icon: AlertTriangle,
-    title: 'Stock Alerts',
-    description: 'Automated low stock and expiry notifications.',
-    link: '/alerts',
-    color: 'destructive',
-    stat: '3 Critical'
-  },
-  {
-    icon: Users,
-    title: 'Patients',
-    description: 'Register and manage patient records by clinic.',
-    link: '/patients',
-    color: 'primary',
-    stat: 'OPD Registry'
-  },
-  {
-    icon: FileText,
-    title: 'Prescriptions',
-    description: 'Digital prescription entry and patient history.',
-    link: '/prescriptions',
-    color: 'primary',
-    stat: 'Patient Records'
-  },
-  {
-    icon: BarChart3,
-    title: 'Reports & Analytics',
-    description: 'Consumption trends and inventory valuation.',
-    link: '/reports',
-    color: 'secondary',
-    stat: 'Monthly Insights'
-  },
-  {
-    icon: Building2,
-    title: 'Clinic Profile',
-    description: 'Manage doctor profiles and clinic locations.',
-    link: '/about',
-    color: 'primary',
-    stat: 'Noida & Delhi'
-  }
+const navigationItems = [
+  { label: 'Dashboard', path: '/', icon: LayoutDashboard },
+  { label: 'Consultations', path: '/prescriptions', icon: Stethoscope },
+  { label: 'Conditions', path: '/alerts', icon: Activity },
+  { label: 'Inventory', path: '/inventory', icon: Package2 },
+  { label: 'Patients', path: '/patients', icon: Users },
+  { label: 'Orders', path: '/stock-management', icon: ShoppingBag },
+  { label: 'Reports', path: '/reports', icon: BarChart3 },
+  { label: 'Settings', path: '/about', icon: Settings },
 ];
 
-const clinicInfo = {
-  specialties: [
-    "Migraine", "Respiratory Diseases", "Bone & Joint Diseases", 
-    "Gynecological Problems", "Skin & Cosmetic Problems", 
-    "Allergies", "Kid's Health", "Thyroid Disorders", 
-    "Hair & Scalp Conditions", "Gastrointestinal Disorders"
-  ],
-  locations: [
-    {
-      name: "Clinic-1 (Noida)",
-      address: "102, Jaipuria Plaza, Sec- 26, Noida",
-      phones: ["0120-4295211", "8010877211"]
-    },
-    {
-      name: "Clinic-2 (Delhi)",
-      address: "G-16, Vardhman Sun-Rise Plaza, Vasundhara Enclave, Delhi-96",
-      phones: ["011-47520627", "9205664653"]
-    }
-  ]
-};
+const overviewCards = [
+  {
+    title: 'Medicine Inventory',
+    description: 'Master database of medicines, potencies, forms, and supplier-ready stock visibility.',
+    path: '/inventory',
+    stat: '2,400+ records',
+    icon: Pill,
+    tint: 'from-emerald-500 to-lime-400',
+    surface: 'from-emerald-50 to-lime-50',
+  },
+  {
+    title: 'Stock Management',
+    description: 'Track batches, stock-in activity, and dispensing movement across clinic shelves.',
+    path: '/stock-management',
+    stat: 'Live movement',
+    icon: ShoppingBag,
+    tint: 'from-sky-500 to-cyan-400',
+    surface: 'from-sky-50 to-cyan-50',
+  },
+  {
+    title: 'Stock Alerts',
+    description: 'Watch low-stock items, expiry windows, and critical replenishment priorities.',
+    path: '/alerts',
+    stat: '3 critical flags',
+    icon: Activity,
+    tint: 'from-amber-500 to-orange-400',
+    surface: 'from-amber-50 to-orange-50',
+  },
+  {
+    title: 'Patients',
+    description: 'Access patient records, contact history, and clinic-specific treatment details.',
+    path: '/patients',
+    stat: 'OPD registry',
+    icon: Users,
+    tint: 'from-violet-500 to-fuchsia-400',
+    surface: 'from-violet-50 to-fuchsia-50',
+  },
+  {
+    title: 'Prescriptions',
+    description: 'Create digital prescriptions and maintain longitudinal treatment documentation.',
+    path: '/prescriptions',
+    stat: 'Treatment history',
+    icon: Stethoscope,
+    tint: 'from-rose-500 to-pink-400',
+    surface: 'from-rose-50 to-pink-50',
+  },
+  {
+    title: 'Reports',
+    description: 'Review consumption trends, valuation summaries, and multi-clinic performance.',
+    path: '/reports',
+    stat: 'Monthly insights',
+    icon: BarChart3,
+    tint: 'from-slate-700 to-slate-500',
+    surface: 'from-slate-50 to-slate-100',
+  },
+];
 
-// --- Components ---
-
-const ParallaxSection = ({ children, className = "" }: { children: ReactNode, className?: string }) => {
-  const ref = useRef(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "15%"]);
-  
-  return (
-    <div ref={ref} className={`relative overflow-hidden ${className}`}>
-      <motion.div style={{ y }} className="absolute inset-0 w-full h-[120%] -top-[10%]">
-        {children}
-      </motion.div>
-    </div>
-  );
-};
+const clinicLocations = [
+  {
+    name: 'Clinic-1 (Noida)',
+    address: '102, Jaipuria Plaza, Sec-26, Noida',
+    phones: ['0120-4295211', '8010877211'],
+  },
+  {
+    name: 'Clinic-2 (Delhi)',
+    address: 'G-16, Vardhman Sun-Rise Plaza, Vasundhara Enclave, Delhi-96',
+    phones: ['011-47520627', '9205664653'],
+  },
+];
 
 export default function HomePage() {
+  const location = useLocation();
+  const clinicLocation = useClinicLocation();
+  const { member } = useMember();
+
+  const displayName = member?.displayName || 'Clinic Admin';
+  const displayInitials = displayName
+    .split(' ')
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join('')
+    .toUpperCase();
 
   return (
-    <div className="min-h-screen bg-background font-paragraph text-foreground selection:bg-primary/20">
-      <Header />
-
-      {/* --- Ticker Section --- */}
-      <div className="w-full bg-primary text-white py-3 overflow-hidden border-y border-accent-gold/10">
-        <div className="flex whitespace-nowrap">
-          <motion.div 
-            animate={{ x: "-50%" }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            className="flex gap-12 text-sm uppercase tracking-[0.2em] font-medium opacity-90"
-          >
-            {Array(10).fill("Holistic Healing • Precision Potency • Natural Care • Dr. Upadhyaya's Homeopathy •").map((text, i) => (
-              <span key={i}>{text}</span>
-            ))}
-          </motion.div>
-        </div>
-      </div>
-
-      {/* --- System Modules (Quick Actions) --- */}
-      <section className="w-full max-w-[120rem] mx-auto px-4 md:px-8 py-20">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-12">
-          <div className="max-w-2xl">
-            <h2 className="font-heading text-5xl md:text-6xl text-foreground mb-4">
-              Clinic Ecosystem
-            </h2>
-            <p className="text-lg text-foreground/80 font-light">
-              A unified interface for managing the complex inventory of homeopathic medicines, 
-              patient records, and multi-clinic operations.
-            </p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {quickActions.map((action, index) => (
-            <motion.div
-              key={action.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-            >
-              <Link to={action.link} className="group block h-full">
-                <div className="relative h-full bg-secondary rounded-2xl p-8 border border-primary/30 hover:border-accent-gold/50 transition-all duration-500 hover:shadow-xl hover:shadow-primary/20 overflow-hidden">
-                  {/* Hover Background Effect */}
-                  <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  
-                  <div className="relative z-10 flex flex-col h-full justify-between">
-                    <div>
-                      <div className={`w-14 h-14 rounded-xl bg-accent-gold/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500`}>
-                        <action.icon className={`w-7 h-7 text-accent-gold`} />
-                      </div>
-                      <h3 className="font-heading text-2xl text-foreground mb-3">
-                        {action.title}
-                      </h3>
-                      <p className="text-foreground/70 leading-relaxed mb-8">
-                        {action.description}
-                      </p>
-                    </div>
-                    
-                    <div className="flex items-center justify-between pt-6 border-t border-primary/20">
-                      <span className="text-xs font-bold tracking-wider uppercase text-accent-gold/80">
-                        {action.stat}
-                      </span>
-                      <ArrowRight className="w-5 h-5 text-accent-gold group-hover:text-accent-gold group-hover:translate-x-1 transition-all" />
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* --- Feature Spotlight: Potency Matrix --- */}
-      <section className="w-full bg-secondary py-20 overflow-hidden">
-        <div className="max-w-[120rem] mx-auto px-4 md:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-            <div className="order-2 lg:order-1 relative">
-              {/* Abstract UI Representation */}
-              <div className="relative z-10 bg-background rounded-xl shadow-2xl border border-primary/20 p-8 max-w-xl mx-auto lg:mx-0 transform rotate-[-2deg] hover:rotate-0 transition-transform duration-700">
-                <div className="flex items-center justify-between mb-8 border-b border-primary/10 pb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-3 h-3 rounded-full bg-red-400" />
-                    <div className="w-3 h-3 rounded-full bg-yellow-400" />
-                    <div className="w-3 h-3 rounded-full bg-green-400" />
-                  </div>
-                  <span className="text-xs font-mono text-foreground/60">POTENCY_MATRIX.EXE</span>
-                </div>
-                <div className="space-y-4">
-                  {[
-                    { name: "Aconite Napellus", p6: 12, p30: 45, p200: 8 },
-                    { name: "Belladonna", p6: 24, p30: 15, p200: 32 },
-                    { name: "Arnica Montana", p6: 5, p30: 60, p200: 12 },
-                    { name: "Nux Vomica", p6: 18, p30: 22, p200: 4 }
-                  ].map((item, i) => (
-                    <div key={i} className="flex items-center justify-between text-sm p-3 hover:bg-primary/10 rounded-lg transition-colors">
-                      <span className="font-medium text-foreground w-1/3">{item.name}</span>
-                      <div className="flex gap-2 w-2/3 justify-end">
-                        <span className="px-2 py-1 bg-accent-gold/20 text-accent-gold rounded text-xs">6C: {item.p6}</span>
-                        <span className="px-2 py-1 bg-accent-gold/20 text-accent-gold rounded text-xs">30C: {item.p30}</span>
-                        <span className="px-2 py-1 bg-accent-gold/20 text-accent-gold rounded text-xs">200C: {item.p200}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-8 pt-4 border-t border-primary/10 flex justify-between items-center">
-                  <div className="h-2 w-32 bg-primary/20 rounded-full overflow-hidden">
-                    <div className="h-full w-2/3 bg-accent-gold" />
-                  </div>
-                  <span className="text-xs text-foreground/50">Stock Level: Optimal</span>
-                </div>
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(134,239,172,0.24),_transparent_28%),radial-gradient(circle_at_top_right,_rgba(125,211,252,0.18),_transparent_20%),linear-gradient(180deg,_#f9fdf8_0%,_#eef7f0_100%)] text-slate-700">
+      <div className="mx-auto flex min-h-screen w-full max-w-[1600px] flex-col gap-6 p-4 sm:p-6 lg:flex-row">
+        <aside className="w-full overflow-hidden rounded-[28px] border border-white/70 bg-white/80 shadow-[0_18px_60px_rgba(111,145,114,0.12)] backdrop-blur lg:sticky lg:top-6 lg:min-h-[calc(100vh-3rem)] lg:w-[260px] lg:flex-shrink-0">
+          <div className="border-b border-emerald-100 bg-gradient-to-r from-emerald-50 via-lime-50 to-white px-6 py-6">
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-lime-400 text-white shadow-lg shadow-emerald-200">
+                <Sparkles className="h-5 w-5" />
               </div>
-              
-              {/* Decorative Elements */}
-              <div className="absolute -top-10 -right-10 w-64 h-64 bg-accent-gold/10 rounded-full blur-3xl -z-10" />
-              <div className="absolute -bottom-10 -left-10 w-64 h-64 bg-primary/10 rounded-full blur-3xl -z-10" />
-            </div>
-
-            <div className="order-1 lg:order-2 space-y-8">
-              <div className="inline-flex items-center gap-2 text-accent-gold font-medium tracking-wider uppercase text-sm">
-                <Activity className="w-4 h-4" />
-                Specialized Inventory
-              </div>
-              <h2 className="font-heading text-5xl lg:text-6xl text-foreground">
-                The Potency Matrix
-              </h2>
-              <p className="text-xl text-foreground/80 leading-relaxed">
-                Homeopathy requires a different dimension of inventory management. 
-                Our system tracks not just the medicine, but the intricate matrix of 
-                potencies (6C, 30C, 200C, 1M) and forms (Globules, Dilutions, Mother Tinctures).
-              </p>
-              <ul className="space-y-4">
-                {[
-                  "Multi-dimensional SKU tracking",
-                  "Automated reorder levels per potency",
-                  "Batch expiry management",
-                  "Small quantity unit support (Drams, ML)"
-                ].map((item, i) => (
-                  <li key={i} className="flex items-center gap-3 text-foreground/90">
-                    <div className="w-6 h-6 rounded-full bg-accent-gold border border-accent-gold/30 flex items-center justify-center flex-shrink-0">
-                      <div className="w-2 h-2 rounded-full bg-background" />
-                    </div>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* --- Clinic Information & Specialties --- */}
-      <section className="w-full py-20 bg-background relative">
-        <div className="max-w-[120rem] mx-auto px-4 md:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-            
-            {/* Content & Locations */}
-            <div className="lg:col-span-12 space-y-12">
-              
-              {/* Specialties */}
               <div>
-                <h2 className="font-heading text-4xl text-foreground mb-6">Specialized Treatments</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {clinicInfo.specialties.map((spec, i) => (
-                    <motion.div 
-                      key={i}
-                      initial={{ opacity: 0, x: 20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: i * 0.05 }}
-                      className="group relative overflow-hidden p-4 rounded-lg bg-secondary border border-primary/30 hover:border-accent-gold/40 transition-all duration-300 cursor-pointer"
+                <p className="font-heading text-2xl text-emerald-700">HomeoHub</p>
+                <p className="font-paragraph text-sm text-slate-500">Clinic workspace</p>
+              </div>
+            </div>
+          </div>
+
+          <nav className="grid gap-2 p-4">
+            {navigationItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = location.pathname === item.path;
+
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`flex items-center justify-between rounded-2xl px-4 py-3.5 transition-all ${
+                    isActive
+                      ? 'bg-gradient-to-r from-emerald-500 to-lime-400 text-white shadow-[0_14px_24px_rgba(72,187,120,0.24)]'
+                      : 'text-slate-600 hover:bg-emerald-50/70'
+                  }`}
+                >
+                  <span className="flex items-center gap-3">
+                    <Icon className="h-4 w-4" />
+                    <span className="font-paragraph text-sm font-medium">{item.label}</span>
+                  </span>
+                  {item.label === 'Conditions' ? (
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
+                        isActive ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-700'
+                      }`}
                     >
-                      <div className="relative z-10">
-                        <div className="flex items-center gap-3 mb-2">
-                          <Leaf className="w-5 h-5 text-accent-gold/60" />
-                          <span className="text-foreground font-medium">{spec}</span>
-                        </div>
-                        {/* Hidden info on hover */}
-                        <div className="max-h-0 overflow-hidden group-hover:max-h-40 transition-all duration-300">
-                          <p className="text-foreground/80 text-sm mt-3 pt-3 border-t border-primary/20">
-                            Expert treatment for {spec.toLowerCase()} using personalized homeopathic remedies and proven therapeutic protocols.
-                          </p>
-                        </div>
-                      </div>
-                      {/* Hover background effect */}
-                      <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
-                    </motion.div>
-                  ))}
+                      6
+                    </span>
+                  ) : null}
+                </Link>
+              );
+            })}
+          </nav>
+
+          <div className="hidden px-4 pb-4 lg:block">
+            <div className="rounded-[24px] bg-gradient-to-br from-slate-900 via-emerald-900 to-lime-700 p-5 text-white shadow-xl">
+              <p className="font-paragraph text-xs uppercase tracking-[0.22em] text-emerald-100/90">
+                Active Clinic
+              </p>
+              <p className="mt-3 font-heading text-2xl">{clinicLocation}</p>
+              <p className="mt-2 font-paragraph text-sm text-emerald-50/85">
+                Unified dashboard for inventory, patients, and operations.
+              </p>
+            </div>
+          </div>
+        </aside>
+
+        <main className="min-w-0 flex-1 rounded-[32px] border border-white/70 bg-white/78 shadow-[0_20px_70px_rgba(126,156,130,0.12)] backdrop-blur">
+          <div className="border-b border-emerald-100/80 bg-gradient-to-r from-white via-emerald-50/70 to-white px-4 py-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex items-center gap-3 text-sm text-slate-500">
+                <div className="rounded-full bg-emerald-100 p-2 text-emerald-700">
+                  <MapPin className="h-4 w-4" />
+                </div>
+                <span className="font-paragraph">
+                  Dashboard connected to <span className="font-semibold text-slate-700">{clinicLocation}</span>
+                </span>
+              </div>
+
+              <div className="flex items-center gap-3 rounded-2xl border border-emerald-100 bg-white px-3 py-2 shadow-sm">
+                <Avatar className="h-11 w-11 rounded-2xl bg-gradient-to-br from-sky-100 to-emerald-100 text-emerald-700">
+                  <AvatarFallback className="rounded-2xl bg-transparent font-heading text-sm font-semibold text-emerald-700">
+                    {displayInitials}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="min-w-0">
+                  <p className="truncate font-paragraph text-sm font-semibold text-slate-700">
+                    {displayName}
+                  </p>
+                  <p className="font-paragraph text-xs text-slate-500">Homeopathy dashboard</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+            <motion.section
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-8 overflow-hidden rounded-[32px] bg-gradient-to-br from-slate-900 via-emerald-900 to-lime-700 p-8 text-white shadow-[0_24px_80px_rgba(84,140,98,0.24)]"
+            >
+              <div className="grid gap-8 xl:grid-cols-[minmax(0,1.3fr)_360px] xl:items-end">
+                <div>
+                  <p className="font-paragraph text-sm uppercase tracking-[0.24em] text-emerald-100/90">
+                    Clinic Ecosystem
+                  </p>
+                  <h1 className="mt-4 font-heading text-4xl sm:text-5xl xl:text-6xl">
+                    Unified Homeopathy Operations
+                  </h1>
+                  <p className="mt-5 max-w-3xl font-paragraph text-base text-emerald-50/85 sm:text-lg">
+                    Manage inventory, patients, prescriptions, and multi-clinic workflows from one green dashboard surface instead of the earlier brochure-style interface.
+                  </p>
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-3 xl:grid-cols-1">
+                  <div className="rounded-[24px] bg-white/10 p-5 backdrop-blur">
+                    <p className="font-paragraph text-xs uppercase tracking-[0.18em] text-emerald-100/90">
+                      Medicines
+                    </p>
+                    <p className="mt-3 font-heading text-3xl">2,400+</p>
+                  </div>
+                  <div className="rounded-[24px] bg-white/10 p-5 backdrop-blur">
+                    <p className="font-paragraph text-xs uppercase tracking-[0.18em] text-emerald-100/90">
+                      Active Patients
+                    </p>
+                    <p className="mt-3 font-heading text-3xl">1,280</p>
+                  </div>
+                  <div className="rounded-[24px] bg-white/10 p-5 backdrop-blur">
+                    <p className="font-paragraph text-xs uppercase tracking-[0.18em] text-emerald-100/90">
+                      Today
+                    </p>
+                    <div className="mt-3 flex items-center gap-2 font-heading text-2xl">
+                      <CalendarClock className="h-5 w-5" />
+                      Ready
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.section>
+
+            <section className="mb-8">
+              <div className="mb-5 flex items-end justify-between gap-4">
+                <div>
+                  <h2 className="font-heading text-3xl text-slate-800">Core Modules</h2>
+                  <p className="mt-2 font-paragraph text-slate-500">
+                    Direct entry points for the daily clinic workflow.
+                  </p>
                 </div>
               </div>
 
-              {/* Locations */}
-              <div>
-                <h2 className="font-heading text-4xl text-foreground mb-6">Our Locations</h2>
-                <div className="space-y-8">
-                  {clinicInfo.locations.map((loc, i) => (
-                    <div key={i} className="bg-secondary p-8 rounded-2xl border border-primary/30">
-                      <h3 className="font-heading text-2xl text-accent-gold mb-4">{loc.name}</h3>
-                      <div className="space-y-4">
-                        <div className="flex items-start gap-4">
-                          <MapPin className="w-6 h-6 text-accent-gold/60 mt-1 flex-shrink-0" />
-                          <p className="text-foreground/90 text-lg">{loc.address}</p>
-                        </div>
-                        <div className="flex items-start gap-4">
-                          <Phone className="w-6 h-6 text-accent-gold/60 mt-1 flex-shrink-0" />
-                          <div className="flex flex-col">
-                            {loc.phones.map((phone, idx) => (
-                              <span key={idx} className="text-foreground/90 text-lg">{phone}</span>
-                            ))}
+              <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                {overviewCards.map((card, index) => {
+                  const Icon = card.icon;
+
+                  return (
+                    <motion.div
+                      key={card.title}
+                      initial={{ opacity: 0, y: 18 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                    >
+                      <Link
+                        to={card.path}
+                        className="group block h-full rounded-[28px] border border-emerald-100 bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(126,156,130,0.14)]"
+                      >
+                        <div className={`mb-5 inline-flex rounded-2xl bg-gradient-to-br ${card.surface} p-4 ring-1 ring-emerald-100`}>
+                          <div className={`rounded-xl bg-gradient-to-r ${card.tint} p-3 text-white shadow-lg`}>
+                            <Icon className="h-5 w-5" />
                           </div>
                         </div>
-                      </div>
+                        <h3 className="font-heading text-2xl text-slate-800">{card.title}</h3>
+                        <p className="mt-3 font-paragraph leading-7 text-slate-500">
+                          {card.description}
+                        </p>
+                        <div className="mt-8 flex items-center justify-between border-t border-emerald-50 pt-5">
+                          <span className="font-paragraph text-sm font-semibold text-emerald-700">
+                            {card.stat}
+                          </span>
+                          <span className="flex items-center gap-2 font-paragraph text-sm font-semibold text-slate-700 transition-transform group-hover:translate-x-1">
+                            Open
+                            <ArrowRight className="h-4 w-4" />
+                          </span>
+                        </div>
+                      </Link>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </section>
+
+            <section className="grid gap-6 xl:grid-cols-[minmax(0,1.15fr)_420px]">
+              <div className="rounded-[28px] border border-emerald-100 bg-white p-6 shadow-sm">
+                <h2 className="font-heading text-3xl text-slate-800">Specialized Treatment Areas</h2>
+                <p className="mt-2 font-paragraph text-slate-500">
+                  Key categories handled by the clinic across both operating locations.
+                </p>
+
+                <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                  {[
+                    'Migraine',
+                    'Respiratory Diseases',
+                    'Bone & Joint Disorders',
+                    'Gynecological Concerns',
+                    'Skin & Cosmetic Care',
+                    "Children's Health",
+                    'Thyroid Support',
+                    'Digestive Disorders',
+                  ].map((item) => (
+                    <div
+                      key={item}
+                      className="rounded-2xl bg-gradient-to-r from-emerald-50 to-lime-50 px-4 py-4 font-paragraph text-sm font-medium text-slate-700 ring-1 ring-emerald-100"
+                    >
+                      {item}
                     </div>
                   ))}
                 </div>
               </div>
 
-            </div>
+              <div className="rounded-[28px] border border-emerald-100 bg-gradient-to-br from-white to-emerald-50/60 p-6 shadow-sm">
+                <h2 className="font-heading text-3xl text-slate-800">Clinic Locations</h2>
+                <div className="mt-6 space-y-4">
+                  {clinicLocations.map((clinic) => (
+                    <div key={clinic.name} className="rounded-2xl bg-white/80 p-5 ring-1 ring-emerald-100">
+                      <h3 className="font-heading text-xl text-slate-800">{clinic.name}</h3>
+                      <p className="mt-2 font-paragraph text-sm leading-6 text-slate-500">
+                        {clinic.address}
+                      </p>
+                      <div className="mt-4 space-y-1">
+                        {clinic.phones.map((phone) => (
+                          <p key={phone} className="font-paragraph text-sm font-semibold text-emerald-700">
+                            {phone}
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
           </div>
-        </div>
-      </section>
-
-      {/* --- Visual Breather / Parallax --- */}
-      <section className="w-full h-[40vh] relative overflow-hidden flex items-center justify-center bg-secondary">
-        <ParallaxSection className="absolute inset-0">
-          <Image
-            src="https://static.wixstatic.com/media/3fbaca_e2b4cf1af34e4fb992258cbdf513ae85~mv2.jpeg"
-            alt="Homeopathic Care"
-            width={1920}
-            className="w-full h-full object-cover opacity-30"
-          />
-        </ParallaxSection>
-        <div className="relative z-10 text-center px-4">
-          <h2 className="font-heading text-5xl md:text-6xl text-foreground mb-4">
-            Nature's Science.
-          </h2>
-          <p className="text-lg md:text-xl text-foreground/80 font-light max-w-2xl mx-auto">
-            Restoring balance through precise, individualized treatment plans.
-          </p>
-        </div>
-      </section>
-
-      <Footer />
+        </main>
+      </div>
     </div>
   );
 }

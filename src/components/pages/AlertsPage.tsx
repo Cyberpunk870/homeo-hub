@@ -3,8 +3,7 @@ import { motion } from 'framer-motion';
 import { AlertTriangle, AlertCircle, Clock } from 'lucide-react';
 import { BaseCrudService } from '@/integrations';
 import { HomeopathicMedicines, InventoryBatches } from '@/entities';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import DashboardShell from '@/components/dashboard/DashboardShell';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useClinicLocation } from '@/hooks/use-clinic-location';
@@ -99,20 +98,10 @@ export default function AlertsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      
-      <div className="w-full max-w-[100rem] mx-auto px-4 sm:px-8 py-16">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-12"
-        >
-          <h1 className="font-heading text-4xl sm:text-5xl text-foreground mb-4">Stock Alerts</h1>
-          <p className="font-paragraph text-base sm:text-lg text-foreground/70">
-            Monitor low stock warnings and medicines approaching expiry for {clinicLocation} clinic
-          </p>
-        </motion.div>
+    <DashboardShell
+      title="Stock Alerts"
+      description={`Monitor low stock warnings and medicines approaching expiry for ${clinicLocation} clinic`}
+    >
 
         {/* Alert Summary */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -120,14 +109,14 @@ export default function AlertsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-white p-6 rounded-lg border-2 border-destructive/40 shadow-md"
+            className="rounded-[28px] border-2 border-rose-200 bg-white p-6 shadow-sm"
           >
             <div className="flex items-center gap-4">
               <div className="p-3 bg-destructive/15 rounded-lg">
                 <AlertTriangle className="w-8 h-8 text-destructive" />
               </div>
               <div>
-                <p className="font-paragraph text-sm font-semibold text-gray-700">Low Stock Alerts</p>
+                <p className="font-paragraph text-sm font-semibold text-slate-600">Low Stock Alerts</p>
                 <p className="font-heading text-4xl font-bold text-destructive">{lowStockAlerts.length}</p>
               </div>
             </div>
@@ -137,14 +126,14 @@ export default function AlertsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-white p-6 rounded-lg border-2 border-accent-gold/40 shadow-md"
+            className="rounded-[28px] border-2 border-amber-200 bg-white p-6 shadow-sm"
           >
             <div className="flex items-center gap-4">
               <div className="p-3 bg-accent-gold/15 rounded-lg">
                 <Clock className="w-8 h-8 text-accent-gold" />
               </div>
               <div>
-                <p className="font-paragraph text-sm font-semibold text-gray-700">Expiry Alerts</p>
+                <p className="font-paragraph text-sm font-semibold text-slate-600">Expiry Alerts</p>
                 <p className="font-heading text-4xl font-bold text-accent-gold">{expiryAlerts.length}</p>
               </div>
             </div>
@@ -152,7 +141,7 @@ export default function AlertsPage() {
         </div>
 
         <Tabs defaultValue="low-stock" className="w-full">
-          <TabsList className="grid w-full max-w-md grid-cols-2 mb-8">
+            <TabsList className="mb-8 grid w-full max-w-md grid-cols-2 rounded-2xl border border-emerald-100 bg-white p-1">
             <TabsTrigger value="low-stock" className="font-paragraph">
               Low Stock ({lowStockAlerts.length})
             </TabsTrigger>
@@ -176,7 +165,7 @@ export default function AlertsPage() {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.05 }}
-                      className="bg-white p-6 rounded-lg border border-destructive/30 hover:border-destructive/50 transition-all"
+                      className="rounded-[28px] border border-rose-200 bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(126,156,130,0.14)]"
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex gap-4 flex-1">
@@ -246,7 +235,7 @@ export default function AlertsPage() {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.05 }}
-                        className={`bg-white p-6 rounded-lg border transition-all ${urgencyColors[urgency]}`}
+                        className={`rounded-[28px] border bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(126,156,130,0.14)] ${urgencyColors[urgency]}`}
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex gap-4 flex-1">
@@ -306,9 +295,6 @@ export default function AlertsPage() {
             </div>
           </TabsContent>
         </Tabs>
-      </div>
-
-      <Footer />
-    </div>
+    </DashboardShell>
   );
 }

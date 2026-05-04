@@ -3,8 +3,7 @@ import { motion } from 'framer-motion';
 import { ArrowRightLeft, ClipboardCheck, Minus, PackagePlus, Plus, Truck } from 'lucide-react';
 import { BaseCrudService } from '@/integrations';
 import { HomeopathicMedicines, InventoryBatches, StockTransactionLedger, Suppliers } from '@/entities';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import DashboardShell from '@/components/dashboard/DashboardShell';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -531,51 +530,61 @@ export default function StockManagementPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-
-      <div className="w-full max-w-[110rem] mx-auto px-4 sm:px-8 py-16">
+    <DashboardShell
+      title="Stock Management"
+      description={`Purchase, dispense, transfer, verify, and plan stock operations for ${clinicLocation} clinic.`}
+      actions={(
+        <Button className="h-14 rounded-2xl bg-gradient-to-r from-emerald-500 to-lime-400 px-6 text-base font-semibold text-white shadow-[0_18px_34px_rgba(72,187,120,0.24)] hover:from-emerald-600 hover:to-lime-500">
+          <PackagePlus className="mr-2 h-4 w-4" />
+          New Stock Entry
+        </Button>
+      )}
+    >
+      <div>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-12">
-          <h1 className="font-heading text-4xl sm:text-5xl text-foreground mb-4">Inventory Operations</h1>
-          <p className="font-paragraph text-base sm:text-lg text-foreground/70">
-            Purchase, dispense, transfer, verify, and plan stock for {clinicLocation} clinic
-          </p>
+          <div className="rounded-[32px] border border-emerald-100/80 bg-gradient-to-br from-emerald-500 via-emerald-400 to-lime-300 p-8 text-white shadow-[0_24px_80px_rgba(72,187,120,0.22)]">
+            <p className="font-paragraph text-xs uppercase tracking-[0.28em] text-emerald-50/90">Operations Hub</p>
+            <h2 className="mt-3 font-heading text-4xl sm:text-5xl">Inventory Operations</h2>
+            <p className="mt-4 max-w-3xl font-paragraph text-base text-emerald-50/90 sm:text-lg">
+              Purchase, dispense, transfer, verify, and plan stock for {clinicLocation} clinic with a single operational workflow.
+            </p>
+          </div>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <div className="rounded-xl border border-secondary/30 bg-white p-5">
-            <p className="font-paragraph text-sm text-gray-600">Current Clinic Value</p>
-            <p className="font-heading text-3xl text-gray-900 mt-2">Rs. {inventoryValue.toFixed(0)}</p>
+          <div className="rounded-[28px] border border-emerald-100 bg-white/95 p-6 shadow-sm">
+            <p className="font-paragraph text-sm text-slate-500">Current Clinic Value</p>
+            <p className="mt-3 font-heading text-3xl text-slate-800">Rs. {inventoryValue.toFixed(0)}</p>
           </div>
-          <div className="rounded-xl border border-secondary/30 bg-white p-5">
-            <p className="font-paragraph text-sm text-gray-600">Active Batches</p>
-            <p className="font-heading text-3xl text-gray-900 mt-2">{clinicBatches.length}</p>
+          <div className="rounded-[28px] border border-emerald-100 bg-white/95 p-6 shadow-sm">
+            <p className="font-paragraph text-sm text-slate-500">Active Batches</p>
+            <p className="mt-3 font-heading text-3xl text-slate-800">{clinicBatches.length}</p>
           </div>
-          <div className="rounded-xl border border-secondary/30 bg-white p-5">
-            <p className="font-paragraph text-sm text-gray-600">Pending Transfers</p>
-            <p className="font-heading text-3xl text-gray-900 mt-2">{pendingTransfers.length}</p>
+          <div className="rounded-[28px] border border-emerald-100 bg-white/95 p-6 shadow-sm">
+            <p className="font-paragraph text-sm text-slate-500">Pending Transfers</p>
+            <p className="mt-3 font-heading text-3xl text-slate-800">{pendingTransfers.length}</p>
           </div>
         </div>
 
         <Tabs defaultValue="stock-in" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 mb-8 h-auto">
-            <TabsTrigger value="stock-in" className="font-paragraph">
+          <TabsList className="mb-8 grid h-auto w-full grid-cols-2 gap-2 rounded-[28px] border border-emerald-100 bg-white/90 p-2 shadow-sm md:grid-cols-5">
+            <TabsTrigger value="stock-in" className="rounded-2xl px-4 py-3 font-paragraph data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-lime-400 data-[state=active]:text-white">
               <PackagePlus className="w-4 h-4 mr-2" />
               Purchases
             </TabsTrigger>
-            <TabsTrigger value="stock-out" className="font-paragraph">
+            <TabsTrigger value="stock-out" className="rounded-2xl px-4 py-3 font-paragraph data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-lime-400 data-[state=active]:text-white">
               <Minus className="w-4 h-4 mr-2" />
               Dispense
             </TabsTrigger>
-            <TabsTrigger value="transfer" className="font-paragraph">
+            <TabsTrigger value="transfer" className="rounded-2xl px-4 py-3 font-paragraph data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-lime-400 data-[state=active]:text-white">
               <ArrowRightLeft className="w-4 h-4 mr-2" />
               Transfers
             </TabsTrigger>
-            <TabsTrigger value="count" className="font-paragraph">
+            <TabsTrigger value="count" className="rounded-2xl px-4 py-3 font-paragraph data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-lime-400 data-[state=active]:text-white">
               <ClipboardCheck className="w-4 h-4 mr-2" />
               Stock Count
             </TabsTrigger>
-            <TabsTrigger value="suppliers" className="font-paragraph">
+            <TabsTrigger value="suppliers" className="rounded-2xl px-4 py-3 font-paragraph data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-lime-400 data-[state=active]:text-white">
               <Truck className="w-4 h-4 mr-2" />
               Suppliers
             </TabsTrigger>
@@ -972,8 +981,6 @@ export default function StockManagementPage() {
           </div>
         )}
       </div>
-
-      <Footer />
-    </div>
+    </DashboardShell>
   );
 }
