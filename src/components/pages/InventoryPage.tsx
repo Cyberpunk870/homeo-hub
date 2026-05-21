@@ -4,23 +4,16 @@ import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import {
-  Activity,
-  BarChart3,
   ChevronLeft,
   ChevronRight,
-  LayoutDashboard,
   MapPin,
   Package2,
   PencilLine,
   Pill,
   Plus,
   Search,
-  Settings,
-  ShoppingBag,
   Sparkles,
-  Stethoscope,
   Trash2,
-  Users,
 } from 'lucide-react';
 import { BaseCrudService, useMember } from '@/integrations';
 import { HomeopathicMedicines, InventoryBatches } from '@/entities';
@@ -42,6 +35,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { RequiredLabel } from '@/components/ui/required-label';
 import { useClinicLocation } from '@/hooks/use-clinic-location';
 import {
   getBatchesForMedicine,
@@ -50,6 +44,7 @@ import {
 } from '@/lib/inventory';
 import { normalizeText } from '@/lib/validators';
 import { useToast } from '@/hooks/use-toast';
+import { dashboardNavigationItems } from '@/components/dashboard/navigation';
 
 type MedicineDraft = {
   medicineName: string;
@@ -78,17 +73,6 @@ const emptyMedicineDraft: MedicineDraft = {
 };
 
 const ITEMS_PER_PAGE = 8;
-
-const navigationItems = [
-  { label: 'Dashboard', path: '/', icon: LayoutDashboard },
-  { label: 'Consultations', path: '/prescriptions', icon: Stethoscope },
-  { label: 'Conditions', path: '/alerts', icon: Activity },
-  { label: 'Inventory', path: '/inventory', icon: Package2 },
-  { label: 'Patients', path: '/patients', icon: Users },
-  { label: 'Orders', path: '/stock-management', icon: ShoppingBag },
-  { label: 'Reports', path: '/reports', icon: BarChart3 },
-  { label: 'Settings', path: '/about', icon: Settings },
-];
 
 function getStockState(totalStock: number, reorderLevel: number) {
   if (totalStock <= 0) {
@@ -351,8 +335,8 @@ export default function InventoryPage() {
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(134,239,172,0.24),_transparent_28%),radial-gradient(circle_at_top_right,_rgba(125,211,252,0.18),_transparent_20%),linear-gradient(180deg,_#f9fdf8_0%,_#eef7f0_100%)] text-slate-700">
-      <div className="mx-auto flex min-h-screen w-full max-w-[1600px] flex-col gap-6 p-4 sm:p-6 xl:flex-row">
-        <aside className="w-full overflow-hidden rounded-[28px] border border-white/70 bg-white/80 shadow-[0_18px_60px_rgba(111,145,114,0.12)] backdrop-blur xl:sticky xl:top-6 xl:min-h-[calc(100vh-3rem)] xl:w-[260px] xl:flex-shrink-0">
+      <div className="mx-auto flex min-h-screen w-full max-w-[1600px] flex-col gap-6 p-4 sm:p-6 lg:flex-row">
+        <aside className="w-full overflow-hidden rounded-[28px] border border-white/70 bg-white/80 shadow-[0_18px_60px_rgba(111,145,114,0.12)] backdrop-blur lg:sticky lg:top-6 lg:min-h-[calc(100vh-3rem)] lg:w-[260px] lg:flex-shrink-0">
           <div className="border-b border-emerald-100 bg-gradient-to-r from-emerald-50 via-lime-50 to-white px-6 py-6">
             <div className="flex items-center gap-3">
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-lime-400 text-white shadow-lg shadow-emerald-200">
@@ -366,9 +350,11 @@ export default function InventoryPage() {
           </div>
 
           <nav className="grid gap-2 p-4">
-            {navigationItems.map((item) => {
+            {dashboardNavigationItems.map((item) => {
               const Icon = item.icon;
-              const isActive = location.pathname === item.path;
+              const isActive = item.path === '/inventory'
+                ? location.pathname === '/inventory' || location.pathname === '/stock-management'
+                : location.pathname === item.path;
 
               return (
                 <Link
@@ -384,13 +370,13 @@ export default function InventoryPage() {
                     <Icon className="h-4 w-4" />
                     <span className="font-paragraph text-sm font-medium">{item.label}</span>
                   </span>
-                  {item.label === 'Conditions' ? (
+                  {item.label === 'Alerts' ? (
                     <span
                       className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
                         isActive ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-700'
                       }`}
                     >
-                      6
+                      Live
                     </span>
                   ) : null}
                 </Link>
@@ -398,7 +384,7 @@ export default function InventoryPage() {
             })}
           </nav>
 
-          <div className="hidden px-4 pb-4 xl:block">
+          <div className="hidden px-4 pb-4 lg:block">
             <div className="rounded-[24px] bg-gradient-to-br from-slate-900 via-emerald-900 to-lime-700 p-5 text-white shadow-xl">
               <p className="font-paragraph text-xs uppercase tracking-[0.22em] text-emerald-100/90">
                 Active Clinic
@@ -482,6 +468,29 @@ export default function InventoryPage() {
                 </Button>
               </div>
             </motion.div>
+
+            <div className="mb-6 rounded-[28px] border border-emerald-100 bg-white/90 p-4 shadow-sm">
+              <div className="flex flex-wrap gap-3">
+                {[
+                  { label: 'Purchases', path: '/stock-management#stock-in' },
+                  { label: 'Dispense', path: '/stock-management#stock-out' },
+                  { label: 'Transfers', path: '/stock-management#transfer' },
+                  { label: 'Stock Count', path: '/stock-management#count' },
+                  { label: 'Suppliers', path: '/stock-management#suppliers' },
+                ].map((item) => (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className="rounded-2xl border border-emerald-100 bg-gradient-to-r from-emerald-50 to-lime-50 px-4 py-3 text-sm font-semibold text-emerald-700 transition hover:border-emerald-200 hover:from-emerald-100 hover:to-lime-100"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+              <p className="mt-3 text-sm text-slate-500">
+                Inventory and stock operations now sit under the Inventory module for quicker access.
+              </p>
+            </div>
 
             <div className="mb-6 grid gap-3 lg:grid-cols-[minmax(0,1.4fr)_220px_220px_auto]">
               <div className="relative">
@@ -896,11 +905,10 @@ export default function InventoryPage() {
           </DialogHeader>
 
           <form onSubmit={saveMedicine} className="space-y-5 px-8 py-7">
+            <p className="text-sm font-medium text-slate-500">Fields marked <span className="text-rose-500">*</span> are required.</p>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label className="font-paragraph text-sm font-semibold text-slate-700">
-                  Medicine Name
-                </Label>
+                <RequiredLabel required className="font-paragraph text-sm font-semibold text-slate-700">Medicine Name</RequiredLabel>
                 <Input
                   value={medicineDraft.medicineName}
                   onChange={(event) =>
@@ -910,9 +918,7 @@ export default function InventoryPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label className="font-paragraph text-sm font-semibold text-slate-700">
-                  Potency
-                </Label>
+                <RequiredLabel required className="font-paragraph text-sm font-semibold text-slate-700">Potency</RequiredLabel>
                 <Input
                   value={medicineDraft.potency}
                   onChange={(event) =>
@@ -925,9 +931,7 @@ export default function InventoryPage() {
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label className="font-paragraph text-sm font-semibold text-slate-700">
-                  Form Type
-                </Label>
+                <RequiredLabel required className="font-paragraph text-sm font-semibold text-slate-700">Form Type</RequiredLabel>
                 <Input
                   value={medicineDraft.formType}
                   onChange={(event) =>

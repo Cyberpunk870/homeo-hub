@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { RequiredLabel } from '@/components/ui/required-label';
 import {
   Select,
   SelectContent,
@@ -305,9 +306,10 @@ export default function PrescriptionsPage() {
           </DialogHeader>
           
           <form onSubmit={handleAddPrescription} className="space-y-6">
+            <p className="text-sm font-medium text-slate-500">Fields marked <span className="text-rose-500">*</span> are required.</p>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="prescription-id" className="font-paragraph">Prescription ID</Label>
+                <RequiredLabel htmlFor="prescription-id" required className="font-paragraph">Prescription ID</RequiredLabel>
                 <Input
                   id="prescription-id"
                   value={newPrescription.prescriptionId}
@@ -318,7 +320,7 @@ export default function PrescriptionsPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="prescription-date" className="font-paragraph">Date</Label>
+                <RequiredLabel htmlFor="prescription-date" required className="font-paragraph">Date</RequiredLabel>
                 <Input
                   id="prescription-date"
                   type="date"
@@ -330,7 +332,7 @@ export default function PrescriptionsPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="clinic" className="font-paragraph">Clinic</Label>
+              <RequiredLabel htmlFor="clinic" required className="font-paragraph">Clinic</RequiredLabel>
               <Select
                 value={newPrescription.clinicLocation}
                 onValueChange={(value) => setNewPrescription({ ...newPrescription, clinicLocation: value })}
@@ -348,7 +350,7 @@ export default function PrescriptionsPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="patient" className="font-paragraph">Patient</Label>
+              <RequiredLabel htmlFor="patient" required className="font-paragraph">Patient</RequiredLabel>
               <Select
                 value={newPrescription.patientName}
                 onValueChange={(value) => setNewPrescription({ ...newPrescription, patientName: value })}
@@ -371,7 +373,7 @@ export default function PrescriptionsPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="doctor" className="font-paragraph">Doctor</Label>
+              <RequiredLabel htmlFor="doctor" required className="font-paragraph">Doctor</RequiredLabel>
               <Select
                 value={newPrescription.doctorName}
                 onValueChange={(value) => setNewPrescription({ ...newPrescription, doctorName: value })}

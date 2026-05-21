@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRightLeft, ClipboardCheck, Minus, PackagePlus, Plus, Truck } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 import { BaseCrudService } from '@/integrations';
 import { HomeopathicMedicines, InventoryBatches, StockTransactionLedger, Suppliers } from '@/entities';
 import DashboardShell from '@/components/dashboard/DashboardShell';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { RequiredLabel } from '@/components/ui/required-label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -47,6 +49,8 @@ export default function StockManagementPage() {
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   const clinicLocation = useClinicLocation();
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState('stock-in');
 
   const [stockInForm, setStockInForm] = useState({
     clinicLocation: 'Noida',
@@ -112,6 +116,13 @@ export default function StockManagementPage() {
     setTransferForm((prev) => ({ ...prev, sourceClinicLocation: clinicLocation, destinationClinicLocation: getOppositeClinic(clinicLocation) }));
     setCountForm((prev) => ({ ...prev, clinicLocation }));
   }, [clinicLocation]);
+
+  useEffect(() => {
+    const hashValue = location.hash.replace('#', '');
+    if (['stock-in', 'stock-out', 'transfer', 'count', 'suppliers'].includes(hashValue)) {
+      setActiveTab(hashValue);
+    }
+  }, [location.hash]);
 
   const loadData = async () => {
     setIsLoading(true);
@@ -531,8 +542,8 @@ export default function StockManagementPage() {
 
   return (
     <DashboardShell
-      title="Stock Management"
-      description={`Purchase, dispense, transfer, verify, and plan stock operations for ${clinicLocation} clinic.`}
+      title="Inventory Operations"
+      description={`Purchases, dispensing, transfers, stock count, and suppliers for ${clinicLocation} clinic.`}
       actions={(
         <Button className="h-14 rounded-2xl bg-gradient-to-r from-emerald-500 to-lime-400 px-6 text-base font-semibold text-white shadow-[0_18px_34px_rgba(72,187,120,0.24)] hover:from-emerald-600 hover:to-lime-500">
           <PackagePlus className="mr-2 h-4 w-4" />
@@ -566,7 +577,14 @@ export default function StockManagementPage() {
           </div>
         </div>
 
-        <Tabs defaultValue="stock-in" className="w-full">
+        <Tabs
+          value={activeTab}
+          onValueChange={(value) => {
+            setActiveTab(value);
+            window.history.replaceState(null, '', `#${value}`);
+          }}
+          className="w-full"
+        >
           <TabsList className="mb-8 grid h-auto w-full grid-cols-2 gap-2 rounded-[28px] border border-emerald-100 bg-white/90 p-2 shadow-sm md:grid-cols-5">
             <TabsTrigger value="stock-in" className="rounded-2xl px-4 py-3 font-paragraph data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-lime-400 data-[state=active]:text-white">
               <PackagePlus className="w-4 h-4 mr-2" />
@@ -596,9 +614,10 @@ export default function StockManagementPage() {
                 <h2 className="font-heading text-2xl text-gray-900 mb-2">Record Purchase</h2>
                 <p className="font-paragraph text-sm text-gray-600 mb-6">Capture invoice, unit cost, supplier, and received batch details.</p>
                 <form onSubmit={handleStockIn} className="space-y-4">
+                  <p className="text-sm font-medium text-slate-500">Fields marked <span className="text-rose-500">*</span> are required.</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="clinic-in">Clinic</Label>
+                      <RequiredLabel htmlFor="clinic-in" required>Clinic</RequiredLabel>
                       <Select value={stockInForm.clinicLocation} onValueChange={(value) => setStockInForm({ ...stockInForm, clinicLocation: value })}>
                         <SelectTrigger id="clinic-in"><SelectValue placeholder="Select clinic" /></SelectTrigger>
                         <SelectContent>{CLINIC_LOCATIONS.map((clinic) => <SelectItem key={clinic} value={clinic}>{clinic}</SelectItem>)}</SelectContent>
@@ -610,7 +629,7 @@ export default function StockManagementPage() {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="medicine-in">Medicine</Label>
+                    <RequiredLabel htmlFor="medicine-in" required>Medicine</RequiredLabel>
                     <Select value={stockInForm.medicineSKU} onValueChange={(value) => setStockInForm({ ...stockInForm, medicineSKU: value })}>
                       <SelectTrigger id="medicine-in"><SelectValue placeholder="Select medicine" /></SelectTrigger>
                       <SelectContent>
@@ -624,7 +643,7 @@ export default function StockManagementPage() {
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="batch-in">Batch Number</Label>
+                      <RequiredLabel htmlFor="batch-in" required>Batch Number</RequiredLabel>
                       <Input id="batch-in" value={stockInForm.batchNumber} onChange={(event) => setStockInForm({ ...stockInForm, batchNumber: event.target.value })} placeholder="e.g., ARN-30C-03" />
                     </div>
                     <div className="space-y-2">
@@ -634,7 +653,7 @@ export default function StockManagementPage() {
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="quantity-in">Quantity</Label>
+                      <RequiredLabel htmlFor="quantity-in" required>Quantity</RequiredLabel>
                       <Input id="quantity-in" type="number" min="1" value={stockInForm.quantity} onChange={(event) => setStockInForm({ ...stockInForm, quantity: event.target.value })} />
                     </div>
                     <div className="space-y-2">
@@ -642,7 +661,7 @@ export default function StockManagementPage() {
                       <Input id="unit-cost" type="number" min="0" step="0.01" value={stockInForm.unitCost} onChange={(event) => setStockInForm({ ...stockInForm, unitCost: event.target.value })} />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="invoice-number">Invoice / GRN</Label>
+                      <RequiredLabel htmlFor="invoice-number" required>Invoice / GRN</RequiredLabel>
                       <Input id="invoice-number" value={stockInForm.purchaseInvoiceNumber} onChange={(event) => setStockInForm({ ...stockInForm, purchaseInvoiceNumber: event.target.value })} placeholder="INV-1001" />
                     </div>
                   </div>
@@ -680,16 +699,17 @@ export default function StockManagementPage() {
               <h2 className="font-heading text-2xl text-gray-900 mb-2">Dispense Stock</h2>
               <p className="font-paragraph text-sm text-gray-600 mb-6">Dispense from a specific batch and preserve an accurate movement ledger.</p>
               <form onSubmit={handleStockOut} className="space-y-4">
+                <p className="text-sm font-medium text-slate-500">Fields marked <span className="text-rose-500">*</span> are required.</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="clinic-out">Clinic</Label>
+                    <RequiredLabel htmlFor="clinic-out" required>Clinic</RequiredLabel>
                     <Select value={stockOutForm.clinicLocation} onValueChange={(value) => setStockOutForm({ ...stockOutForm, clinicLocation: value })}>
                       <SelectTrigger id="clinic-out"><SelectValue placeholder="Select clinic" /></SelectTrigger>
                       <SelectContent>{CLINIC_LOCATIONS.map((clinic) => <SelectItem key={clinic} value={clinic}>{clinic}</SelectItem>)}</SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="medicine-out">Medicine</Label>
+                    <RequiredLabel htmlFor="medicine-out" required>Medicine</RequiredLabel>
                     <Select value={stockOutForm.medicineSKU} onValueChange={(value) => setStockOutForm({ ...stockOutForm, medicineSKU: value })}>
                       <SelectTrigger id="medicine-out"><SelectValue placeholder="Select medicine" /></SelectTrigger>
                       <SelectContent>{medicines.filter((medicine) => medicine.medicineName).map((medicine) => <SelectItem key={medicine._id} value={medicine.medicineName!}>{medicine.medicineName} - {medicine.potency}</SelectItem>)}</SelectContent>
@@ -698,11 +718,11 @@ export default function StockManagementPage() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="batch-out">Batch Number</Label>
+                    <RequiredLabel htmlFor="batch-out" required>Batch Number</RequiredLabel>
                     <Input id="batch-out" value={stockOutForm.batchNumber} onChange={(event) => setStockOutForm({ ...stockOutForm, batchNumber: event.target.value })} />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="quantity-out">Quantity</Label>
+                    <RequiredLabel htmlFor="quantity-out" required>Quantity</RequiredLabel>
                     <Input id="quantity-out" type="number" min="1" value={stockOutForm.quantity} onChange={(event) => setStockOutForm({ ...stockOutForm, quantity: event.target.value })} />
                   </div>
                   <div className="space-y-2">
@@ -721,16 +741,17 @@ export default function StockManagementPage() {
                 <h2 className="font-heading text-2xl text-gray-900 mb-2">Create Transfer Request</h2>
                 <p className="font-paragraph text-sm text-gray-600 mb-6">Request stock movement between clinics, then confirm from the queue.</p>
                 <form onSubmit={handleTransferRequest} className="space-y-4">
+                  <p className="text-sm font-medium text-slate-500">Fields marked <span className="text-rose-500">*</span> are required.</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label>Source Clinic</Label>
+                      <RequiredLabel required>Source Clinic</RequiredLabel>
                       <Select value={transferForm.sourceClinicLocation} onValueChange={(value) => setTransferForm({ ...transferForm, sourceClinicLocation: value })}>
                         <SelectTrigger><SelectValue placeholder="Select source" /></SelectTrigger>
                         <SelectContent>{CLINIC_LOCATIONS.map((clinic) => <SelectItem key={clinic} value={clinic}>{clinic}</SelectItem>)}</SelectContent>
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label>Destination Clinic</Label>
+                      <RequiredLabel required>Destination Clinic</RequiredLabel>
                       <Select value={transferForm.destinationClinicLocation} onValueChange={(value) => setTransferForm({ ...transferForm, destinationClinicLocation: value })}>
                         <SelectTrigger><SelectValue placeholder="Select destination" /></SelectTrigger>
                         <SelectContent>{CLINIC_LOCATIONS.filter((clinic) => clinic !== transferForm.sourceClinicLocation).map((clinic) => <SelectItem key={clinic} value={clinic}>{clinic}</SelectItem>)}</SelectContent>
@@ -738,7 +759,7 @@ export default function StockManagementPage() {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label>Medicine</Label>
+                    <RequiredLabel required>Medicine</RequiredLabel>
                     <Select value={transferForm.medicineSKU} onValueChange={(value) => setTransferForm({ ...transferForm, medicineSKU: value })}>
                       <SelectTrigger><SelectValue placeholder="Select medicine" /></SelectTrigger>
                       <SelectContent>{medicines.filter((medicine) => medicine.medicineName).map((medicine) => <SelectItem key={medicine._id} value={medicine.medicineName!}>{medicine.medicineName} - {medicine.potency}</SelectItem>)}</SelectContent>
@@ -746,11 +767,11 @@ export default function StockManagementPage() {
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label>Batch Number</Label>
+                      <RequiredLabel required>Batch Number</RequiredLabel>
                       <Input value={transferForm.batchNumber} onChange={(event) => setTransferForm({ ...transferForm, batchNumber: event.target.value })} />
                     </div>
                     <div className="space-y-2">
-                      <Label>Quantity</Label>
+                      <RequiredLabel required>Quantity</RequiredLabel>
                       <Input type="number" min="1" value={transferForm.quantity} onChange={(event) => setTransferForm({ ...transferForm, quantity: event.target.value })} />
                     </div>
                   </div>
@@ -805,15 +826,16 @@ export default function StockManagementPage() {
                 <h2 className="font-heading text-2xl text-gray-900 mb-2">Physical Verification</h2>
                 <p className="font-paragraph text-sm text-gray-600 mb-6">Capture counted stock and automatically post an adjustment if the count differs.</p>
                 <form onSubmit={handleCountSubmission} className="space-y-4">
+                  <p className="text-sm font-medium text-slate-500">Fields marked <span className="text-rose-500">*</span> are required.</p>
                   <div className="space-y-2">
-                    <Label>Clinic</Label>
+                    <RequiredLabel required>Clinic</RequiredLabel>
                     <Select value={countForm.clinicLocation} onValueChange={(value) => setCountForm({ ...countForm, clinicLocation: value, batchId: '' })}>
                       <SelectTrigger><SelectValue placeholder="Select clinic" /></SelectTrigger>
                       <SelectContent>{CLINIC_LOCATIONS.map((clinic) => <SelectItem key={clinic} value={clinic}>{clinic}</SelectItem>)}</SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label>Batch</Label>
+                    <RequiredLabel required>Batch</RequiredLabel>
                     <Select value={countForm.batchId} onValueChange={(value) => setCountForm({ ...countForm, batchId: value })}>
                       <SelectTrigger><SelectValue placeholder="Select batch" /></SelectTrigger>
                       <SelectContent>
@@ -831,7 +853,7 @@ export default function StockManagementPage() {
                       <Input value={selectedCountBatch?.quantityAvailable || ''} disabled />
                     </div>
                     <div className="space-y-2">
-                      <Label>Counted Quantity</Label>
+                      <RequiredLabel required>Counted Quantity</RequiredLabel>
                       <Input type="number" min="0" value={countForm.countedQuantity} onChange={(event) => setCountForm({ ...countForm, countedQuantity: event.target.value })} />
                     </div>
                   </div>
@@ -879,8 +901,9 @@ export default function StockManagementPage() {
                 <h2 className="font-heading text-2xl text-gray-900 mb-2">Supplier Master</h2>
                 <p className="font-paragraph text-sm text-gray-600 mb-6">Maintain supplier records directly inside the inventory tool.</p>
                 <form onSubmit={handleSupplierCreate} className="space-y-4">
+                  <p className="text-sm font-medium text-slate-500">Fields marked <span className="text-rose-500">*</span> are required.</p>
                   <div className="space-y-2">
-                    <Label>Supplier Name</Label>
+                    <RequiredLabel required>Supplier Name</RequiredLabel>
                     <Input value={supplierForm.supplierName} onChange={(event) => setSupplierForm({ ...supplierForm, supplierName: event.target.value })} />
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

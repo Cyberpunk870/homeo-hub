@@ -1,31 +1,13 @@
 import type { ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
-  Activity,
-  BarChart3,
-  LayoutDashboard,
   MapPin,
-  Package2,
-  Settings,
-  ShoppingBag,
   Sparkles,
-  Stethoscope,
-  Users,
 } from 'lucide-react';
 import { useMember } from '@/integrations';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useClinicLocation } from '@/hooks/use-clinic-location';
-
-const navigationItems = [
-  { label: 'Dashboard', path: '/', icon: LayoutDashboard },
-  { label: 'Consultations', path: '/prescriptions', icon: Stethoscope },
-  { label: 'Conditions', path: '/alerts', icon: Activity },
-  { label: 'Inventory', path: '/inventory', icon: Package2 },
-  { label: 'Patients', path: '/patients', icon: Users },
-  { label: 'Orders', path: '/stock-management', icon: ShoppingBag },
-  { label: 'Reports', path: '/reports', icon: BarChart3 },
-  { label: 'Settings', path: '/about', icon: Settings },
-];
+import { dashboardNavigationItems } from '@/components/dashboard/navigation';
 
 type DashboardShellProps = {
   title: string;
@@ -69,9 +51,11 @@ export default function DashboardShell({
           </div>
 
           <nav className="grid gap-2 p-4">
-            {navigationItems.map((item) => {
+            {dashboardNavigationItems.map((item) => {
               const Icon = item.icon;
-              const isActive = location.pathname === item.path;
+              const isActive = item.path === '/inventory'
+                ? location.pathname === '/inventory' || location.pathname === '/stock-management'
+                : location.pathname === item.path;
 
               return (
                 <Link
@@ -87,15 +71,13 @@ export default function DashboardShell({
                     <Icon className="h-4 w-4" />
                     <span className="font-paragraph text-sm font-medium">{item.label}</span>
                   </span>
-                  {item.label === 'Conditions' ? (
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
-                        isActive ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-700'
-                      }`}
-                    >
-                      6
-                    </span>
-                  ) : null}
+                  {item.label === 'Alerts' ? <span
+                    className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
+                      isActive ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-700'
+                    }`}
+                  >
+                    Live
+                  </span> : null}
                 </Link>
               );
             })}

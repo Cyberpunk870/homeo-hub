@@ -1,59 +1,37 @@
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Activity,
   ArrowRight,
   BarChart3,
-  CalendarClock,
-  LayoutDashboard,
   MapPin,
-  Package2,
   Pill,
-  Settings,
-  ShoppingBag,
   Sparkles,
   Stethoscope,
   Users,
 } from 'lucide-react';
-import { useMember } from '@/integrations';
+import { BaseCrudService, useMember } from '@/integrations';
+import { HomeopathicMedicines, InventoryBatches, Patients } from '@/entities';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useClinicLocation } from '@/hooks/use-clinic-location';
-
-const navigationItems = [
-  { label: 'Dashboard', path: '/', icon: LayoutDashboard },
-  { label: 'Consultations', path: '/prescriptions', icon: Stethoscope },
-  { label: 'Conditions', path: '/alerts', icon: Activity },
-  { label: 'Inventory', path: '/inventory', icon: Package2 },
-  { label: 'Patients', path: '/patients', icon: Users },
-  { label: 'Orders', path: '/stock-management', icon: ShoppingBag },
-  { label: 'Reports', path: '/reports', icon: BarChart3 },
-  { label: 'Settings', path: '/about', icon: Settings },
-];
+import { dashboardNavigationItems } from '@/components/dashboard/navigation';
 
 const overviewCards = [
   {
     title: 'Medicine Inventory',
     description: 'Master database of medicines, potencies, forms, and supplier-ready stock visibility.',
     path: '/inventory',
-    stat: '2,400+ records',
+    stat: 'Live catalog',
     icon: Pill,
     tint: 'from-emerald-500 to-lime-400',
     surface: 'from-emerald-50 to-lime-50',
   },
   {
-    title: 'Stock Management',
-    description: 'Track batches, stock-in activity, and dispensing movement across clinic shelves.',
-    path: '/stock-management',
-    stat: 'Live movement',
-    icon: ShoppingBag,
-    tint: 'from-sky-500 to-cyan-400',
-    surface: 'from-sky-50 to-cyan-50',
-  },
-  {
     title: 'Stock Alerts',
     description: 'Watch low-stock items, expiry windows, and critical replenishment priorities.',
     path: '/alerts',
-    stat: '3 critical flags',
+    stat: 'Action required',
     icon: Activity,
     tint: 'from-amber-500 to-orange-400',
     surface: 'from-amber-50 to-orange-50',
@@ -104,6 +82,42 @@ export default function HomePage() {
   const location = useLocation();
   const clinicLocation = useClinicLocation();
   const { member } = useMember();
+  const [medicineCount, setMedicineCount] = useState(0);
+  const [patientCount, setPatientCount] = useState(0);
+  const [alertCount, setAlertCount] = useState(0);
+
+  useEffect(() => {
+    void loadDashboardMetrics();
+  }, [clinicLocation]);
+
+  const loadDashboardMetrics = async () => {
+    try {
+      const [medicinesResult, patientsResult, batchesResult] = await Promise.all([
+        BaseCrudService.getAllItems<HomeopathicMedicines>('homeopathicmedicines'),
+        BaseCrudService.getAllItems<Patients>('patients'),
+        BaseCrudService.getAllItems<InventoryBatches>('inventorybatches'),
+      ]);
+
+      setMedicineCount(medicinesResult.length);
+      setPatientCount(
+        patientsResult.filter((patient) => (patient.clinicLocation || 'Noida') === clinicLocation).length
+      );
+
+      const activeClinicBatches = batchesResult.filter((batch) => (batch.clinicLocation || 'Noida') === clinicLocation);
+      const lowStockCount = medicinesResult.filter((medicine) => {
+        const totalStock = activeClinicBatches
+          .filter((batch) => (batch.medicineSKU || '').trim().toLowerCase() === (medicine.medicineName || '').trim().toLowerCase())
+          .reduce((sum, batch) => sum + (batch.quantityAvailable || 0), 0);
+        return totalStock <= (medicine.reorderLevel || 0);
+      }).length;
+      setAlertCount(lowStockCount);
+    } catch (error) {
+      console.error('Error loading dashboard metrics:', error);
+      setMedicineCount(0);
+      setPatientCount(0);
+      setAlertCount(0);
+    }
+  };
 
   const displayName = member?.displayName || 'Clinic Admin';
   const displayInitials = displayName
@@ -130,9 +144,11 @@ export default function HomePage() {
           </div>
 
           <nav className="grid gap-2 p-4">
-            {navigationItems.map((item) => {
+            {dashboardNavigationItems.map((item) => {
               const Icon = item.icon;
-              const isActive = location.pathname === item.path;
+              const isActive = item.path === '/inventory'
+                ? location.pathname === '/inventory' || location.pathname === '/stock-management'
+                : location.pathname === item.path;
 
               return (
                 <Link
@@ -148,13 +164,13 @@ export default function HomePage() {
                     <Icon className="h-4 w-4" />
                     <span className="font-paragraph text-sm font-medium">{item.label}</span>
                   </span>
-                  {item.label === 'Conditions' ? (
+                  {item.label === 'Alerts' ? (
                     <span
                       className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
                         isActive ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-700'
                       }`}
                     >
-                      6
+                      {alertCount}
                     </span>
                   ) : null}
                 </Link>
@@ -218,7 +234,7 @@ export default function HomePage() {
                     Unified Homeopathy Operations
                   </h1>
                   <p className="mt-5 max-w-3xl font-paragraph text-base text-emerald-50/85 sm:text-lg">
-                    Manage inventory, patients, prescriptions, and multi-clinic workflows from one green dashboard surface instead of the earlier brochure-style interface.
+                    Manage inventory, patients, prescriptions, and multi-clinic workflows from one green dashboard surface.
                   </p>
                 </div>
 
@@ -227,21 +243,21 @@ export default function HomePage() {
                     <p className="font-paragraph text-xs uppercase tracking-[0.18em] text-emerald-100/90">
                       Medicines
                     </p>
-                    <p className="mt-3 font-heading text-3xl">2,400+</p>
+                    <p className="mt-3 font-heading text-3xl">{medicineCount}</p>
                   </div>
                   <div className="rounded-[24px] bg-white/10 p-5 backdrop-blur">
                     <p className="font-paragraph text-xs uppercase tracking-[0.18em] text-emerald-100/90">
                       Active Patients
                     </p>
-                    <p className="mt-3 font-heading text-3xl">1,280</p>
+                    <p className="mt-3 font-heading text-3xl">{patientCount}</p>
                   </div>
                   <div className="rounded-[24px] bg-white/10 p-5 backdrop-blur">
                     <p className="font-paragraph text-xs uppercase tracking-[0.18em] text-emerald-100/90">
-                      Today
+                      Active Alerts
                     </p>
                     <div className="mt-3 flex items-center gap-2 font-heading text-2xl">
-                      <CalendarClock className="h-5 w-5" />
-                      Ready
+                      <Activity className="h-5 w-5" />
+                      {alertCount}
                     </div>
                   </div>
                 </div>

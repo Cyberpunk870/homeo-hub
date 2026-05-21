@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { RequiredLabel } from '@/components/ui/required-label';
 import {
   Dialog,
   DialogContent,
@@ -214,13 +215,14 @@ export default function PatientsPage() {
             <DialogTitle className="font-heading text-2xl">Add Patient</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleAddPatient} className="space-y-4">
+            <p className="text-sm font-medium text-slate-500">Fields marked <span className="text-rose-500">*</span> are required.</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="patient-name">Patient Name</Label>
+                <RequiredLabel htmlFor="patient-name" required>Patient Name</RequiredLabel>
                 <Input id="patient-name" value={newPatient.patientName} onChange={(e) => setNewPatient({ ...newPatient, patientName: e.target.value })} required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="patient-phone">Phone Number</Label>
+                <RequiredLabel htmlFor="patient-phone" required>Phone Number</RequiredLabel>
                 <Input id="patient-phone" value={newPatient.phoneNumber} onChange={(e) => setNewPatient({ ...newPatient, phoneNumber: e.target.value })} required />
               </div>
             </div>
