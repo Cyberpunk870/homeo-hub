@@ -46,6 +46,7 @@ export function validatePrescriptionDraft(
     prescriptionDate: string;
     medicinesAndDosages: string;
     clinicLocation: string;
+    receiptNumber?: string;
   },
   existingPrescriptions: Prescriptions[]
 ) {
@@ -54,6 +55,7 @@ export function validatePrescriptionDraft(
   const doctorName = normalizeText(draft.doctorName);
   const prescriptionDate = normalizeText(draft.prescriptionDate);
   const medicinesAndDosages = normalizeText(draft.medicinesAndDosages);
+  const receiptNumber = normalizeText(draft.receiptNumber);
 
   if (!prescriptionId) return 'Enter prescription ID';
   if (!patientName) return 'Select a patient';
@@ -67,6 +69,15 @@ export function validatePrescriptionDraft(
 
   if (duplicatePrescription) {
     return 'Use a unique prescription ID';
+  }
+
+  if (receiptNumber) {
+    const duplicateReceipt = existingPrescriptions.find(
+      (prescription) => normalizeText(prescription.receiptNumber).toLowerCase() === receiptNumber.toLowerCase()
+    );
+    if (duplicateReceipt) {
+      return 'Use a unique receipt number';
+    }
   }
 
   return null;

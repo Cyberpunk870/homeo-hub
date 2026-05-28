@@ -27,6 +27,7 @@ import { useToast } from '@/hooks/use-toast';
 import { CLINIC_LOCATIONS } from '@/lib/clinic';
 import { useClinicLocation } from '@/hooks/use-clinic-location';
 import { normalizeText, validatePatientDraft } from '@/lib/validators';
+import { generatePatientIdentifier } from '@/lib/consultations';
 
 export default function PatientsPage() {
   const [patients, setPatients] = useState<Patients[]>([]);
@@ -38,18 +39,28 @@ export default function PatientsPage() {
   const { toast } = useToast();
 
   const [newPatient, setNewPatient] = useState({
+    patientId: '',
     patientName: '',
     phoneNumber: '',
+    mobileNumber: '',
     email: '',
     address: '',
     dateOfBirth: '',
+    ageYears: '',
+    ageMonths: '',
     gender: '',
+    maritalStatus: '',
+    city: '',
+    state: '',
+    country: 'India',
+    postalCode: '',
+    profession: '',
     medicalHistorySummary: '',
     clinicLocation: 'Noida'
   });
 
   useEffect(() => {
-    setNewPatient((prev) => ({ ...prev, clinicLocation }));
+    setNewPatient((prev) => ({ ...prev, clinicLocation, patientId: prev.patientId || generatePatientIdentifier(clinicLocation) }));
   }, [clinicLocation]);
 
   useEffect(() => {
@@ -81,21 +92,41 @@ export default function PatientsPage() {
       await BaseCrudService.create<Patients>('patients', {
         _id: crypto.randomUUID(),
         ...newPatient,
+        patientId: normalizeText(newPatient.patientId) || generatePatientIdentifier(newPatient.clinicLocation),
         patientName: normalizeText(newPatient.patientName),
         phoneNumber: normalizeText(newPatient.phoneNumber),
+        mobileNumber: normalizeText(newPatient.mobileNumber),
         email: normalizeText(newPatient.email),
         address: normalizeText(newPatient.address),
+        ageYears: newPatient.ageYears ? Number(newPatient.ageYears) : undefined,
+        ageMonths: newPatient.ageMonths ? Number(newPatient.ageMonths) : undefined,
+        maritalStatus: normalizeText(newPatient.maritalStatus),
+        city: normalizeText(newPatient.city),
+        state: normalizeText(newPatient.state),
+        country: normalizeText(newPatient.country),
+        postalCode: normalizeText(newPatient.postalCode),
+        profession: normalizeText(newPatient.profession),
         medicalHistorySummary: normalizeText(newPatient.medicalHistorySummary),
       });
       toast({ title: 'Patient Added', description: 'Patient profile created successfully' });
       setIsAddDialogOpen(false);
       setNewPatient({
+        patientId: generatePatientIdentifier(clinicLocation),
         patientName: '',
         phoneNumber: '',
+        mobileNumber: '',
         email: '',
         address: '',
         dateOfBirth: '',
+        ageYears: '',
+        ageMonths: '',
         gender: '',
+        maritalStatus: '',
+        city: '',
+        state: '',
+        country: 'India',
+        postalCode: '',
+        profession: '',
         medicalHistorySummary: '',
         clinicLocation,
       });
@@ -108,7 +139,7 @@ export default function PatientsPage() {
   const filteredPatients = patients.filter((patient) => {
     const query = searchQuery.toLowerCase();
     const matchesClinic = (patient.clinicLocation || 'Noida') === clinicLocation;
-    return matchesClinic && (
+    return matchesClinic && !patient.isArchived && (
       patient.patientName?.toLowerCase().includes(query) ||
       patient.phoneNumber?.toLowerCase().includes(query) ||
       patient.email?.toLowerCase().includes(query)
@@ -163,6 +194,7 @@ export default function PatientsPage() {
                         <Badge variant="outline">{patient.gender || 'N/A'}</Badge>
                       </div>
                       <div className="space-y-1 font-paragraph text-sm text-slate-600">
+                        <p><span className="font-medium text-slate-800">Patient ID:</span> {patient.patientId || 'Pending'}</p>
                         <p><span className="font-medium text-slate-800">Phone:</span> {patient.phoneNumber || 'N/A'}</p>
                         <p><span className="font-medium text-slate-800">Email:</span> {patient.email || 'N/A'}</p>
                         <p className="line-clamp-2"><span className="font-medium text-slate-800">History:</span> {patient.medicalHistorySummary || 'Not recorded'}</p>
@@ -188,12 +220,21 @@ export default function PatientsPage() {
           </DialogHeader>
           {selectedPatient && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+              <div><p className="text-gray-600">Patient ID</p><p className="font-medium text-gray-900">{selectedPatient.patientId || 'Pending'}</p></div>
               <div><p className="text-gray-600">Name</p><p className="font-medium text-gray-900">{selectedPatient.patientName}</p></div>
               <div><p className="text-gray-600">Clinic</p><p className="font-medium text-gray-900">{selectedPatient.clinicLocation || 'Noida'}</p></div>
               <div><p className="text-gray-600">Phone</p><p className="font-medium text-gray-900">{selectedPatient.phoneNumber || 'N/A'}</p></div>
+              <div><p className="text-gray-600">Mobile</p><p className="font-medium text-gray-900">{selectedPatient.mobileNumber || 'N/A'}</p></div>
               <div><p className="text-gray-600">Email</p><p className="font-medium text-gray-900">{selectedPatient.email || 'N/A'}</p></div>
               <div><p className="text-gray-600">DOB</p><p className="font-medium text-gray-900">{selectedPatient.dateOfBirth ? new Date(selectedPatient.dateOfBirth).toLocaleDateString() : 'N/A'}</p></div>
               <div><p className="text-gray-600">Gender</p><p className="font-medium text-gray-900">{selectedPatient.gender || 'N/A'}</p></div>
+              <div><p className="text-gray-600">Age</p><p className="font-medium text-gray-900">{selectedPatient.ageYears || 0} years {selectedPatient.ageMonths || 0} months</p></div>
+              <div><p className="text-gray-600">Marital Status</p><p className="font-medium text-gray-900">{selectedPatient.maritalStatus || 'N/A'}</p></div>
+              <div><p className="text-gray-600">City</p><p className="font-medium text-gray-900">{selectedPatient.city || 'N/A'}</p></div>
+              <div><p className="text-gray-600">State</p><p className="font-medium text-gray-900">{selectedPatient.state || 'N/A'}</p></div>
+              <div><p className="text-gray-600">Country</p><p className="font-medium text-gray-900">{selectedPatient.country || 'N/A'}</p></div>
+              <div><p className="text-gray-600">Postal Code</p><p className="font-medium text-gray-900">{selectedPatient.postalCode || 'N/A'}</p></div>
+              <div><p className="text-gray-600">Profession</p><p className="font-medium text-gray-900">{selectedPatient.profession || 'N/A'}</p></div>
               <div className="sm:col-span-2">
                 <p className="text-gray-600 mb-1">Address</p>
                 <p className="font-medium text-gray-900">{selectedPatient.address || 'N/A'}</p>
@@ -216,6 +257,10 @@ export default function PatientsPage() {
           </DialogHeader>
           <form onSubmit={handleAddPatient} className="space-y-4">
             <p className="text-sm font-medium text-slate-500">Fields marked <span className="text-rose-500">*</span> are required.</p>
+            <div className="space-y-2">
+              <Label htmlFor="patient-id">Patient ID</Label>
+              <Input id="patient-id" value={newPatient.patientId} onChange={(e) => setNewPatient({ ...newPatient, patientId: e.target.value })} />
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <RequiredLabel htmlFor="patient-name" required>Patient Name</RequiredLabel>
@@ -224,6 +269,13 @@ export default function PatientsPage() {
               <div className="space-y-2">
                 <RequiredLabel htmlFor="patient-phone" required>Phone Number</RequiredLabel>
                 <Input id="patient-phone" value={newPatient.phoneNumber} onChange={(e) => setNewPatient({ ...newPatient, phoneNumber: e.target.value })} required />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="patient-mobile">Mobile Number</Label>
+                <Input id="patient-mobile" value={newPatient.mobileNumber} onChange={(e) => setNewPatient({ ...newPatient, mobileNumber: e.target.value })} />
               </div>
             </div>
 
@@ -267,9 +319,56 @@ export default function PatientsPage() {
               </div>
             </div>
 
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="patient-age-years">Age (Years)</Label>
+                <Input id="patient-age-years" type="number" min="0" value={newPatient.ageYears} onChange={(e) => setNewPatient({ ...newPatient, ageYears: e.target.value })} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="patient-age-months">Age (Months)</Label>
+                <Input id="patient-age-months" type="number" min="0" max="11" value={newPatient.ageMonths} onChange={(e) => setNewPatient({ ...newPatient, ageMonths: e.target.value })} />
+              </div>
+              <div className="space-y-2">
+                <Label>Marital Status</Label>
+                <Select value={newPatient.maritalStatus} onValueChange={(value) => setNewPatient({ ...newPatient, maritalStatus: value })}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Single">Single</SelectItem>
+                    <SelectItem value="Married">Married</SelectItem>
+                    <SelectItem value="Widowed">Widowed</SelectItem>
+                    <SelectItem value="Separated">Separated</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="patient-address">Address</Label>
               <Textarea id="patient-address" value={newPatient.address} onChange={(e) => setNewPatient({ ...newPatient, address: e.target.value })} rows={2} />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="patient-city">City</Label>
+                <Input id="patient-city" value={newPatient.city} onChange={(e) => setNewPatient({ ...newPatient, city: e.target.value })} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="patient-state">State</Label>
+                <Input id="patient-state" value={newPatient.state} onChange={(e) => setNewPatient({ ...newPatient, state: e.target.value })} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="patient-country">Country</Label>
+                <Input id="patient-country" value={newPatient.country} onChange={(e) => setNewPatient({ ...newPatient, country: e.target.value })} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="patient-postal">Pin / Zip Code</Label>
+                <Input id="patient-postal" value={newPatient.postalCode} onChange={(e) => setNewPatient({ ...newPatient, postalCode: e.target.value })} />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="patient-profession">Profession</Label>
+              <Input id="patient-profession" value={newPatient.profession} onChange={(e) => setNewPatient({ ...newPatient, profession: e.target.value })} />
             </div>
             <div className="space-y-2">
               <Label htmlFor="patient-history">Medical History Summary</Label>

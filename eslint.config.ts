@@ -1,8 +1,14 @@
+// @ts-expect-error - ESLint config dependencies are in devDependencies
 import tsPlugin from '@typescript-eslint/eslint-plugin';
+// @ts-expect-error - ESLint config dependencies are in devDependencies
 import tsParser from '@typescript-eslint/parser';
+// @ts-expect-error - ESLint config dependencies are in devDependencies
 import eslintPluginAstro from 'eslint-plugin-astro';
+// @ts-expect-error - ESLint config dependencies are in devDependencies
 import importPlugin from 'eslint-plugin-import';
+// @ts-expect-error - ESLint config dependencies are in devDependencies
 import reactPlugin from 'eslint-plugin-react';
+// @ts-expect-error - ESLint config dependencies are in devDependencies
 import globals from 'globals';
 import useImageComponent from './eslint-rules/use-image-component';
 import fixEmptySelectItemValue from './eslint-rules/fix-empty-select-item-value';

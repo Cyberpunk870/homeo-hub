@@ -2,6 +2,8 @@
 
 Hosted clinic operations software for a homeopathy practice with two clinics: Delhi and Noida. The app covers inventory, stock movements, alerts, patients, prescriptions, reports, doctor-only authentication, and JSON backup/restore.
 
+For production deployment and custom domain setup, see [DEPLOYMENT.md](./DEPLOYMENT.md).
+
 ## Product status
 
 - Shared PostgreSQL backend for hosted use
@@ -62,7 +64,7 @@ PUBLIC_APP_NAME=Homeo Hub
 
 The database schema is created automatically on first boot and seeded with starter clinic data if the tables are empty.
 
-For Railway, the repo now includes [railway.json](/home/kg110/homeo-hub-1/railway.json) and a health endpoint at `/api/health`.
+For Railway, the repo includes `railway.json`, `nixpacks.toml`, and a health endpoint at `/api/health`.
 
 ## Backups
 
@@ -73,7 +75,7 @@ For Railway, the repo now includes [railway.json](/home/kg110/homeo-hub-1/railwa
 
 ## Verification
 
-The current repo passes:
+Run these before production release:
 
 - `npm run check`
 - `npm run test:run`

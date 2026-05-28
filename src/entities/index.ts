@@ -23,6 +23,80 @@ export interface ClinicLocations {
   email?: string;
 }
 
+/**
+ * Collection ID: clinicsettings
+ * Interface for ClinicSettings
+ */
+export interface ClinicSettings {
+  _id: string;
+  _createdDate?: Date;
+  _updatedDate?: Date;
+  /** App field: clinic this settings profile applies to */
+  clinicLocation?: string;
+  /** App field: default consultation fee */
+  consultationFee?: number;
+  /** App field: default medicine fee */
+  medicineFee?: number;
+  /** App field: default follow-up spacing in days */
+  defaultFollowUpDays?: number;
+  /** App field: suggested backup location for desktop installs */
+  backupLocation?: string;
+  /** App field: optional clinic billing notes */
+  billingNotes?: string;
+}
+
+/**
+ * Collection ID: noteslibrary
+ * Interface for NotesLibrary
+ */
+export interface NotesLibrary {
+  _id: string;
+  _createdDate?: Date;
+  _updatedDate?: Date;
+  /** App field: clinic that owns the note */
+  clinicLocation?: string;
+  /** App field: note title */
+  title?: string;
+  /** App field: note category or condition */
+  category?: string;
+  /** App field: searchable keywords */
+  keywords?: string;
+  /** App field: note body */
+  content?: string;
+  /** App field: archive flag */
+  isArchived?: boolean;
+}
+
+/**
+ * Collection ID: medicalcertificates
+ * Interface for MedicalCertificates
+ */
+export interface MedicalCertificates {
+  _id: string;
+  _createdDate?: Date;
+  _updatedDate?: Date;
+  /** App field: clinic that issued the certificate */
+  clinicLocation?: string;
+  /** App field: generated certificate number */
+  certificateNumber?: string;
+  /** App field: patient identifier */
+  patientId?: string;
+  /** App field: patient name */
+  patientName?: string;
+  /** App field: doctor name */
+  doctorName?: string;
+  /** App field: certificate date */
+  issueDate?: Date | string;
+  /** App field: diagnosis or reason */
+  diagnosisSummary?: string;
+  /** App field: recommended rest days */
+  restDays?: number;
+  /** App field: additional notes */
+  notes?: string;
+  /** App field: archive flag */
+  isArchived?: boolean;
+}
+
 
 /**
  * Collection ID: doctors
@@ -144,10 +218,14 @@ export interface Patients {
   _id: string;
   _createdDate?: Date;
   _updatedDate?: Date;
+  /** App field: generated patient identifier */
+  patientId?: string;
   /** @wixFieldType text */
   patientName?: string;
   /** @wixFieldType text */
   phoneNumber?: string;
+  /** App field: alternate mobile number */
+  mobileNumber?: string;
   /** @wixFieldType text */
   email?: string;
   /** @wixFieldType text */
@@ -158,6 +236,26 @@ export interface Patients {
   gender?: string;
   /** @wixFieldType text */
   medicalHistorySummary?: string;
+  /** App field: computed age years */
+  ageYears?: number;
+  /** App field: computed age months */
+  ageMonths?: number;
+  /** App field: marital status */
+  maritalStatus?: string;
+  /** App field: city */
+  city?: string;
+  /** App field: state */
+  state?: string;
+  /** App field: country */
+  country?: string;
+  /** App field: postal code */
+  postalCode?: string;
+  /** App field: profession */
+  profession?: string;
+  /** App field: archive flag */
+  isArchived?: boolean;
+  /** App field: archive timestamp */
+  archivedAt?: Date | string;
   /** App field (recommended): default clinic */
   clinicLocation?: string;
 }
@@ -171,6 +269,8 @@ export interface Prescriptions {
   _id: string;
   _createdDate?: Date;
   _updatedDate?: Date;
+  /** App field: patient identifier */
+  patientId?: string;
   /** @wixFieldType text */
   prescriptionId?: string;
   /** @wixFieldType text */
@@ -183,6 +283,58 @@ export interface Prescriptions {
   medicinesAndDosages?: string;
   /** @wixFieldType text */
   notes?: string;
+  /** App field: symptom or diagnosis notes */
+  symptomsSummary?: string;
+  /** App field: hot/chilly/ambithermal */
+  nature?: string;
+  /** App field: salt/sweet/normal/etc. */
+  craving?: string;
+  /** App field: treatment summary */
+  treatmentSummary?: string;
+  /** App field: external medicines */
+  externalMedicines?: string;
+  /** App field: investigations */
+  investigations?: string;
+  /** App field: row-wise medicine data as JSON */
+  medicineLineItems?: string;
+  /** App field: treatment duration in days */
+  treatmentForDays?: number;
+  /** App field: number of consultations issued in this visit */
+  consultationCount?: number;
+  /** App field: doctor-managed interval value */
+  followUpIntervalValue?: number;
+  /** App field: days or months */
+  followUpIntervalUnit?: string;
+  /** App field: next consultation date */
+  nextConsultationDate?: Date | string;
+  /** App field: default consultation charge */
+  consultationCharge?: number;
+  /** App field: medicine charge */
+  medicineCharge?: number;
+  /** App field: total billed amount */
+  totalAmount?: number;
+  /** App field: amount collected in cash */
+  amountPaidCash?: number;
+  /** App field: amount collected online */
+  amountPaidOnline?: number;
+  /** App field: pending balance */
+  balanceAmount?: number;
+  /** App field: whether a bill is required */
+  billRequired?: boolean;
+  /** App field: whether a printed prescription is required */
+  prescriptionRequired?: boolean;
+  /** App field: generated receipt number */
+  receiptNumber?: string;
+  /** App field: receipt cancelled flag */
+  cancelledReceipt?: boolean;
+  /** App field: paid/partial/unpaid */
+  paymentStatus?: string;
+  /** App field: remarks */
+  remarks?: string;
+  /** App field: archive flag */
+  isArchived?: boolean;
+  /** App field: archive timestamp */
+  archivedAt?: Date | string;
   /** App field (recommended): issuing clinic */
   clinicLocation?: string;
 }

@@ -1,10 +1,15 @@
 {
-  "extends": "astro/tsconfigs/base",
   "compilerOptions": {
+    "ignoreDeprecations": "6.0",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "target": "ES2022",
     "jsx": "react-jsx",
     "jsxImportSource": "react",
     "rootDir": ".",
     "baseUrl": ".",
+    "resolveJsonModule": true,
     "incremental": true,
     "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo",
     "noUnusedLocals": false,
@@ -26,14 +31,14 @@
         "src/components/*"
       ],
       "@/integrations/*": [
-        "integrations/*",
+        "integrations/*"
       ],
       "@/integrations": [
         "integrations"
       ],
       "@wix/codegen-framework-packages": [
         "integrations"
-      ],
+      ]
     }
   },
   "include": [

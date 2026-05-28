@@ -9,14 +9,24 @@ import AlertsPage from '@/components/pages/AlertsPage';
 import PrescriptionsPage from '@/components/pages/PrescriptionsPage';
 import PatientsPage from '@/components/pages/PatientsPage';
 import ReportsPage from '@/components/pages/ReportsPage';
-import AboutPage from '@/components/pages/AboutPage';
+import SettingsPage from '@/components/pages/SettingsPage';
+import ReconciliationPage from '@/components/pages/ReconciliationPage';
+import NotesPage from '@/components/pages/NotesPage';
+import MedicalCertificatesPage from '@/components/pages/MedicalCertificatesPage';
+import ArchivalPage from '@/components/pages/ArchivalPage';
+import { MemberProtectedRoute } from '@/components/ui/member-protected-route';
 
 // Layout component that includes ScrollToTop
 function Layout() {
   return (
     <>
       <ScrollToTop />
-      <Outlet />
+      <MemberProtectedRoute
+        signInTitle="HomeoHub Desktop Sign In"
+        messageToSignIn="Enter the clinic username and password to open the application workspace."
+      >
+        <Outlet />
+      </MemberProtectedRoute>
     </>
   );
 }
@@ -70,6 +80,13 @@ const router = createBrowserRouter([
         },
       },
       {
+        path: "reconciliation",
+        element: <ReconciliationPage />,
+        routeMetadata: {
+          pageIdentifier: 'reconciliation',
+        },
+      },
+      {
         path: "reports",
         element: <ReportsPage />,
         routeMetadata: {
@@ -77,10 +94,38 @@ const router = createBrowserRouter([
         },
       },
       {
+        path: "notes",
+        element: <NotesPage />,
+        routeMetadata: {
+          pageIdentifier: 'notes',
+        },
+      },
+      {
+        path: "certificates",
+        element: <MedicalCertificatesPage />,
+        routeMetadata: {
+          pageIdentifier: 'certificates',
+        },
+      },
+      {
+        path: "archival",
+        element: <ArchivalPage />,
+        routeMetadata: {
+          pageIdentifier: 'archival',
+        },
+      },
+      {
         path: "about",
-        element: <AboutPage />,
+        element: <Navigate to="/settings" replace />,
         routeMetadata: {
           pageIdentifier: 'about',
+        },
+      },
+      {
+        path: "settings",
+        element: <SettingsPage />,
+        routeMetadata: {
+          pageIdentifier: 'settings',
         },
       },
       {

@@ -54,6 +54,58 @@ const collectionConfigs: CollectionConfig[] = [
     uniqueIndexes: ['location_name'],
   },
   {
+    collectionId: 'clinicsettings',
+    tableName: 'clinic_settings',
+    defaultOrderColumn: 'clinic_location',
+    columns: [
+      { key: 'clinicLocation', column: 'clinic_location', definition: 'TEXT NOT NULL' },
+      { key: 'consultationFee', column: 'consultation_fee', definition: 'NUMERIC(12,2) NOT NULL DEFAULT 0', serialize: (value) => Number(value ?? 0), parse: (value) => Number(value ?? 0) },
+      { key: 'medicineFee', column: 'medicine_fee', definition: 'NUMERIC(12,2) NOT NULL DEFAULT 0', serialize: (value) => Number(value ?? 0), parse: (value) => Number(value ?? 0) },
+      { key: 'defaultFollowUpDays', column: 'default_follow_up_days', definition: 'INTEGER NOT NULL DEFAULT 28', serialize: (value) => Number(value ?? 28), parse: (value) => Number(value ?? 28) },
+      { key: 'backupLocation', column: 'backup_location', definition: 'TEXT' },
+      { key: 'billingNotes', column: 'billing_notes', definition: 'TEXT' },
+    ],
+    uniqueIndexes: ['clinic_location'],
+  },
+  {
+    collectionId: 'noteslibrary',
+    tableName: 'notes_library',
+    defaultOrderColumn: 'updated_at',
+    columns: [
+      { key: 'clinicLocation', column: 'clinic_location', definition: 'TEXT NOT NULL' },
+      { key: 'title', column: 'title', definition: 'TEXT NOT NULL' },
+      { key: 'category', column: 'category', definition: 'TEXT' },
+      { key: 'keywords', column: 'keywords', definition: 'TEXT' },
+      { key: 'content', column: 'content', definition: 'TEXT NOT NULL' },
+      { key: 'isArchived', column: 'is_archived', definition: 'BOOLEAN' },
+    ],
+    indexes: ['clinic_location', 'category'],
+  },
+  {
+    collectionId: 'medicalcertificates',
+    tableName: 'medical_certificates',
+    defaultOrderColumn: 'issue_date',
+    columns: [
+      { key: 'clinicLocation', column: 'clinic_location', definition: 'TEXT NOT NULL' },
+      { key: 'certificateNumber', column: 'certificate_number', definition: 'TEXT NOT NULL' },
+      { key: 'patientId', column: 'patient_id', definition: 'TEXT' },
+      { key: 'patientName', column: 'patient_name', definition: 'TEXT NOT NULL' },
+      { key: 'doctorName', column: 'doctor_name', definition: 'TEXT NOT NULL' },
+      {
+        key: 'issueDate',
+        column: 'issue_date',
+        definition: 'DATE',
+        serialize: (value) => (value ? String(value).slice(0, 10) : null),
+      },
+      { key: 'diagnosisSummary', column: 'diagnosis_summary', definition: 'TEXT' },
+      { key: 'restDays', column: 'rest_days', definition: 'INTEGER', serialize: (value) => Number(value ?? 0), parse: (value) => Number(value ?? 0) },
+      { key: 'notes', column: 'notes', definition: 'TEXT' },
+      { key: 'isArchived', column: 'is_archived', definition: 'BOOLEAN' },
+    ],
+    uniqueIndexes: ['certificate_number'],
+    indexes: ['clinic_location', 'patient_name', 'issue_date'],
+  },
+  {
     collectionId: 'doctors',
     tableName: 'doctors',
     defaultOrderColumn: 'doctor_name',
@@ -141,8 +193,10 @@ const collectionConfigs: CollectionConfig[] = [
     defaultOrderColumn: 'updated_at',
     columns: [
       { key: 'clinicLocation', column: 'clinic_location', definition: 'TEXT NOT NULL' },
+      { key: 'patientId', column: 'patient_id', definition: 'TEXT' },
       { key: 'patientName', column: 'patient_name', definition: 'TEXT NOT NULL' },
       { key: 'phoneNumber', column: 'phone_number', definition: 'TEXT NOT NULL' },
+      { key: 'mobileNumber', column: 'mobile_number', definition: 'TEXT' },
       { key: 'email', column: 'email', definition: 'TEXT' },
       { key: 'address', column: 'address', definition: 'TEXT' },
       {
@@ -153,6 +207,21 @@ const collectionConfigs: CollectionConfig[] = [
       },
       { key: 'gender', column: 'gender', definition: 'TEXT' },
       { key: 'medicalHistorySummary', column: 'medical_history_summary', definition: 'TEXT' },
+      { key: 'ageYears', column: 'age_years', definition: 'INTEGER', serialize: (value) => (value == null ? null : Number(value)), parse: (value) => (value == null ? null : Number(value)) },
+      { key: 'ageMonths', column: 'age_months', definition: 'INTEGER', serialize: (value) => (value == null ? null : Number(value)), parse: (value) => (value == null ? null : Number(value)) },
+      { key: 'maritalStatus', column: 'marital_status', definition: 'TEXT' },
+      { key: 'city', column: 'city', definition: 'TEXT' },
+      { key: 'state', column: 'state', definition: 'TEXT' },
+      { key: 'country', column: 'country', definition: 'TEXT' },
+      { key: 'postalCode', column: 'postal_code', definition: 'TEXT' },
+      { key: 'profession', column: 'profession', definition: 'TEXT' },
+      { key: 'isArchived', column: 'is_archived', definition: 'BOOLEAN' },
+      {
+        key: 'archivedAt',
+        column: 'archived_at',
+        definition: 'TIMESTAMPTZ',
+        serialize: (value) => (value ? String(value) : null),
+      },
     ],
     uniqueIndexes: ['clinic_location', 'phone_number'],
     indexes: ['clinic_location', 'patient_name'],
@@ -164,6 +233,7 @@ const collectionConfigs: CollectionConfig[] = [
     columns: [
       { key: 'clinicLocation', column: 'clinic_location', definition: 'TEXT NOT NULL' },
       { key: 'prescriptionId', column: 'prescription_id', definition: 'TEXT NOT NULL' },
+      { key: 'patientId', column: 'patient_id', definition: 'TEXT' },
       { key: 'patientName', column: 'patient_name', definition: 'TEXT NOT NULL' },
       { key: 'doctorName', column: 'doctor_name', definition: 'TEXT NOT NULL' },
       {
@@ -174,9 +244,45 @@ const collectionConfigs: CollectionConfig[] = [
       },
       { key: 'medicinesAndDosages', column: 'medicines_and_dosages', definition: 'TEXT NOT NULL' },
       { key: 'notes', column: 'notes', definition: 'TEXT' },
+      { key: 'symptomsSummary', column: 'symptoms_summary', definition: 'TEXT' },
+      { key: 'nature', column: 'nature', definition: 'TEXT' },
+      { key: 'craving', column: 'craving', definition: 'TEXT' },
+      { key: 'treatmentSummary', column: 'treatment_summary', definition: 'TEXT' },
+      { key: 'externalMedicines', column: 'external_medicines', definition: 'TEXT' },
+      { key: 'investigations', column: 'investigations', definition: 'TEXT' },
+      { key: 'medicineLineItems', column: 'medicine_line_items', definition: 'TEXT' },
+      { key: 'treatmentForDays', column: 'treatment_for_days', definition: 'INTEGER', serialize: (value) => Number(value ?? 0), parse: (value) => Number(value ?? 0) },
+      { key: 'consultationCount', column: 'consultation_count', definition: 'INTEGER', serialize: (value) => Number(value ?? 1), parse: (value) => Number(value ?? 1) },
+      { key: 'followUpIntervalValue', column: 'follow_up_interval_value', definition: 'INTEGER', serialize: (value) => Number(value ?? 28), parse: (value) => Number(value ?? 28) },
+      { key: 'followUpIntervalUnit', column: 'follow_up_interval_unit', definition: 'TEXT' },
+      {
+        key: 'nextConsultationDate',
+        column: 'next_consultation_date',
+        definition: 'DATE',
+        serialize: (value) => (value ? String(value).slice(0, 10) : null),
+      },
+      { key: 'consultationCharge', column: 'consultation_charge', definition: 'NUMERIC(12,2)', serialize: (value) => Number(value ?? 0), parse: (value) => Number(value ?? 0) },
+      { key: 'medicineCharge', column: 'medicine_charge', definition: 'NUMERIC(12,2)', serialize: (value) => Number(value ?? 0), parse: (value) => Number(value ?? 0) },
+      { key: 'totalAmount', column: 'total_amount', definition: 'NUMERIC(12,2)', serialize: (value) => Number(value ?? 0), parse: (value) => Number(value ?? 0) },
+      { key: 'amountPaidCash', column: 'amount_paid_cash', definition: 'NUMERIC(12,2)', serialize: (value) => Number(value ?? 0), parse: (value) => Number(value ?? 0) },
+      { key: 'amountPaidOnline', column: 'amount_paid_online', definition: 'NUMERIC(12,2)', serialize: (value) => Number(value ?? 0), parse: (value) => Number(value ?? 0) },
+      { key: 'balanceAmount', column: 'balance_amount', definition: 'NUMERIC(12,2)', serialize: (value) => Number(value ?? 0), parse: (value) => Number(value ?? 0) },
+      { key: 'billRequired', column: 'bill_required', definition: 'BOOLEAN' },
+      { key: 'prescriptionRequired', column: 'prescription_required', definition: 'BOOLEAN' },
+      { key: 'receiptNumber', column: 'receipt_number', definition: 'TEXT' },
+      { key: 'cancelledReceipt', column: 'cancelled_receipt', definition: 'BOOLEAN' },
+      { key: 'paymentStatus', column: 'payment_status', definition: 'TEXT' },
+      { key: 'remarks', column: 'remarks', definition: 'TEXT' },
+      { key: 'isArchived', column: 'is_archived', definition: 'BOOLEAN' },
+      {
+        key: 'archivedAt',
+        column: 'archived_at',
+        definition: 'TIMESTAMPTZ',
+        serialize: (value) => (value ? String(value) : null),
+      },
     ],
     uniqueIndexes: ['prescription_id'],
-    indexes: ['clinic_location', 'patient_name', 'prescription_date'],
+    indexes: ['clinic_location', 'patient_name', 'prescription_date', 'receipt_number'],
   },
   {
     collectionId: 'stocktransactionledger',
@@ -306,6 +412,9 @@ async function ensureSchema() {
 
   for (const config of collectionConfigs) {
     await db.query(buildTableSql(config));
+    for (const column of config.columns) {
+      await db.query(`ALTER TABLE ${config.tableName} ADD COLUMN IF NOT EXISTS ${column.column} ${column.definition}`);
+    }
 
     for (const uniqueIndex of config.uniqueIndexes ?? []) {
       await db.query(
